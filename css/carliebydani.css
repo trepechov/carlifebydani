@@ -1,0 +1,15 @@
+/* Templete specific */
+
+/*
+ - The base layer is for things like reset rules or default styles applied to plain HTML elements.
+ - The components layer is for class-based styles that you want to be able to override with utilities.
+ - The utilities layer is for small, single-purpose classes that should always take precedence over any other styles.
+*/
+
+@layer utilities {
+    .logo {
+        @apply w-32
+        h-32
+        m-auto;
+    }
+}

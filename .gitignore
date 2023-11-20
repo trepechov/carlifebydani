@@ -1,0 +1,31 @@
+# Ignore theme build files
+/dist
+
+# Ignore node_modules directory
+/node_modules
+
+# Ignore compiled CSS files
+# /style.css
+
+# Ignore compiled JavaScript files
+# /script.js
+
+# Ignore compiled assets
+# /assets
+
+# Ignore development files
+# /.env
+# /.env.example
+# /.env.local
+# /.env.development
+# /.env.test
+# /.env.production
+
+# Ignore editor configuration files
+/.vscode
+/.idea
+/.history
+
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
