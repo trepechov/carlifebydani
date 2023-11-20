@@ -1,4 +1,4 @@
-# CarlifebyDani WordPress Theme
+# CarLife by Dani WordPress Theme
 
 This is a custom WordPress theme developed by Dani. It's designed for car enthusiasts and uses Tailwind CSS for styling.
 
@@ -13,7 +13,7 @@ This is a custom WordPress theme developed by Dani. It's designed for car enthus
   - Download and install [Local WP](https://localwp.com/). Ask someone for backup file.
   - Or use your favorite tool that supports PHP and MySQL.
 
-2. Navigate to the `/wp-content/themes` folder in your WordPress installation and clone this repository using `git clone`.
+2. Navigate to the `/wp-content/themes` folder in your WordPress installation and clone this repository using `git clone` this repo.
 
 3. Navigate to the cloned repository by running `cd carlifebydani` and install the necessary dependencies by running `npm install`.
 
@@ -29,9 +29,6 @@ This project uses Prettier for code formatting. To install Prettier in Visual St
 3. Search for `Prettier - Code formatter`.
 4. Click on the install button.
 
-## User Settings
-
-Add the following snippets to your `settings.json` file in Visual Studio Code to ensure consistent formatting:
 
 ## User Settings
 
@@ -48,7 +45,7 @@ Add the following snippets to your `settings.json` file in Visual Studio Code to
   "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
   
 }
-
+````
 ## Development
 
 This theme uses Tailwind CSS. To compile your CSS, run:
