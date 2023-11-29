@@ -5,7 +5,7 @@
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  */
-get_header();
+get_template_part('template-parts/header');
 ?>
 
     <div class="main-content">
@@ -32,6 +32,4 @@ get_header();
         ?>
     </div>
 
-<?php
-// get_sidebar();
-get_footer();
+<?php get_template_part('template-parts/footer'); ?>
