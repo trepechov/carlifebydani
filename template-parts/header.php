@@ -10,15 +10,34 @@
     <?php wp_head(); ?>
 </head>
 
-<body class="bg-black text-white">
-    <header>
-        <div class="border-b border-b-red-500">
-            <div class="container max-w-7xl p-2 flexjustify-between">
-                <div>Tags</div>
-                <nav>
+<body class="body">
+    <header class="header">
+        <!-- TOP -->
+        <div class="top">
+            <div class="top-container">
+                <nav class="top-tags">Популярни теми /
+                    <ul class="list-none flex">
+                    <?php
+                        $tags = get_tags([
+                            'orderby' => 'count',
+                            'order' => 'DESC',
+                            'number' => 5
+                        ]);
+                        foreach ( $tags as $tag ) :
+                        $tag_link = get_tag_link( $tag->term_id );
+                    ?>
+                    <li class="m-2">
+                        <a href='<?php echo $tag_link; ?>' title='<?php echo $tag->name; ?>'>#<?php echo $tag->name ?></a>
+                    </li>
+                    <?php
+                        endforeach;
+                    ?>
+                    </ul>
+                </nav>
+                <nav class="top-nav">
                     <?php
                         wp_nav_menu( array(
-                            'theme_location' => 'header-menu',
+                            'theme_location' => 'top-menu',
                             'fallback_cb' => false,
                             'menu_class' => 'list-none flex space-x-4',
                             'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>',
@@ -28,7 +47,8 @@
             </div> 
         </div>
 
-        <div class="container max-w-7xl p-2 flex justify-between">
+        <!-- Main Navigation -->
+        <div class="main-nav">
             <div class="flex">
                 <a class="mr-4" href="<?php echo get_home_url(); ?>">
                     <h2>CarLife by Dani Logo</h2>
@@ -44,9 +64,8 @@
                     </ul>
                 </nav>
             </div>
+            <div>Новини за EV News | Твоята EV Кола</div>
         </div>
-
     </header>
-
-    <main class="site-main bg-gray-800 p-2">
-        <div class="container max-w-7xl p-2">
+                
+    <main>
