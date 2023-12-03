@@ -13,7 +13,9 @@
             <div class="absolute right-0 top-5 p-8 bg-red-600 rounded-br-3xl w-2/5">
                 <span><?php echo date('d.m.Y', strtotime($query->posts[0]->post_date)) ?></span>
                 <span><?php echo get_the_category( $query->posts[0]->ID )[0]->name ?></span>
-                <h2 class="text-5xl"><?php echo $query->posts[0]->post_title ?></h2>
+                <h2 class="text-5xl">
+                    <a href='<?php  echo get_permalink($query->posts[0]->ID) ?>'><?php echo $query->posts[0]->post_title ?></a>
+                </h2>
             </div>
         </article>
         <div>
@@ -24,7 +26,7 @@
                 ?>
                     <article class='post'>
                         <?php echo get_the_post_thumbnail( $query->posts[$i]->ID, array( 300, 300 ), array( 'class' => 'w-full' ) ); ?>
-                        <h3><?php echo $query->posts[$i]->post_title ?></h3>
+                        <h3><a href="<?php echo get_permalink($query->posts[$i]->ID)?>"><?php echo $query->posts[$i]->post_title ?></a></h3>
                         <p><?php echo date('d.m.Y', strtotime($query->posts[$i]->post_date)) ?></p>
                     </article>
                 <?php }
