@@ -520,8 +520,13 @@ video {
     max-width: 1536px;
   }
 }
-.m-2 {
-  margin: 0.5rem;
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+.mx-2\.5 {
+  margin-left: 0.625rem;
+  margin-right: 0.625rem;
 }
 .mr-4 {
   margin-right: 1rem;
@@ -544,8 +549,17 @@ video {
 .list-none {
   list-style-type: none;
 }
+.items-center {
+  align-items: center;
+}
 .justify-between {
   justify-content: space-between;
+}
+.gap-4 {
+  gap: 1rem;
+}
+.gap-5 {
+  gap: 1.25rem;
 }
 .space-x-4 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
@@ -571,6 +585,10 @@ video {
   --tw-border-opacity: 1;
   border-color: rgb(239 68 68 / var(--tw-border-opacity));
 }
+.bg-\[\#505050\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(80 80 80 / var(--tw-bg-opacity));
+}
 .bg-black {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
@@ -580,6 +598,10 @@ video {
 }
 .p-2 {
   padding: 0.5rem;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 .py-2 {
   padding-top: 0.5rem;
@@ -592,16 +614,30 @@ video {
   font-size: 1.5rem;
   line-height: 2rem;
 }
+.text-\[13px\] {
+  font-size: 13px;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
 }
-.body {
-  --tw-bg-opacity: 1;
-  background-color: rgb(38 38 38 / var(--tw-bg-opacity));
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
+.font-bold {
+  font-weight: 700;
 }
+.uppercase {
+  text-transform: uppercase;
+}
+.body {
+        font-family: "Sofia Sans", sans-serif;
+        --tw-bg-opacity: 1;
+        background-color: rgb(38 38 38 / var(--tw-bg-opacity));
+        --tw-text-opacity: 1;
+        color: rgb(255 255 255 / var(--tw-text-opacity));
+    }
 .header {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
@@ -662,6 +698,10 @@ video {
     flex-direction: row;
     justify-content: space-between;
   }
+}
+.top-container ul li:hover {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity));
 }
 .top-tags {
   display: flex;
@@ -760,8 +800,7 @@ video {
   max-width: 80rem;
   padding: 0.5rem;
 }
-.featured-posts {
-    }
+.featured-posts {}
 .featured-posts-container {
   width: 100%;
   margin-right: auto;
@@ -838,3 +877,7 @@ video {
  - The components layer is for class-based styles that you want to be able to override with utilities.
  - The utilities layer is for small, single-purpose classes that should always take precedence over any other styles.
 */
+.hover\:bg-red-500:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
+}

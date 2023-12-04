@@ -7,6 +7,12 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link
+	    href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+	    rel="stylesheet"
+	/>
     <?php wp_head(); ?>
 </head>
 
@@ -15,8 +21,12 @@
         <!-- TOP -->
         <div class="top">
             <div class="top-container">
-                <nav class="top-tags">Популярни теми /
-                    <ul class="list-none flex">
+                <nav class="top-tags text-[13px]">
+                    <span class="font-bold uppercase">Популярни теми</span>
+
+                    <span class="mx-2.5">/</span>
+
+                    <ul class="list-none flex gap-4">
                     <?php
                         $tags = get_tags([
                             'orderby' => 'count',
@@ -26,7 +36,7 @@
                         foreach ( $tags as $tag ) :
                         $tag_link = get_tag_link( $tag->term_id );
                     ?>
-                    <li class="m-2">
+                    <li>
                         <a href='<?php echo $tag_link; ?>' title='<?php echo $tag->name; ?>'>#<?php echo $tag->name ?></a>
                     </li>
                     <?php
@@ -34,17 +44,22 @@
                     ?>
                     </ul>
                 </nav>
-                <nav class="top-nav">
+
+                <nav class="text-sm flex gap-5 items-center">
                     <?php
                         wp_nav_menu( array(
                             'theme_location' => 'top-menu',
                             'fallback_cb' => false,
-                            'menu_class' => 'list-none flex space-x-4',
+                            'menu_class' => 'list-none flex gap-4',
                             'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>',
                         ) );
                     ?>
+
+                    <button class="py-2 px-4 bg-[#505050] text-sm font-bold uppercase hover:bg-red-500">
+                        Подкрепи ни
+                    </button>
                 </nav>
-            </div> 
+            </div>
         </div>
 
         <!-- Main Navigation -->
@@ -67,5 +82,5 @@
             <div>Новини за EV News | Твоята EV Кола</div>
         </div>
     </header>
-                
+
     <main>
