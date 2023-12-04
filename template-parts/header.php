@@ -64,12 +64,13 @@
 
         <!-- Main Navigation -->
         <div class="main-nav">
-            <div class="flex">
-                <a class="mr-4" href="<?php echo get_home_url(); ?>">
-                    <h2>CarLife by Dani Logo</h2>
+            <div class="flex gap-6">
+                <a class="w-full h-full max-w-[224px]" href="<?php echo get_home_url(); ?>">
+                    CarLife by Dani Logo
                 </a>
+
                 <nav>
-                    <ul class="list-none flex space-x-4">
+                    <ul class="list-none flex gap-7">
                         <?php wp_list_categories( array(
                             'title_li' => '',
                             'orderby' => 'id',

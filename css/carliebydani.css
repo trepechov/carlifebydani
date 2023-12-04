@@ -18,31 +18,37 @@
 
     .header {
         @apply bg-black;
+
+        .top {
+            @apply w-full border-b border-b-red-500;
+
+            .top-container {
+                @apply wrapper flex flex-col items-center md:flex-row md:justify-between;
+
+                & ul li:hover {
+                    @apply text-red-500 cursor-pointer;
+                }
+            }
+        }
+
+        .top-tags {
+            @apply flex items-center;
+        }
+
+        .main-nav {
+            @apply wrapper flex justify-between;
+        }
+
+        .main-nav ul {
+            @apply flex items-center;
+
+            & li {
+                @apply text-xl font-bold w-max;
+            }
+        }
+
     }
 
-    .top {
-        @apply w-full border-b border-b-red-500;
-    }
-
-    .top-container {
-        @apply wrapper flex flex-col items-center md:flex-row md:justify-between;
-    }
-
-    .top-container ul li:hover {
-        @apply text-red-500;
-    }
-
-    .top-tags {
-        @apply flex items-center;
-    }
-
-    .main-nav {
-        @apply wrapper flex justify-between;
-    }
-
-    .main-nav ul {
-        @apply flex items-center;
-    }
 
     .featured-posts {
         @apply bg-gradient-to-b via-black/50;
