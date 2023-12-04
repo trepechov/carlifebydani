@@ -13,8 +13,8 @@ $news_posts = get_posts( array(
                 foreach($news_posts as $post) {
                     echo "<article class='post'>";
                     echo get_the_post_thumbnail( $post->ID, array( 300, 300 ), array( 'class' => 'w-full' ) );
-                    echo "<h3>" . $post->post_title . "</h3>";
-                    echo "<p>" . $post->post_date . "</p></article>";
+                    echo "<h3><a href='" . get_permalink($post->ID)  . "'>" . $post->post_title . "</a></h3>";
+                    echo "<p>" . date('d.m.Y', strtotime($post->post_date)) . "</p></article>";
                 }
             ?>
             <article class='post'>1</article>
@@ -25,8 +25,8 @@ $news_posts = get_posts( array(
                 foreach($news_posts as $post) {
                     echo "<article class='post'>";
                     echo get_the_post_thumbnail( $post->ID, array( 300, 300 ), array( 'class' => 'w-full' ) );
-                    echo "<h3>" . $post->post_title . "</h3>";
-                    echo "<p>" . $post->post_date . "</p></article>";
+                    echo "<h3><a href='" . get_permalink($post->ID)  . "'>" . $post->post_title . "</a></h3>";
+                    echo "<p>" . date('d.m.Y', strtotime($post->post_date)) . "</p></article>";
                 }
             ?>
             <article class='post'>1</article>

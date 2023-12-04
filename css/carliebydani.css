@@ -12,7 +12,7 @@
     }
 
     .body {
-        font-family: "Sofia Sans", sans-serif;
+        font-family: 'Sofia Sans', sans-serif;
         @apply bg-[#262626] text-white;
     }
 
@@ -88,7 +88,6 @@
         }
     }
 
-
     .featured-posts {
         @apply bg-gradient-to-b via-black/50;
     }
@@ -97,7 +96,8 @@
         @apply wrapper;
     }
 
-    .featured-posts {}
+    .featured-posts {
+    }
 
     .featured-posts-container {
         @apply wrapper;
