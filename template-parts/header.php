@@ -72,12 +72,20 @@
 
                 <nav>
                     <ul class="list-none flex gap-7">
-                        <?php wp_list_categories( array(
-                            'title_li' => '',
-                            'orderby' => 'id',
-                            'hide_empty' => false,
-                            'parent' => 0,
-                        ) ); ?>
+                        <?php
+                            $categories = get_categories( array(
+                                'title_li' => '',
+                                'orderby' => 'id',
+                                'hide_empty' => false,
+                                'parent' => 0,
+                            ) );
+
+                            foreach( $categories as $key => $category ) {
+                                echo '<li><a href="' . get_category_link( $category->term_id ) . '">';
+                                echo '<span>0' . $key + 1 . '</span>';
+                                echo $category->name . '</a></li>';
+                            }
+                       ?>
                     </ul>
                 </nav>
             </div>

@@ -877,6 +877,13 @@ video {
   transition-duration: 300ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+.header .main-nav ul li span {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1rem;
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity));
+}
 .header .main-nav .sidebar {
   display: flex;
   flex-direction: column;
