@@ -55,9 +55,7 @@
                         ) );
                     ?>
 
-                    <button class="py-2 px-4 bg-[#505050] text-sm font-bold uppercase hover:bg-red-500">
-                        Подкрепи ни
-                    </button>
+                    <button>Подкрепи ни</button>
                 </nav>
             </div>
         </div>
@@ -80,7 +78,22 @@
                     </ul>
                 </nav>
             </div>
-            <div>Новини за EV News | Твоята EV Кола</div>
+
+            <div class="sidebar">
+		        <span class="text-[13px] font-bold uppercase text-red-500">сподели с нас...</span>
+
+		        <div class="flex gap-8">
+			        <div class="sidebar-item">
+				        <span class="item-title">Новини за EV NEWS</span>
+				        <span class="item-sub-title text-gray">Теми, които те вълнуват</span>
+                    </div>
+
+			        <div class="sidebar-item">
+				        <span class="item-title">Твоята EV Кола</span>
+				        <span class="item-sub-title text-gray">Запиши колата си за ревю</span>
+			        </div>
+                </div>
+		    </div>
         </div>
     </header>
 
