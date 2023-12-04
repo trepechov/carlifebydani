@@ -597,10 +597,6 @@ video {
   --tw-border-opacity: 1;
   border-color: rgb(239 68 68 / var(--tw-border-opacity));
 }
-.bg-\[\#505050\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(80 80 80 / var(--tw-bg-opacity));
-}
 .bg-black {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
@@ -610,10 +606,6 @@ video {
 }
 .p-2 {
   padding: 0.5rem;
-}
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
 }
 .py-2 {
   padding-top: 0.5rem;
@@ -646,19 +638,6 @@ video {
 .text-red-500 {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity));
-}
-.transition {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-.duration-300 {
-  transition-duration: 300ms;
-}
-.ease-in-out {
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 .body {
         font-family: "Sofia Sans", sans-serif;
@@ -743,6 +722,8 @@ video {
   align-items: center;
 }
 .header .top .top-container button {
+  display: flex;
+  gap: 0.5rem;
   --tw-bg-opacity: 1;
   background-color: rgb(80 80 80 / var(--tw-bg-opacity));
   padding-top: 0.5rem;
@@ -753,19 +734,24 @@ video {
   line-height: 1.25rem;
   font-weight: 700;
   text-transform: uppercase;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.header .top .top-container button :first-child {
+  display: block;
+  height: 1.25rem;
+  width: 1.25rem;
+  background-image: url('http://carlifebydani.local/wp-content/uploads/2023/12/red-heart.png');
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 .header .top .top-container button:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
+.header .top .top-container button:hover :first-child {
+  background-image: url('http://carlifebydani.local/wp-content/uploads/2023/12/white-heart.png');
+}
 .header .main-nav {
   display: flex;
-  align-items: center;
   justify-content: space-between;
   width: 100%;
   margin-right: auto;
@@ -983,7 +969,3 @@ video {
  - The components layer is for class-based styles that you want to be able to override with utilities.
  - The utilities layer is for small, single-purpose classes that should always take precedence over any other styles.
 */
-.hover\:bg-red-500:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
-}

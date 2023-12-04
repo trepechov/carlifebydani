@@ -55,16 +55,19 @@
                         ) );
                     ?>
 
-                    <button>Подкрепи ни</button>
+                    <button>
+                        <span></span>
+                        <span>Подкрепи ни</span>
+                    </button>
                 </nav>
             </div>
         </div>
 
         <!-- Main Navigation -->
         <div class="main-nav">
-            <div class="flex gap-6">
+            <div class="flex items-center gap-6">
                 <a class="w-full h-full max-w-[224px]" href="<?php echo get_home_url(); ?>">
-                    CarLife by Dani Logo
+                    <img src="http://carlifebydani.local/wp-content/uploads/2023/12/logo-1.png" alt="Logo">
                 </a>
 
                 <nav>

@@ -34,13 +34,25 @@
                 }
 
                 button {
-                    @apply py-2 px-4 bg-[#505050] text-sm font-bold uppercase hover:bg-red-500 transition duration-300 ease-in-out
+                    @apply py-2 px-4 flex gap-2 bg-[#505050] text-sm font-bold uppercase;
+
+                    :first-child {
+                        @apply w-5 h-5 block bg-[url('http://carlifebydani.local/wp-content/uploads/2023/12/red-heart.png')] bg-contain bg-no-repeat;
+                    }
+
+                    &:hover {
+                        @apply bg-red-500;
+
+                        :first-child {
+                            @apply bg-[url('http://carlifebydani.local/wp-content/uploads/2023/12/white-heart.png')];
+                        }
+                    }
                 }
             }
         }
 
         .main-nav {
-            @apply wrapper flex justify-between items-center;
+            @apply wrapper flex justify-between;
 
             ul {
                 @apply flex items-center;
