@@ -21,10 +21,10 @@
         <!-- TOP -->
         <div class="top">
             <div class="top-container">
-                <nav class="top-tags text-[13px]">
+                <nav class="top-tags text-xs gap-2">
                     <span class="font-bold uppercase">Популярни теми</span>
 
-                    <span class="mx-2.5">/</span>
+                    <span>/</span>
 
                     <ul class="list-none flex gap-4">
                     <?php
@@ -45,20 +45,15 @@
                     </ul>
                 </nav>
 
-                <nav class="text-sm flex gap-5 items-center">
+                <nav class="text-sm flex gap-5">
                     <?php
                         wp_nav_menu( array(
                             'theme_location' => 'top-menu',
                             'fallback_cb' => false,
-                            'menu_class' => 'list-none flex gap-4',
+                            'menu_class' => 'list-none flex gap-4 items-center',
                             'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>',
                         ) );
                     ?>
-
-                    <button>
-                        <span></span>
-                        <span>Подкрепи ни</span>
-                    </button>
                 </nav>
             </div>
         </div>
@@ -66,8 +61,8 @@
         <!-- Main Navigation -->
         <div class="main-nav">
             <div class="flex items-center gap-6">
-                <a class="w-full h-full max-w-[224px]" href="<?php echo get_home_url(); ?>">
-                    <img src="http://carlifebydani.local/wp-content/uploads/2023/12/logo-1.png" alt="Logo">
+                <a class="w-full h-full max-w-[56rem]" href="<?php echo get_home_url(); ?>">
+                    <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo.svg" alt="Logo" />
                 </a>
 
                 <nav>
@@ -91,7 +86,7 @@
             </div>
 
             <div class="sidebar">
-		        <span class="text-[13px] font-bold uppercase text-red-500">сподели с нас...</span>
+		        <span class="top-title">сподели с нас...</span>
 
 		        <div class="flex gap-8">
 			        <div class="sidebar-item">

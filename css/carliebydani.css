@@ -8,84 +8,138 @@
 
 @layer utilities {
     .wrapper {
-        @apply container max-w-7xl mx-auto p-2;
+        @apply
+            container
+            max-w-7xl
+            mx-auto
+            p-2;
     }
 
     .body {
         font-family: 'Sofia Sans', sans-serif;
-        @apply bg-[#262626] text-white;
+
+        @apply
+            bg-brand-grey
+            text-white;
     }
 
     .header {
         @apply bg-black;
 
         .top {
-            @apply w-full border-b border-b-red-500;
+            @apply
+                w-full
+                border-b
+                border-b-brand-red;
 
             .top-container {
-                @apply wrapper flex flex-col items-center md:flex-row md:justify-between;
+                @apply
+                    wrapper
+                    flex
+                    flex-col
+                    items-center
+                    md:flex-row
+                    md:justify-between
+                    ;
 
-                li:hover {
-                    @apply text-red-500 cursor-pointer transition duration-300 ease-in-out;
+                li {
+                    @apply 
+                        cursor-pointer
+                        transition
+                        duration-300
+                        ease-in-out
+                      hover:text-brand-red;
+
+                    &.menu-item-153 {
+                        @apply
+                            py-2
+                            px-4
+                            flex
+                            gap-2
+                            bg-brand-button
+                            text-sm
+                            font-bold
+                            uppercase
+                            hover:text-white
+                            hover:bg-brand-red;
+                    }
                 }
 
                 .top-tags {
                     @apply flex items-center;
                 }
-
-                button {
-                    @apply py-2 px-4 flex gap-2 bg-[#505050] text-sm font-bold uppercase;
-
-                    :first-child {
-                        @apply w-5 h-5 block bg-[url('http://carlifebydani.local/wp-content/uploads/2023/12/red-heart.png')] bg-contain bg-no-repeat;
-                    }
-
-                    &:hover {
-                        @apply bg-red-500;
-
-                        :first-child {
-                            @apply bg-[url('http://carlifebydani.local/wp-content/uploads/2023/12/white-heart.png')];
-                        }
-                    }
-                }
             }
         }
 
         .main-nav {
-            @apply wrapper flex justify-between;
+            @apply 
+                wrapper
+                flex
+                justify-between;
 
             ul {
-                @apply flex items-center;
+                @apply 
+                    flex
+                    items-center;
 
                 li {
-                    @apply text-xl font-bold w-max;
-
-                    &:hover {
-                        @apply text-red-500 cursor-pointer transition duration-300 ease-in-out;
-                    }
+                    @apply 
+                        text-xl
+                        font-bold
+                        w-max
+                        cursor-pointer
+                        transition
+                        duration-300
+                        ease-in-out
+                        hover:text-brand-red;
 
                     span {
-                        @apply block text-sm leading-4 text-red-500;
+                        @apply
+                            block
+                            text-sm
+                            leading-4
+                            text-brand-red;
                     }
                 }
             }
 
             .sidebar {
-                @apply flex flex-col items-start gap-1;
+                @apply
+                    flex
+                    flex-col
+                    items-start
+                    gap-1;
+
+                .top-title {
+                    @apply 
+                        text-xs
+                        font-bold 
+                        uppercase 
+                        text-brand-red;
+                }
 
                 .sidebar-item {
-                    @apply flex flex-col gap-1;
+                    @apply
+                        flex 
+                        flex-col
+                        gap-1;
 
                     .item-title {
-                        @apply text-[17px] font-bold;
-
-                        &:hover {
-                            @apply text-red-500 cursor-pointer transition duration-300 ease-in-out;
-                        }
+                        @apply
+                            text-lg
+                            font-bold
+                            cursor-pointer
+                            transition
+                            duration-300
+                            ease-in-out
+                            hover:text-brand-red;
                     }
 
                     .item-sub-title {
-                        @apply text-xs italic text-[#86898A];
+                        @apply
+                            text-xs
+                            italic
+                            text-brand-lightgrey;
                     }
                 }
             }
@@ -93,7 +147,9 @@
     }
 
     .featured-posts {
-        @apply bg-gradient-to-b via-black/50;
+        @apply 
+            bg-gradient-to-b
+            via-black/50;
     }
 
     .featured-posts-container {
@@ -108,14 +164,26 @@
     }
 
     .posts-3 {
-        @apply grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4;
+        @apply
+            grid
+            grid-cols-1
+            lg:grid-cols-3
+            gap-4
+            mb-4;
     }
 
     .posts-4 {
-        @apply grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4;
+        @apply
+            grid
+            grid-cols-2
+            lg:grid-cols-4
+            gap-4
+            mb-4;
     }
 
     .post {
-        @apply bg-black rounded-br-lg;
+        @apply
+            bg-black
+            rounded-br-lg;
     }
 }
