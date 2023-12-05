@@ -154,13 +154,32 @@
 
     .featured-posts-container {
         @apply wrapper;
+
+        .title-container {
+            @apply
+                mb-12
+                p-8
+                bg-brand-red
+                rounded-br-[3rem]
+                xl:absolute
+                xl:right-0
+                xl:top-5
+                xl:w-2/5;
+
+            h2 {
+                @apply
+                    mt-5
+                    text-6xl
+                    transition
+                    duration-300
+                    ease-in-out
+                    hover:text-black
+                    xl:text-5xl;
+            }
+        }
     }
 
     .featured-posts {
-    }
-
-    .featured-posts-container {
-        @apply wrapper;
     }
 
     .posts-3 {
