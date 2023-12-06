@@ -7,9 +7,15 @@
     $query = new WP_Query( $args );
 ?>
 <div class="featured-posts">
+    <div class="gradient"></div>
+
     <div class="featured-posts-container">
-        <article class="relative mt-6">
-            <?php echo get_the_post_thumbnail( $query->posts[0]->ID, array( 1024, 1024 ), array( 'class' => 'w-full xl:w-4/5 xl:rounded-br-[6.3rem]' ) ); ?>
+        <article class="relative my-6">
+            <div class="relative w-full lg:w-3/4">
+                <div class="gradient-overlay"></div>
+                <?php echo get_the_post_thumbnail( $query->posts[0]->ID, array( 1024, 1024 ), array( 'class' => 'lg:rounded-br-6xl' ) ); ?>
+            </div>
+
 
             <div class="title-container">
                 <span class="text-black text-xl font-bold"><?php echo date('d.m.Y', strtotime($query->posts[0]->post_date)) ?></span>

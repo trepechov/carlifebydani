@@ -527,8 +527,9 @@ video {
   margin-left: 0.25rem;
   margin-right: 0.25rem;
 }
-.mt-6 {
+.my-6 {
   margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 .flex {
   display: flex;
@@ -690,6 +691,33 @@ video {
         --tw-text-opacity: 1;
         color: rgb(255 255 255 / var(--tw-text-opacity));
     }
+a,
+    a > * {
+  cursor: pointer;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gradient-overlay {
+  position: absolute;
+  inset: 0px;
+  width: 100%;
+  border-radius: 0px;
+  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+  --tw-gradient-from: transparent var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(0 0 0 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #000 var(--tw-gradient-to-position);
+  opacity: 0.5;
+}
+@media (min-width: 1024px) {
+
+  .gradient-overlay {
+    border-bottom-right-radius: 6rem;
+  }
+}
 .header {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
@@ -751,20 +779,13 @@ video {
     justify-content: space-between;
   }
 }
-.header .top .top-container li {
-  cursor: pointer;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
 .header .top .top-container li:hover {
   --tw-text-opacity: 1;
   color: rgb(254 54 82 / var(--tw-text-opacity));
 }
 .header .top .top-container li.menu-item-153 {
   display: flex;
+  cursor: pointer;
   gap: 0.5rem;
   --tw-bg-opacity: 1;
   background-color: rgb(80 80 80 / var(--tw-bg-opacity));
@@ -776,6 +797,11 @@ video {
   line-height: 1.25rem;
   font-weight: 700;
   text-transform: uppercase;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 .header .top .top-container li.menu-item-153:hover {
   --tw-bg-opacity: 1;
@@ -837,15 +863,9 @@ video {
 .header .main-nav ul li {
   width: -moz-max-content;
   width: max-content;
-  cursor: pointer;
   font-size: 1.25rem;
   line-height: 1.75rem;
   font-weight: 700;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 .header .main-nav ul li:hover {
   --tw-text-opacity: 1;
@@ -900,9 +920,17 @@ video {
   color: rgb(134 137 138 / var(--tw-text-opacity));
 }
 .featured-posts {
+  position: relative;
+  background-image: url('../images/bg-pattern.png');
+}
+.featured-posts .gradient {
+  position: absolute;
+  inset: 0px;
   background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
-  --tw-gradient-to: rgb(0 0 0 / 0)  var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), rgb(0 0 0 / 0.5) var(--tw-gradient-via-position), var(--tw-gradient-to);
+  --tw-gradient-from: rgb(0 0 0 / 0.6) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(0 0 0 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: transparent var(--tw-gradient-to-position);
 }
 .featured-posts-container {
   width: 100%;
@@ -947,43 +975,36 @@ video {
 }
 .featured-posts-container .title-container {
   margin-bottom: 3rem;
-  border-bottom-right-radius: 3rem;
+  border-bottom-right-radius: 2rem;
   --tw-bg-opacity: 1;
   background-color: rgb(254 54 82 / var(--tw-bg-opacity));
   padding: 2rem;
 }
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
 
   .featured-posts-container .title-container {
     position: absolute;
     right: 0px;
     top: 1.25rem;
-    width: 40%;
+    width: 33.333333%;
   }
 }
 .featured-posts-container .title-container h2 {
   margin-top: 1.25rem;
   font-size: 3.75rem;
   line-height: 1;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 .featured-posts-container .title-container h2:hover {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
 }
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
 
   .featured-posts-container .title-container h2 {
     font-size: 3rem;
     line-height: 1;
   }
 }
-.featured-posts {
-    }
 .posts-3 {
   margin-bottom: 1rem;
   display: grid;
@@ -1013,19 +1034,19 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
 }
-/* Templete specific */
+/* Template specific */
 /*
  - The base layer is for things like reset rules or default styles applied to plain HTML elements.
  - The components layer is for class-based styles that you want to be able to override with utilities.
  - The utilities layer is for small, single-purpose classes that should always take precedence over any other styles.
 */
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
 
-  .xl\:w-4\/5 {
-    width: 80%;
+  .lg\:w-3\/4 {
+    width: 75%;
   }
 
-  .xl\:rounded-br-\[6\.3rem\] {
-    border-bottom-right-radius: 6.3rem;
+  .lg\:rounded-br-6xl {
+    border-bottom-right-radius: 6rem;
   }
 }
