@@ -7,7 +7,7 @@ $args  = array(
 $query = new WP_Query($args);
 ?>
 
-<div class="bg-pattern ">
+<div class="bg-pattern">
     <div class="bg-from-black-gradien">
         <div class="container py-6">
             <!-- Hero article -->
