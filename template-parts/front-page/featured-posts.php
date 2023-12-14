@@ -34,19 +34,18 @@ $query = new WP_Query($args);
                 </div>
             </article>
 
-            <div>
-                <h3 class="border-l-4 p-1 border-red-500">Избрано за вас</h3>
-                <div class="posts-4">
-                    <?php for ($i = 1; $i < 5; $i++) {
-                        if (!empty($query->posts[$i])) {
+            <div class="mt-8">
+                <h3 class="border-l-8 p-3 mb-8 border-brand-red">Избрано за вас</h3>
+                <div class="mb-8 lg:grid lg:grid-cols-3 lg:gap-8 items-stretch justify-items-stretch">
+                    <?php
+                    for ($i = 0; $i < 3; $i++) {
+                        // Reemove this once have enought posts
+                        if (!isset($query->posts[$i])) {
+                            continue;
+                        }
+                        get_template_part('template-parts/cart-article', 'article',  array('post' => $query->posts[$i], 'title_size' => 'normal'));
+                    }
                     ?>
-                            <article class='post'>
-                                <?php echo get_the_post_thumbnail($query->posts[$i]->ID, array(300, 300), array('class' => 'w-full')); ?>
-                                <h3><a href="<?php echo get_permalink($query->posts[$i]->ID) ?>"><?php echo $query->posts[$i]->post_title ?></a></h3>
-                                <p><?php echo date('d.m.Y', strtotime($query->posts[$i]->post_date)) ?></p>
-                            </article>
-                    <?php }
-                    } ?>
                 </div>
             </div>
         </div>
