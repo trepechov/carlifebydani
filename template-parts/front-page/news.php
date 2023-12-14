@@ -1,6 +1,4 @@
 <?php
-define('NEWS_CATEGORY_ID', 6);
-
 $news_posts = get_posts(array(
     'numberposts'    => 11,
     'category'       => NEWS_CATEGORY_ID

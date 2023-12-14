@@ -1,40 +1,31 @@
-/* Template specific */
 
-/*
- - The base layer is for things like reset rules or default styles applied to plain HTML elements.
- - The components layer is for class-based styles that you want to be able to override with utilities.
- - The utilities layer is for small, single-purpose classes that should always take precedence over any other styles.
-*/
+/* Not used any more... only left as refference after refactoring */
 
 @layer utilities {
     .wrapper {
-        @apply
-            container
-            max-w-7xl
+        @apply container
             mx-auto
+            max-w-7xl
             p-2;
     }
 
     .body {
         font-family: 'Sofia Sans', sans-serif;
 
-        @apply
-            bg-brand-grey
+        @apply bg-brand-grey
             text-white;
     }
 
     a,
     a > * {
-        @apply
-            cursor-pointer
+        @apply cursor-pointer
             transition
             duration-300
             ease-in-out;
     }
 
     .gradient-overlay {
-        @apply
-            absolute
+        @apply absolute
             inset-0
             w-full
             rounded-none
@@ -49,40 +40,36 @@
         @apply bg-black;
 
         .top {
-            @apply
-                w-full
+            @apply w-full
                 border-b
                 border-b-brand-red;
 
             .top-container {
-                @apply
-                    wrapper
+                @apply wrapper
                     flex
                     flex-col
                     items-center
                     md:flex-row
-                    md:justify-between
-                    ;
+                    md:justify-between;
 
                 li {
                     @apply hover:text-brand-red;
 
                     &.menu-item-153 {
-                        @apply
-                            py-2
-                            px-4
-                            flex
+                        @apply flex
+                            cursor-pointer
                             gap-2
                             bg-brand-button
+                            px-4
+                            py-2
                             text-sm
                             font-bold
                             uppercase
-                            cursor-pointer
                             transition
                             duration-300
                             ease-in-out
-                            hover:text-white
-                            hover:bg-brand-red;
+                            hover:bg-brand-red
+                            hover:text-white;
                     }
                 }
 
@@ -93,26 +80,22 @@
         }
 
         .main-nav {
-            @apply 
-                wrapper
+            @apply wrapper
                 flex
                 justify-between;
 
             ul {
-                @apply 
-                    flex
+                @apply flex
                     items-center;
 
                 li {
-                    @apply 
+                    @apply w-max
                         text-xl
                         font-bold
-                        w-max
                         hover:text-brand-red;
 
                     span {
-                        @apply
-                            block
+                        @apply block
                             text-sm
                             leading-4
                             text-brand-red;
@@ -121,31 +104,27 @@
             }
 
             .sidebar {
-                @apply
-                    flex
+                @apply flex
                     flex-col
                     items-start
                     gap-1;
 
                 .top-title {
-                    @apply 
-                        text-xs
+                    @apply text-xs
                         font-bold 
                         uppercase 
                         text-brand-red;
                 }
 
                 .sidebar-item {
-                    @apply
-                        flex 
+                    @apply flex 
                         flex-col
                         gap-1;
 
                     .item-title {
-                        @apply
+                        @apply cursor-pointer
                             text-lg
                             font-bold
-                            cursor-pointer
                             transition
                             duration-300
                             ease-in-out
@@ -153,8 +132,7 @@
                     }
 
                     .item-sub-title {
-                        @apply
-                            text-xs
+                        @apply text-xs
                             italic
                             text-brand-lightgrey;
                     }
@@ -167,8 +145,7 @@
         @apply relative bg-pattern;
 
         .gradient {
-            @apply 
-                absolute
+            @apply absolute
                 inset-0
                 bg-gradient-to-b
                 from-black/60
@@ -180,19 +157,17 @@
         @apply wrapper;
 
         .title-container {
-            @apply
-                mb-12
-                p-8
-                bg-brand-red
+            @apply mb-12
                 rounded-br-4xl
+                bg-brand-red
+                p-8
                 lg:absolute
                 lg:right-0
                 lg:top-5
                 lg:w-1/3;
 
             h2 {
-                @apply
-                    mt-5
+                @apply mt-5
                     text-6xl
                     hover:text-black
                     lg:text-5xl;
@@ -201,26 +176,23 @@
     }
 
     .posts-3 {
-        @apply
+        @apply mb-4
             grid
             grid-cols-1
-            lg:grid-cols-3
             gap-4
-            mb-4;
+            lg:grid-cols-3;
     }
 
     .posts-4 {
-        @apply
+        @apply mb-4
             grid
             grid-cols-2
-            lg:grid-cols-4
             gap-4
-            mb-4;
+            lg:grid-cols-4;
     }
 
     .post {
-        @apply
-            bg-black
-            rounded-br-lg;
+        @apply rounded-br-lg
+            bg-black;
     }
 }
