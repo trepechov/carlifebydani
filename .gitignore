@@ -21,6 +21,10 @@
 # /.env.test
 # /.env.production
 
+# Ignore zip files
+*.zip
+
+
 # Ignore editor configuration files
 /.vscode
 /.idea

@@ -1,15 +1,18 @@
 {
-    "name": "carliebydani",
-    "version": "1.0.0",
+    "name": "carlifebydani",
+    "version": "0.0.1",
     "description": "",
     "scripts": {
         "dev": "npx postcss ./css/style.css -o ./css/style.min.css  --minify --watch",
-        "build": "npx postcss ./css/style.css -o ./css/style.min.css --minify"
+        "build": "npx postcss ./css/style.css -o ./css/style.min.css --minify",
+        "pack": "npm run build && npx copy-files-from-to && npm-build-zip --source=carlifebydani --name=carlifebydani --name_only=false && rm -rf carlifebydani"
     },
     "devDependencies": {
         "@prettier/plugin-php": "^0.21.0",
         "@tailwindcss/typography": "^0.5.10",
         "autoprefixer": "^10.4.16",
+        "copy-files-from-to": "^3.9.1",
+        "npm-build-zip": "^1.0.4",
         "postcss": "^8.4.31",
         "postcss-cli": "^10.1.0",
         "postcss-import": "^15.1.0",
@@ -17,5 +20,18 @@
         "prettier": "^3.1.0",
         "prettier-plugin-tailwindcss": "^0.5.7",
         "tailwindcss": "^3.3.5"
-    }
+    },
+    "copyFiles": [
+        {
+            "from": [
+                "*.php",
+                "*.png",
+                "*.css",
+                "css/style.min.css",
+                "images/*",
+                "template-parts/**"
+            ],
+            "to": "carlifebydani/"
+        }
+    ]
 }

@@ -33,6 +33,7 @@ This project uses Prettier & PHP Intelephense for code formattin. To install Pre
 -   `PHP Intelephense`
 
 4. Optional you can also install `Tailwind CSS IntelliSense`
+
 ## User Settings
 
 After installing the `Prettier - Code formatter` & `PHP Intelephense` plugins for your code editor.
@@ -61,6 +62,17 @@ This theme uses Tailwind CSS. To compile your CSS, run:
 ```bash
 npm run dev
 ```
+
+## Create template zip package
+
+1.  Update template version the package.json file (optional)
+2.  Use command:
+
+```
+npm run pack
+```
+
+You will have the zip package in project root folder
 
 # References
 
