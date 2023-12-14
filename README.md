@@ -43,14 +43,14 @@ After installing the `Prettier - Code formatter` & `PHP Intelephense` plugins fo
 
 ```json
 {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
     "php.format.rules.catchOnNewLine": false,
     "[php]": {
         "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
         "editor.formatOnSave": true
-    }
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
 ```
 

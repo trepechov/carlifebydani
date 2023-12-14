@@ -1,24 +1,26 @@
 <?php
-$news_posts = get_posts( array(
-    'numberposts'	=> 4,
-	'category'		=> 2   //category ev-masters
-) );
-?><div class="category-posts">
-    <div class="featured-posts-container">
-        <h3 class="border-l-4 p-1 border-red-500">EV Masters</h3>
+$ev_masters_posts = get_posts(array(
+    'numberposts'   => 4,
+    'category'      => EV_MASTERS_CATEGORY_ID
+));
+?><div class="bg-pattern">
+    <div class="container py-6">
+        <div class="flex mb-8 justify-between items-center">
+            <h3 class="border-l-8 p-3 border-brand-red">EV Masters</h3>
+            <a href="<?php echo get_category_link(EV_MASTERS_CATEGORY_ID) ?>" class="button">Виж всички</a>
+        </div>
 
-        <div class="posts-4">
+
+        <div class="mb-8 lg:grid lg:grid-cols-4 lg:gap-8 lg:place-items-stretch">
             <?php
-                foreach($news_posts as $post) {
-                    echo "<article class='post'>";
-                    echo get_the_post_thumbnail( $post->ID, array( 300, 300 ), array( 'class' => 'w-full' ) );
-                    echo "<h3><a href='" . get_permalink($post->ID)  . "'>" . $post->post_title . "</a></h3>";
-                    echo "<p>" . date('d.m.Y', strtotime($post->post_date)) . "</p></article>";
+            for ($i = 0; $i < 4; $i++) {
+                // Reemove this once have enought posts
+                if (!isset($ev_masters_posts[$i])) {
+                    continue;
                 }
+                get_template_part('template-parts/cart-article', 'article',  array('post' => $ev_masters_posts[$i], 'title_size' => 'small'));
+            }
             ?>
-            <article class='post'>1</article>
-            <article class='post'>2</article>
-            <article class='post'>4</article>
-        </div> 
+        </div>
     </div>
 </div>

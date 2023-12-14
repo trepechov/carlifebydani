@@ -1,5 +1,74 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
-@import 'carliebydani.css';
+/* @import 'carliebydani.css'; */
+
+@tailwind base;
+
+@layer base {
+    body {
+        @apply bg-brand-grey
+            text-white;
+    }
+
+    a,
+    .link-transition {
+        @apply cursor-pointer
+            transition
+            duration-300
+            ease-in-out;
+    }
+
+    h2 {
+        @apply text-2xl font-bold lg:text-5xl;
+    }
+
+    h3 {
+        @apply text-4xl font-bold;
+    }
+
+    h4 {
+        @apply text-3xl font-bold;
+    }
+
+    h5 {
+        @apply text-2xl font-bold;
+    }
+}
+
+@tailwind components;
+
+@layer components {
+    .overlay {
+        @apply absolute
+            inset-0;
+    }
+}
+
+@tailwind utilities;
+
+@layer utilities {
+    .button {
+        @apply link-transition
+        flex
+        cursor-pointer
+        gap-2
+        bg-brand-button
+        px-4
+        py-2
+        text-sm
+        font-bold
+        uppercase
+        hover:bg-brand-red
+        hover:text-white;
+    }
+
+    .button-icon-heart {
+        @apply pl-3
+        before:ml-0.5
+        before:text-brand-red
+        before:transition
+        before:duration-300
+        before:content-['\2665']
+        before:hover:text-white;
+    }
+}

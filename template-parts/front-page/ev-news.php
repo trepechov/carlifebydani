@@ -1,37 +1,37 @@
 <?php
-$news_posts = get_posts( array(
-    'numberposts'	=> 7,
-	'category'		=> 1   //category ev-news
-) );
-?><div class="category-posts">
-    <div class="featured-posts-container">
-        <h3 class="border-l-4 p-1 border-red-500">Ev News</h3>
-
-        <!-- TODO Replace foreach loop with for to ierate over the array and print the posts in the correct order -->
-        <div class="posts-3">
-            <?php
-                foreach($news_posts as $post) {
-                    echo "<article class='post'>";
-                    echo get_the_post_thumbnail( $post->ID, array( 300, 300 ), array( 'class' => 'w-full' ) );
-                    echo "<h3><a href='" . get_permalink($post->ID)  . "'>" . $post->post_title . "</a></h3>";
-                    echo "<p>" . date('d.m.Y', strtotime($post->post_date)) . "</p></article>";
-                }
-            ?>
-            <article class='post'>1</article>
-            <article class='post'>2</article>
+$ev_news_posts = get_posts(array(
+    'numberposts'   => 7,
+    'category'      => EV_NEWS_CATEGORY_ID
+));
+?><div class="bg-pattern">
+    <div class="container py-6">
+        <div class="flex mb-8 justify-between items-center">
+            <h3 class="border-l-8 p-3 border-brand-red">EV News</h3>
+            <a href="<?php echo get_category_link(EV_NEWS_CATEGORY_ID) ?>" class="button">Виж всички</a>
         </div>
-        <div class="posts-4">
+
+
+        <div class="mb-8 lg:grid lg:grid-cols-3 lg:gap-8 items-stretch justify-items-stretch">
             <?php
-                foreach($news_posts as $post) {
-                    echo "<article class='post'>";
-                    echo get_the_post_thumbnail( $post->ID, array( 300, 300 ), array( 'class' => 'w-full' ) );
-                    echo "<h3><a href='" . get_permalink($post->ID)  . "'>" . $post->post_title . "</a></h3>";
-                    echo "<p>" . date('d.m.Y', strtotime($post->post_date)) . "</p></article>";
+            for ($i = 0; $i < 3; $i++) {
+                // Reemove this once have enought posts
+                if (!isset($ev_news_posts[$i])) {
+                    continue;
                 }
+                get_template_part('template-parts/cart-article', 'article',  array('post' => $ev_news_posts[$i], 'title_size' => 'normal'));
+            }
             ?>
-            <article class='post'>1</article>
-            <article class='post'>2</article>
-            <article class='post'>4</article>
-        </div> 
+        </div>
+        <div class="mb-8 lg:grid lg:grid-cols-4 lg:gap-8 lg:place-items-stretch">
+            <?php
+            for ($i = 3; $i < 6; $i++) {
+                // Reemove this once have enought posts
+                if (!isset($ev_news_posts[$i])) {
+                    continue;
+                }
+                get_template_part('template-parts/cart-article', 'article',  array('post' => $ev_news_posts[$i], 'title_size' => 'small'));
+            }
+            ?>
+        </div>
     </div>
 </div>
