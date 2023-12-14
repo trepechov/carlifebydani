@@ -47,25 +47,28 @@
 @tailwind utilities;
 
 @layer utilities {
-    /* Top Menu support us button. 153 is wp-page id */
-    li.menu-item-153 {
+    .button {
         @apply link-transition
         flex
         cursor-pointer
         gap-2
         bg-brand-button
+        px-4
         py-2
-        pl-3
-        pr-4
+        text-sm
         font-bold
         uppercase
+        hover:bg-brand-red
+        hover:text-white;
+    }
+
+    .button-icon-heart {
+        @apply pl-3
         before:ml-0.5
         before:text-brand-red
         before:transition
         before:duration-300
         before:content-['\2665']
-        hover:bg-brand-red
-        hover:text-white
         before:hover:text-white;
     }
 }

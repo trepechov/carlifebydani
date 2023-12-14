@@ -45,15 +45,22 @@ if (!is_user_logged_in()) {
             <nav class="flex gap-5 text-sm">
                 <ul class="list-none flex gap-4 items-center">
                     <?php
-                    $topMenuItems = wp_get_nav_menu_items('top-menu');
+                    $locations = get_nav_menu_locations();
+                    $menu = wp_get_nav_menu_object($locations['top-menu']);
+                    $topMenuItems = wp_get_nav_menu_items($menu->term_id);
 
-                    foreach ($topMenuItems as $item) { ?>
-                        <li class="menu-item-<?php echo $item->ID ?> hover:text-brand-red">
-                            <a href='<?php echo $item->url ?>'><?php echo $item->title ?></a>
+                    for ($i = 0; $i < count($topMenuItems) - 1; $i++) { ?>
+                        <li class=" hover:text-brand-red">
+                            <a href='<?php echo $topMenuItems[$i]->url ?>'><?php echo $topMenuItems[$i]->title ?></a>
                         </li>
                     <?php
                     }
                     ?>
+                    <li>
+                        <a href='<?php echo $topMenuItems[$i]->url ?>' class="button button-icon-heart">
+                            <?php echo $topMenuItems[$i]->title ?>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>

@@ -3,7 +3,6 @@ module.exports = {
         './template-parts/**/*.php',
         './*.php',
         './js/*.js',
-        { raw: '<li class="menu-item-153">', extension: 'php' }
     ],
     theme: {
         screens: {
