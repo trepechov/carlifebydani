@@ -9,9 +9,9 @@ $query = new WP_Query($args);
 
 <div class="bg-pattern">
     <div class="bg-from-black-gradien">
-        <div class="container py-6">
+        <div class="container">
             <!-- Hero article -->
-            <article class="relative">
+            <article class="relative mt-6">
                 <div class="w-full lg:w-3/4 lg:rounded-br-8xl lg:border-b-16 lg:border-r-16 lg:pb-4 lg:pr-4 lg:border-white/10">
                     <div class="relative lg:rounded-br-6xl overflow-hidden">
                         <div class="overlay bg-to-black-gradient"></div>

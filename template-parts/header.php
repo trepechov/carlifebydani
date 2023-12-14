@@ -46,8 +46,8 @@ if (!is_user_logged_in()) {
                 <ul class="list-none flex gap-4 items-center">
                     <?php
                     $locations = get_nav_menu_locations();
-                    $menu = wp_get_nav_menu_object($locations['top-menu']);
-                    $topMenuItems = wp_get_nav_menu_items($menu->term_id);
+                    $top_menu = wp_get_nav_menu_object($locations['top-menu']);
+                    $topMenuItems = wp_get_nav_menu_items($top_menu->term_id);
 
                     for ($i = 0; $i < count($topMenuItems) - 1; $i++) { ?>
                         <li class=" hover:text-brand-red">
@@ -80,18 +80,14 @@ if (!is_user_logged_in()) {
                 <nav>
                     <ul class="list-none flex gap-8">
                         <?php
-                        $categories = get_categories(array(
-                            'title_li' => '',
-                            'orderby' => 'id',
-                            'hide_empty' => false,
-                            'parent' => 0,
-                        ));
+                        $main_menu = wp_get_nav_menu_object($locations['main-menu']);
+                        $mainMenuItems = wp_get_nav_menu_items($main_menu->term_id);
 
-                        foreach ($categories as $key => $category) { ?>
+                        foreach ($mainMenuItems as $key => $menuItem) { ?>
                             <li class="text-xl font-bold hover:text-brand-red">
-                                <a href="<?php echo get_category_link($category->term_id) ?>">
+                                <a href="<?php echo  $menuItem->url ?>">
                                     <span class="block text-sm leading-4 text-brand-red"><?php echo str_pad($key + 1, 2, '0', STR_PAD_LEFT) ?></span>
-                                    <?php echo $category->name ?>
+                                    <?php echo $menuItem->title ?>
                                 </a>
                             </li>
                         <?php
