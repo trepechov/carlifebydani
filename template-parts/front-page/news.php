@@ -23,7 +23,7 @@ $news_posts = get_posts(array(
         </div>
         <div class="mb-8 lg:grid lg:grid-cols-4 lg:gap-8 lg:place-items-stretch">
             <?php
-            for ($i = 3; $i < 10; $i++) {
+            for ($i = 3; $i < 11; $i++) {
                 // Reemove this once have enought posts
                 if (!isset($news_posts[$i])) {
                     continue;

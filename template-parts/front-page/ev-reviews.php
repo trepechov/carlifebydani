@@ -12,7 +12,7 @@ $ev_reviews_posts = get_posts(array(
 
         <div class="mb-8 lg:grid lg:grid-cols-4 lg:gap-8 lg:place-items-stretch">
             <?php
-            for ($i = 0; $i < 7; $i++) {
+            for ($i = 0; $i < 8; $i++) {
                 // Reemove this once have enought posts
                 if (!isset($ev_reviews_posts[$i])) {
                     continue;

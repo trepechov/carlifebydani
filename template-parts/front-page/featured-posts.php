@@ -1,6 +1,7 @@
 <?php
+// Get posts with query to use sticky prop
 $args  = array(
-    'posts_per_page'      => 10,
+    'posts_per_page'      => 4,
     'post__in'            => get_option('sticky_posts'),
     'ignore_sticky_posts' => 1,
 );
