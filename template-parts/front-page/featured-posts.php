@@ -29,7 +29,7 @@ $query = new WP_Query($args);
                         <span><?php echo get_the_category($query->posts[0]->ID)[0]->name ?></span>
                     </div>
                     <h2>
-                        <a href='<?php echo get_permalink($query->posts[0]->ID) ?>' class="hover:text-black"><?php echo $query->posts[0]->post_title ?></a>
+                        <a href='<?php echo get_permalink($query->posts[0]->ID) ?>' class="link-transition hover:text-black"><?php echo $query->posts[0]->post_title ?></a>
                     </h2>
                 </div>
             </article>
