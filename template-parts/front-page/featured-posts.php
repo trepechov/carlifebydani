@@ -35,7 +35,7 @@ $query = new WP_Query($args);
             </article>
 
             <div class="mt-8">
-                <h3 class="border-l-8 p-3 mb-8 border-brand-red">Избрано за вас</h3>
+                <h3 class="border-l-8 p-3 mb-8 border-brand-red uppercase">Избрано за вас</h3>
                 <div class="lg:grid lg:grid-cols-3 lg:gap-8 items-stretch justify-items-stretch">
                     <?php
                     for ($i = 0; $i < 3; $i++) {

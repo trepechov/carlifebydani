@@ -6,7 +6,7 @@ $ev_masters_posts = get_posts(array(
 ?><div class="bg-pattern">
     <div class="container py-6">
         <div class="flex mb-8 justify-between items-center">
-            <h3 class="border-l-8 p-3 border-brand-red">EV Masters</h3>
+            <h3 class="border-l-8 p-3 border-brand-red uppercase">EV Masters</h3>
             <a href="<?php echo get_category_link(EV_MASTERS_CATEGORY_ID) ?>" class="button">Виж всички</a>
         </div>
 
