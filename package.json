@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "npx postcss ./css/style.css -o ./css/style.min.css  --minify --watch",
         "build": "npx postcss ./css/style.css -o ./css/style.min.css --minify",
-        "pack": "npm run build && npx copy-files-from-to && npm-build-zip --source=carlifebydani --name=carlifebydani --name_only=false && rm -rf carlifebydani"
+        "pack": "npm run build && npx copy-files-from-to && npm-build-zip --source=temp/ --name=carlifebydani --name_only=false && rm -rf temp"
     },
     "devDependencies": {
         "@prettier/plugin-php": "^0.21.0",
@@ -31,7 +31,7 @@
                 "images/*",
                 "template-parts/**"
             ],
-            "to": "carlifebydani/"
+            "to": "temp/carlifebydani/"
         }
     ]
 }
