@@ -29,13 +29,13 @@ $query = new WP_Query($args);
                         <span><?php echo get_the_category($query->posts[0]->ID)[0]->name ?></span>
                     </div>
                     <h2>
-                        <a href='<?php echo get_permalink($query->posts[0]->ID) ?>' class="hover:text-black"><?php echo $query->posts[0]->post_title ?></a>
+                        <a href='<?php echo get_permalink($query->posts[0]->ID) ?>' class="link-transition hover:text-black"><?php echo $query->posts[0]->post_title ?></a>
                     </h2>
                 </div>
             </article>
 
             <div class="mt-8">
-                <h3 class="border-l-8 p-3 mb-8 border-brand-red">Избрано за вас</h3>
+                <h3 class="border-l-8 p-3 mb-8 border-brand-red uppercase">Избрано за вас</h3>
                 <div class="lg:grid lg:grid-cols-3 lg:gap-8 items-stretch justify-items-stretch">
                     <?php
                     for ($i = 0; $i < 3; $i++) {

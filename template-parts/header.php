@@ -103,12 +103,12 @@ if (!is_user_logged_in()) {
 
                 <div class="flex gap-8">
                     <a href="#" class="flex flex-col">
-                        <span class="text-lg font-bold">Новини за EV NEWS</span>
+                        <span class="text-lg font-bold link-transition hover:text-brand-red">Новини за EV NEWS</span>
                         <span class="text-xs italic text-brand-lightgrey">Теми, които те вълнуват</span>
                     </a>
 
                     <a href="#" class="flex flex-col">
-                        <span class="text-lg font-bold">Твоята EV Кола</span>
+                        <span class="text-lg font-bold link-transition hover:text-brand-red">Твоята EV Кола</span>
                         <span class="text-xs italic text-brand-lightgrey">запиши колата си за ревю</span>
                     </a>
                 </div>
