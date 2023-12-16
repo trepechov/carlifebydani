@@ -1,6 +1,3 @@
-
-/* Not used any more... only left as refference after refactoring */
-
 @layer utilities {
     .wrapper {
         @apply container

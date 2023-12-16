@@ -45,11 +45,12 @@ module.exports = {
                 'from-red-gradient': 'linear-gradient(180deg, #FE3652 0%, rgba(254, 54, 82, 0) 100%);'
             }),
             backgroundSize: {
-                'size-200': '200% 200%'
-            },
-            backgroundPosition: {
-                'pos-0': '0% 0%',
-                'pos-100': '100% 100%'
+                'size-1/4': '25%',
+                'size-1/3': '33.33%',
+                'size-1/2': '50%',
+                'size-2/3': '66.67%',
+                'size-3/4': '75%',
+                'size-full': '100%'
             }
         }
     },
