@@ -13,7 +13,7 @@
 		</div>
 
 		<a href="#" class="group">
-			<div class="items-center flex justify-end relative bg-size-1/3 bg-no-repeat bg-left lg:h-[600px] lg:items-start lg:bg-size-full lg:bg-cover lg:rounded-br-4xl" style="background-image: url('<?php echo get_stylesheet_directory_uri(); ?>/images/share-with-us-1.png');">
+			<div class="items-center flex justify-end relative bg-size-1/3 bg-no-repeat bg-left lg:h-[600px] lg:items-start lg:bg-cover lg:rounded-br-4xl" style="background-image: url('<?php echo get_stylesheet_directory_uri(); ?>/images/share-with-us-1.png');">
 				<div class="overlay bg-from-black-gradient group-hover:bg-from-red-gradient"></div>
 
 				<div class="z-10 w-2/3 py-16 px-8 lg:w-full lg:py-10 lg:text-center">
@@ -24,7 +24,7 @@
 		</a>
 
 		<a href="#" class="group">
-			<div class="items-center flex justify-end relative bg-size-1/3 bg-no-repeat bg-left lg:h-[600px] lg:items-start lg:bg-size-full lg:bg-cover lg:rounded-br-4xl" style="background-image: url('<?php echo get_stylesheet_directory_uri(); ?>/images/share-with-us-2.png');">
+			<div class="items-center flex justify-end relative bg-size-1/3 bg-no-repeat bg-left lg:h-[600px] lg:items-start lg:bg-cover lg:rounded-br-4xl" style="background-image: url('<?php echo get_stylesheet_directory_uri(); ?>/images/share-with-us-2.png');">
 				<div class="overlay bg-from-black-gradient group-hover:bg-from-red-gradient"></div>
 
 				<div class="z-10 w-2/3 py-16 px-8 lg:w-full lg:py-10 lg:text-center">

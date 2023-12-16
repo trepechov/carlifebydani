@@ -1,7 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
-@import 'carlifebydani.css';
-
 @tailwind base;
 
 @layer base {
@@ -32,6 +30,27 @@
 
     h5 {
         @apply text-2xl font-bold;
+    }
+
+    p {
+        @apply mb-4;
+    }
+
+    table {
+        @apply mx-auto my-8 border-collapse bg-brand-darkgrey;
+    }
+
+    th,
+    td {
+        @apply border-t border-brand-button p-4;
+    }
+
+    tr > td:first-child {
+        @apply bg-brand-solidgrey;
+    }
+
+    th {
+        @apply bg-brand-red;
     }
 }
 
@@ -70,5 +89,17 @@
         before:duration-300
         before:content-['\2665']
         before:hover:text-white;
+    }
+
+    .wp-block-gallery {
+        @apply my-8;
+    }
+
+    .wp-block-image a {
+        @apply relative
+        after:absolute
+        after:inset-0
+        after:content-['']
+        after:hover:bg-to-black-gradient-post;
     }
 }

@@ -1,5 +1,6 @@
 module.exports = {
     content: ['./template-parts/**/*.php', './*.php', './js/*.js'],
+    safelist: ['wp-block-gallery', 'wp-block-image'],
     theme: {
         screens: {
             sm: '640px',
