@@ -1,6 +1,6 @@
 <div class="bg-black">
 	<div class="container py-20 grid gap-8 lg:grid-cols-3">
-		<div class="relative pt-12">
+		<div class="relative lg:pt-12 lg:pr-14">
 			<div class="mb-8 uppercase">
 				<h3 class="border-l-8 p-3 border-brand-red">сподели с нас</h3>
 			</div>
@@ -13,7 +13,7 @@
 		</div>
 
 		<a href="#" class="group">
-			<div class="items-center flex justify-end relative bg-size-1/3 bg-no-repeat bg-left lg:h-[600px] lg:items-start lg:bg-cover lg:rounded-br-4xl" style="background-image: url('<?php echo get_stylesheet_directory_uri(); ?>/images/share-with-us-1.png');">
+			<div class="items-center flex justify-end relative bg-size-1/3 bg-no-repeat bg-left lg:h-[600px] lg:items-start lg:bg-cover lg:bg-center lg:rounded-br-4xl" style="background-image: url('<?php echo get_stylesheet_directory_uri(); ?>/images/share-with-us-1.png');">
 				<div class="overlay bg-from-black-gradient group-hover:bg-from-red-gradient"></div>
 
 				<div class="z-10 w-2/3 py-16 px-8 lg:w-full lg:py-10 lg:text-center">
