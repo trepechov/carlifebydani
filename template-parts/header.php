@@ -9,6 +9,7 @@ if (!is_user_logged_in()) {
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/svg" href="<?php echo get_stylesheet_directory_uri(); ?>/images/favicon.svg">
     <?php wp_head(); ?>
 </head>
 
