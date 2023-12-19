@@ -650,9 +650,19 @@ th{
   z-index: 10;
 }
 
+.mx-2{
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
 .my-16{
   margin-top: 4rem;
   margin-bottom: 4rem;
+}
+
+.mx-12{
+  margin-left: 3rem;
+  margin-right: 3rem;
 }
 
 .mb-12{
@@ -675,12 +685,20 @@ th{
   margin-bottom: 2rem;
 }
 
+.mt-12{
+  margin-top: 3rem;
+}
+
 .mt-16{
   margin-top: 4rem;
 }
 
 .mt-8{
   margin-top: 2rem;
+}
+
+.mt-2{
+  margin-top: 0.5rem;
 }
 
 .block{
@@ -707,6 +725,18 @@ th{
   height: 100%;
 }
 
+.h-2{
+  height: 0.5rem;
+}
+
+.h-14{
+  height: 3.5rem;
+}
+
+.h-24{
+  height: 6rem;
+}
+
 .w-12{
   width: 3rem;
 }
@@ -715,12 +745,28 @@ th{
   width: 66.666667%;
 }
 
+.w-48{
+  width: 12rem;
+}
+
 .w-full{
   width: 100%;
 }
 
-.max-w-7xl{
-  max-width: 80rem;
+.w-1\/2{
+  width: 50%;
+}
+
+.w-2{
+  width: 0.5rem;
+}
+
+.w-24{
+  width: 6rem;
+}
+
+.flex-1{
+  flex: 1 1 0%;
 }
 
 .list-none{
@@ -735,6 +781,10 @@ th{
   align-items: flex-start;
 }
 
+.items-end{
+  align-items: flex-end;
+}
+
 .items-center{
   align-items: center;
 }
@@ -747,6 +797,10 @@ th{
   justify-content: flex-end;
 }
 
+.justify-center{
+  justify-content: center;
+}
+
 .justify-between{
   justify-content: space-between;
 }
@@ -757,6 +811,10 @@ th{
 
 .gap-1{
   gap: 0.25rem;
+}
+
+.gap-14{
+  gap: 3.5rem;
 }
 
 .gap-2{
@@ -779,20 +837,31 @@ th{
   gap: 2rem;
 }
 
+.gap-16{
+  gap: 4rem;
+}
+
 .space-x-4 > :not([hidden]) ~ :not([hidden]){
   --tw-space-x-reverse: 0;
   margin-right: calc(1rem * var(--tw-space-x-reverse));
   margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
-.space-y-8 > :not([hidden]) ~ :not([hidden]){
-  --tw-space-y-reverse: 0;
-  margin-top: calc(2rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(2rem * var(--tw-space-y-reverse));
-}
-
 .overflow-hidden{
   overflow: hidden;
+}
+
+.scroll-smooth{
+  scroll-behavior: smooth;
+}
+
+.rounded-full{
+  border-radius: 9999px;
+}
+
+.rounded-e-full{
+  border-start-end-radius: 9999px;
+  border-end-end-radius: 9999px;
 }
 
 .rounded-br-4xl{
@@ -819,6 +888,11 @@ th{
 .border-gray-800{
   --tw-border-opacity: 1;
   border-color: rgb(31 41 55 / var(--tw-border-opacity));
+}
+
+.border-brand-darkgrey{
+  --tw-border-opacity: 1;
+  border-color: rgb(32 32 32 / var(--tw-border-opacity));
 }
 
 .border-b-brand-red{
@@ -872,10 +946,6 @@ th{
   background-repeat: no-repeat;
 }
 
-.p-2{
-  padding: 0.5rem;
-}
-
 .p-3{
   padding: 0.75rem;
 }
@@ -892,6 +962,11 @@ th{
 .px-8{
   padding-left: 2rem;
   padding-right: 2rem;
+}
+
+.py-12{
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 
 .py-16{
@@ -919,12 +994,29 @@ th{
   padding-bottom: 1.5rem;
 }
 
+.py-8{
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
 .pb-4{
   padding-bottom: 1rem;
 }
 
 .pb-8{
   padding-bottom: 2rem;
+}
+
+.pb-2{
+  padding-bottom: 0.5rem;
+}
+
+.pt-8{
+  padding-top: 2rem;
+}
+
+.pt-12{
+  padding-top: 3rem;
 }
 
 .text-center{
@@ -959,6 +1051,11 @@ th{
 .text-xs{
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-3xl{
+  font-size: 1.875rem;
+  line-height: 2.25rem;
 }
 
 .font-bold{
@@ -1029,6 +1126,7 @@ th{
 }
 
 .button-icon-heart{
+  white-space: nowrap;
   padding-left: 0.75rem;
 }
 
@@ -1080,6 +1178,10 @@ th{
 .hover\:text-brand-red:hover{
   --tw-text-opacity: 1;
   color: rgb(254 54 82 / var(--tw-text-opacity));
+}
+
+.focus\:scroll-auto:focus{
+  scroll-behavior: auto;
 }
 
 .group:hover .group-hover\:bg-brand-solidgrey{

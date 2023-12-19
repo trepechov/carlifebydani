@@ -37,7 +37,7 @@ get_template_part('template-parts/header');
     } else {
         ?>
 
-        <p>No posts found. :(</p>
+        <p>Няма намерни новини. :(</p>
 
     <?php
     }

@@ -4,7 +4,7 @@ if (!is_user_logged_in()) {
     exit;
 } ?>
 <!DOCTYPE html>
-<html <?php language_attributes(); ?>>
+<html <?php language_attributes(); ?> class="scroll-smooth">
 
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
@@ -43,7 +43,7 @@ if (!is_user_logged_in()) {
 
             <!-- Top menu -->
             <nav class="flex gap-5 text-sm">
-                <ul class="list-none flex gap-4 items-center">
+                <ul class="flex gap-4 items-center">
                     <?php
                     $locations = get_nav_menu_locations();
                     $top_menu = wp_get_nav_menu_object($locations['top-menu']);
@@ -78,7 +78,7 @@ if (!is_user_logged_in()) {
 
                 <!-- Main menu with categories -->
                 <nav>
-                    <ul class="list-none flex gap-8">
+                    <ul class="flex gap-8">
                         <?php
                         $main_menu = wp_get_nav_menu_object($locations['main-menu']);
                         $mainMenuItems = wp_get_nav_menu_items($main_menu->term_id);

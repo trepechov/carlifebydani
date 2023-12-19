@@ -83,7 +83,8 @@
     }
 
     .button-icon-heart {
-        @apply pl-3
+        @apply whitespace-nowrap
+        pl-3
         before:ml-0.5
         before:text-brand-red
         before:transition

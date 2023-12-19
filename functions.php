@@ -18,6 +18,9 @@ function register_my_menus()
         array(
             'top-menu' => __('Top Menu'),
             'main-menu' => __('Main Menu'),
+            'share-menu' => __('Share Menu'),
+            'footer-menu' => __('Footer Menu'),
+            'bottom-menu' => __('Bottom Menu'),
         )
     );
 }
