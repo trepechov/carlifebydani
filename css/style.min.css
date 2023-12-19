@@ -396,6 +396,7 @@ video {
 body{
   --tw-bg-opacity: 1;
   background-color: rgb(38 38 38 / var(--tw-bg-opacity));
+  font-family: Sofia Sans, sans-serif;
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
@@ -926,10 +927,6 @@ th{
   padding-bottom: 2rem;
 }
 
-.pt-12{
-  padding-top: 3rem;
-}
-
 .text-center{
   text-align: center;
 }
@@ -1198,6 +1195,10 @@ th{
     background-size: cover;
   }
 
+  .lg\:bg-center{
+    background-position: center;
+  }
+
   .lg\:py-10{
     padding-top: 2.5rem;
     padding-bottom: 2.5rem;
@@ -1207,8 +1208,16 @@ th{
     padding-bottom: 1rem;
   }
 
+  .lg\:pr-14{
+    padding-right: 3.5rem;
+  }
+
   .lg\:pr-4{
     padding-right: 1rem;
+  }
+
+  .lg\:pt-12{
+    padding-top: 3rem;
   }
 
   .lg\:text-center{
