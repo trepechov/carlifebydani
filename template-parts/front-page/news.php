@@ -15,7 +15,7 @@ $news_posts = get_posts([
                 if (!isset($news_posts[$i])) {
                     continue;
                 }
-                get_template_part('template-parts/cart-article', 'article', [
+                get_template_part('template-parts/card-article', 'article', [
                     'post' => $news_posts[$i],
                     'title_size' => 'normal',
                 ]);
@@ -27,7 +27,7 @@ $news_posts = get_posts([
                 if (!isset($news_posts[$i])) {
                     continue;
                 }
-                get_template_part('template-parts/cart-article', 'article', [
+                get_template_part('template-parts/card-article', 'article', [
                     'post' => $news_posts[$i],
                     'title_size' => 'small',
                 ]);

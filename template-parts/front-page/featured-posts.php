@@ -38,12 +38,12 @@ $query = new WP_Query($args);
                 <h3 class="border-l-8 p-3 mb-8 border-brand-red uppercase">Избрано за вас</h3>
                 <div class="lg:grid lg:grid-cols-3 lg:gap-8 items-stretch justify-items-stretch">
                     <?php
-                    for ($i = 0; $i < 3; $i++) {
+                    for ($i = 1; $i < 4; $i++) {
                         // Reemove this once have enought posts
                         if (!isset($query->posts[$i])) {
                             continue;
                         }
-                        get_template_part('template-parts/cart-article', 'article',  array('post' => $query->posts[$i], 'title_size' => 'normal'));
+                        get_template_part('template-parts/card-article', 'article',  array('post' => $query->posts[$i], 'title_size' => 'normal'));
                     }
                     ?>
                 </div>

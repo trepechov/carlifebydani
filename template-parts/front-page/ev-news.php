@@ -18,7 +18,7 @@ $ev_news_posts = get_posts(array(
                 if (!isset($ev_news_posts[$i])) {
                     continue;
                 }
-                get_template_part('template-parts/cart-article', 'article',  array('post' => $ev_news_posts[$i], 'title_size' => 'normal'));
+                get_template_part('template-parts/card-article', 'article',  array('post' => $ev_news_posts[$i], 'title_size' => 'normal'));
             }
             ?>
         </div>
@@ -29,7 +29,7 @@ $ev_news_posts = get_posts(array(
                 if (!isset($ev_news_posts[$i])) {
                     continue;
                 }
-                get_template_part('template-parts/cart-article', 'article',  array('post' => $ev_news_posts[$i], 'title_size' => 'small'));
+                get_template_part('template-parts/card-article', 'article',  array('post' => $ev_news_posts[$i], 'title_size' => 'small'));
             }
             ?>
         </div>
