@@ -28,7 +28,7 @@
                 "*.png",
                 "*.css",
                 "css/style.min.css",
-                "images/*",
+                "images/**",
                 "template-parts/**"
             ],
             "to": "temp/carlifebydani/"

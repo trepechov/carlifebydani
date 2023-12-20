@@ -752,10 +752,6 @@ th{
   flex: 1 1 0%;
 }
 
-.cursor-pointer{
-  cursor: pointer;
-}
-
 .list-none{
   list-style-type: none;
 }
