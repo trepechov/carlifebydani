@@ -6,8 +6,7 @@
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  */
 
-get_template_part('template-parts/header');
-?>
+get_template_part('template-parts/header'); ?>
 
 <div>
     <?php
@@ -18,7 +17,7 @@ get_template_part('template-parts/header');
     get_template_part('template-parts/front-page/ev-reviews');
     get_template_part('template-parts/front-page/ev-masters');
     //Производители
-    //Намерете ни
+    get_template_part('template-parts/front-page/find-us');
     ?>
 </div>
 

@@ -17,7 +17,7 @@ $ev_reviews_posts = get_posts(array(
                 if (!isset($ev_reviews_posts[$i])) {
                     continue;
                 }
-                get_template_part('template-parts/cart-article', 'article',  array('post' => $ev_reviews_posts[$i], 'title_size' => 'small'));
+                get_template_part('template-parts/card-article', 'article',  array('post' => $ev_reviews_posts[$i], 'title_size' => 'small'));
             }
             ?>
         </div>
