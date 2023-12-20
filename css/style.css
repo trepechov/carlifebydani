@@ -104,23 +104,4 @@
         after:content-['']
         after:hover:bg-to-black-gradient-post;
     }
-
-    .social-card {
-        @apply  p-9
-                flex
-                flex-col
-                gap-6
-                items-center 
-                justify-center
-                rounded-br-4xl
-                cursor-pointer
-                 bg-black
-                 hover:bg-brand-solidgrey;
-
-        .title {
-            @apply  text-xs
-                    font-bold
-                    text-brand-lightgrey;
-        }
-    }
 }
