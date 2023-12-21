@@ -728,6 +728,10 @@ th{
   height: 100%;
 }
 
+.h-8{
+  height: 2rem;
+}
+
 .w-12{
   width: 3rem;
 }
@@ -748,8 +752,20 @@ th{
   width: 100%;
 }
 
+.w-9\/12{
+  width: 75%;
+}
+
+.w-2\/6{
+  width: 33.333333%;
+}
+
 .flex-1{
   flex: 1 1 0%;
+}
+
+.cursor-pointer{
+  cursor: pointer;
 }
 
 .list-none{
@@ -1216,6 +1232,14 @@ th{
     width: 100%;
   }
 
+  .lg\:w-4\/5{
+    width: 80%;
+  }
+
+  .lg\:w-10\/12{
+    width: 83.333333%;
+  }
+
   .lg\:grid-cols-3{
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1272,6 +1296,10 @@ th{
     background-position: center;
   }
 
+  .lg\:p-5{
+    padding: 1.25rem;
+  }
+
   .lg\:py-10{
     padding-top: 2.5rem;
     padding-bottom: 2.5rem;
@@ -1295,5 +1323,20 @@ th{
 
   .lg\:text-center{
     text-align: center;
+  }
+}
+
+@media (min-width: 1280px){
+
+  .xl\:w-10\/12{
+    width: 83.333333%;
+  }
+
+  .xl\:w-full{
+    width: 100%;
+  }
+
+  .xl\:p-9{
+    padding: 2.25rem;
   }
 }
