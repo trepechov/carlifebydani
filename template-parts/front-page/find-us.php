@@ -34,7 +34,7 @@ $socialMedias = [
 ?>
 <div class="container py-12 bg-brand-grey">
 	<div class="flex mb-8 justify-between items-center">
-		<h3 class="border-l-8 p-3 border-brand-red uppercase">Намерете ни в</h3>
+		<h3 class="title">Намерете ни в</h3>
 	</div>
 
 	<div class="grid gap-8 grid-cols-2 lg:grid-cols-6">

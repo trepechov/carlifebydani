@@ -7,14 +7,14 @@ $shareMenu = wp_get_nav_menu_items($share_menu->term_id);
 	<div class="container py-20 grid gap-8 lg:grid-cols-3">
 		<div class="relative lg:pt-12 lg:pr-14">
 			<div class="mb-8 uppercase">
-				<h3 class="border-l-8 p-3 border-brand-red">сподели с нас</h3>
+				<h3 class="title">Сподели с нас</h3>
 			</div>
 
 			<div class="text-base text-brand-lightgrey">
 				Lorem Ipsum е елементарен примерен текст, използван в печатарската и типографската индустрия.
 			</div>
 
-			<div class="hidden lg:block absolute top-[50px] -right-8 w-12 h-5/6 bg-pattern-2"></div>
+			<div class="hidden lg:block absolute top-[50px] -right-8 w-12 h-5/6 bg-carbon-stripe-white"></div>
 		</div>
 
 		<?php

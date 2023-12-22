@@ -12,7 +12,7 @@ get_template_part('template-parts/header');
     <?php
     if (have_posts()) { ?>
 
-        <h2 class="border-l-8 mb-8 p-3 border-brand-red uppercase"><?php single_cat_title(); ?></h2>
+        <h2 class="title"><?php single_cat_title(); ?></h2>
         <?php echo tag_description() ?>
         <?php
         /* Start the Loop */

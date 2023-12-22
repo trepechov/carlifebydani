@@ -15,12 +15,12 @@ if (!is_user_logged_in()) {
 
 <body class="body">
     <header class="bg-black">
-        <div class="container py-4 flex justify-between items-center">
+        <div class="container py-2 flex justify-between items-center">
             <!-- Popular tags menu -->
-            <nav class="flex gap-4 text-xs">
+            <nav class="flex items-center gap-2 text-xs">
                 <span class="font-bold uppercase">Популярни теми</span>
 
-                <span>/</span>
+                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/slash.svg" alt="slash" class="h-6" />
 
                 <ul class="list-none flex gap-4">
                     <?php
@@ -58,7 +58,7 @@ if (!is_user_logged_in()) {
                     }
                     ?>
                     <li>
-                        <a href='<?php echo $topMenuItems[$i]->url ?>' class="button button-icon-heart">
+                        <a href='<?php echo $topMenuItems[$i]->url ?>' class="button ">
                             <?php echo $topMenuItems[$i]->title ?>
                         </a>
                     </li>
@@ -67,7 +67,7 @@ if (!is_user_logged_in()) {
         </div>
 
         <!-- Full width separator -->
-        <div class="border-b border-b-brand-red"></div>
+        <div class="border-b border-b-brand-red/50"></div>
 
         <!-- Main Navigation -->
         <div class="container py-4 flex justify-between">
@@ -87,7 +87,7 @@ if (!is_user_logged_in()) {
                         foreach ($mainMenuItems as $key => $menuItem) { ?>
                             <li class="text-xl font-bold hover:text-brand-red">
                                 <a href="<?php echo  $menuItem->url ?>">
-                                    <span class="block text-sm leading-4 text-brand-red"><?php echo str_pad($key + 1, 2, '0', STR_PAD_LEFT) ?></span>
+                                    <span class="block text-sm leading-4 text-brand-red font-normal"><?php echo str_pad($key + 1, 2, '0', STR_PAD_LEFT) ?></span>
                                     <?php echo $menuItem->title ?>
                                 </a>
                             </li>
@@ -100,7 +100,7 @@ if (!is_user_logged_in()) {
 
             <!-- Share with us menu -->
             <div class="flex flex-col items-start gap-1">
-                <span class="text-xs font-bold uppercase text-brand-red">сподели с нас...</span>
+                <span class="text-xs uppercase text-brand-red">сподели с нас...</span>
 
                 <div class="flex gap-8">
                     <a href="#" class="flex flex-col">

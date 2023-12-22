@@ -3,10 +3,10 @@
 <footer class="bg-black">
     <div class="container pt-12 pb-8">
         <div class="flex gap-14 items-stretch">
-            <a href="<?php echo get_home_url(); ?>">
+            <a href="<?php echo get_home_url(); ?>" class="my-3">
                 <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo.svg" alt="Carlife by Dani" class="w-48" />
             </a>
-            <div class="flex-1 bg-pattern-2"></div>
+            <div class="flex-1 bg-carbon-stripe-white"></div>
         </div>
         <div class="flex mt-12">
             <div class="flex-1 mx-2">
@@ -64,7 +64,7 @@
             <div class="flex-1 flex gap-16 justify-end items-center">
                 <div class="flex gap-8 items-end">
                     <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/mail.svg" alt="mai" class="h-14" />
-                    <div class="flex flex-col">
+                    <div class="flex flex-col gap-1">
                         <span class="text-xs text-brand-red">Контакти</span>
                         <a class="text-3xl" href="mailto:info@carlifebydani.com">info@carlifebydani.com</a>
                         <span class="text-xs text-brand-lightgrey">Имате нужда от повече информация или връзка с нас.</span>

@@ -18,19 +18,19 @@
     }
 
     h2 {
-        @apply text-2xl font-bold lg:text-5xl;
+        @apply text-2xl/7 font-bold lg:text-4xl/9;
     }
 
     h3 {
-        @apply text-4xl font-bold;
+        @apply text-3xl/8 font-bold;
     }
 
     h4 {
-        @apply text-3xl font-bold;
+        @apply text-2xl/7 font-bold;
     }
 
     h5 {
-        @apply text-2xl font-bold;
+        @apply text-xl/6 font-bold;
     }
 
     p {
@@ -67,6 +67,10 @@
 @tailwind utilities;
 
 @layer utilities {
+    .title {
+        @apply border-l-10 mb-8 border-brand-red p-4 uppercase;
+    }
+
     .button {
         @apply link-transition
         flex
@@ -74,7 +78,7 @@
         gap-2
         bg-brand-button
         px-4
-        py-2
+        py-1.5
         text-sm
         font-bold
         uppercase
@@ -82,7 +86,7 @@
         hover:text-white;
     }
 
-    .button-icon-heart {
+    /* .button-icon-heart {
         @apply whitespace-nowrap
         pl-3
         before:ml-0.5
@@ -91,7 +95,7 @@
         before:duration-300
         before:content-['\2665']
         before:hover:text-white;
-    }
+    } */
 
     .wp-block-gallery {
         @apply my-8;

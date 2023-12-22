@@ -2,10 +2,10 @@
 $news_posts = get_posts([
     'numberposts' => 11,
     'category' => NEWS_CATEGORY_ID,
-]); ?><div class="bg-pattern">
+]); ?><div class="bg-carbon-stripe">
     <div class="container py-6">
         <div class="flex mb-8 justify-between items-center">
-            <h3 class="border-l-8 p-3 border-brand-red uppercase">Новини</h3>
+            <h3 class="title">Новини</h3>
             <a href="<?php echo get_category_link(NEWS_CATEGORY_ID); ?>" class="button">Виж всички</a>
         </div>
 
