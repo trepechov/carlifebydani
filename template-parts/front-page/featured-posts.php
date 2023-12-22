@@ -8,7 +8,7 @@ $args  = array(
 $query = new WP_Query($args);
 ?>
 
-<div class="bg-carbon-stripe">
+<div class="bg-carbon-stripe-white-20">
     <div class="bg-grey-stripe-gradient">
         <div class="bg-from-black-gradient">
             <div class="container py-8">
@@ -23,7 +23,7 @@ $query = new WP_Query($args);
 
                     <div class="mb-12 p-8 pb-16 bg-brand-red rounded-br-4xl lg:absolute lg:right-0 lg:top-5 lg:w-2/5">
                         <div class="flex items-center text-black gap-2 mb-5">
-                            <span class="text-xl font-bold"><?php echo get_the_category($query->posts[0]->ID)[0]->name ?></span>
+                            <span class="text-xl font-bold uppercase"><?php echo get_the_category($query->posts[0]->ID)[0]->name ?></span>
 
                             <span class="w-1.5 h-1.5 bg-black/50 rounded"></span>
 
@@ -37,7 +37,9 @@ $query = new WP_Query($args);
 
                 <!-- Featured articles -->
                 <div class="mt-12">
-                    <h3 class="title">Избрано за вас</h3>
+                    <div class="flex mb-8 justify-between items-center">
+                        <h3 class="title">Избрано за вас</h3>
+                    </div>
                     <div class="lg:grid lg:grid-cols-3 lg:gap-8 items-stretch justify-items-stretch">
                         <?php
                         for ($i = 1; $i < 4; $i++) {

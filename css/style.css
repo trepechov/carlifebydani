@@ -18,7 +18,7 @@
     }
 
     h2 {
-        @apply text-2xl/7 font-bold lg:text-4xl/9;
+        @apply text-[42px]/11 font-bold;
     }
 
     h3 {
@@ -68,7 +68,7 @@
 
 @layer utilities {
     .title {
-        @apply border-l-10 mb-8 border-brand-red p-4 uppercase;
+        @apply border-l-10 border-brand-red p-4 uppercase;
     }
 
     .button {

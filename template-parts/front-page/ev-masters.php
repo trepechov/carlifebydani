@@ -3,7 +3,7 @@ $ev_masters_posts = get_posts(array(
     'numberposts'   => 4,
     'category'      => EV_MASTERS_CATEGORY_ID
 ));
-?><div class="bg-carbon-stripe">
+?><div class="bg-carbon-stripe-white-20">
     <div class="container py-6">
         <div class="flex mb-8 justify-between items-center">
             <h3 class="title">EV Masters</h3>

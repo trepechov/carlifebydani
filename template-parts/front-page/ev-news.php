@@ -3,7 +3,7 @@ $ev_news_posts = get_posts(array(
     'numberposts'   => 7,
     'category'      => EV_NEWS_CATEGORY_ID
 ));
-?><div class="bg-carbon-stripe">
+?><div class="bg-carbon-stripe-black-20">
     <div class="container py-6">
         <div class="flex mb-8 justify-between items-center">
             <h3 class="title">EV News</h3>

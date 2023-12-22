@@ -70,12 +70,15 @@
                         <span class="text-xs text-brand-lightgrey">Имате нужда от повече информация или връзка с нас.</span>
                     </div>
                 </div>
-                <a class="w-24 h-24 flex items-center justify-center rounded-full bg-brand-red text-lg" href="#">&#9653;</a>
+                <a class="w-24 h-24 flex items-center justify-center rounded-full bg-brand-red text-lg" href="#">
+                    <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/icons/arrow.svg" alt="To Top" class="mb-1" />
+                </a>
 
             </div>
         </div>
 
-        <div class="mt-12 pt-8 text-xs text-center border-t border-brand-darkgrey">&copy;2023 <a href="<?php echo get_home_url(); ?>">carlifebydani.com</a>
+        <div class="mt-12 pt-8 text-xs text-center border-t border-brand-darkgrey">
+            &copy;2023 <a href="<?php echo get_home_url(); ?>" class="hover:text-brand-red">carlifebydani.com</a> Всички права запазени!
         </div>
     </div>
 </footer>

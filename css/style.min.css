@@ -412,17 +412,9 @@ a,
 }
 
 h2{
-  font-size: 1.5rem;
-  line-height: 1.75rem;
+  font-size: 42px;
+  line-height: 2.75rem;
   font-weight: 700;
-}
-
-@media (min-width: 1024px){
-
-  h2{
-    font-size: 2.25rem;
-    line-height: 2.25rem;
-  }
 }
 
 h3{
@@ -655,6 +647,10 @@ th{
 .my-3{
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
+}
+
+.mb-1{
+  margin-bottom: 0.25rem;
 }
 
 .mb-12{
@@ -916,12 +912,16 @@ th{
   background-color: rgb(254 54 82 / var(--tw-bg-opacity));
 }
 
-.bg-carbon-stripe{
-  background-image: url('../images/bg/carbon-stripe.png');
+.bg-carbon-stripe-black-20{
+  background-image: url('../images/bg/carbon-stripe-black-20.png');
 }
 
 .bg-carbon-stripe-white{
   background-image: url('../images/bg/carbon-stripe-white.png');
+}
+
+.bg-carbon-stripe-white-20{
+  background-image: url('../images/bg/carbon-stripe-white-20.png');
 }
 
 .bg-from-black-gradient{
@@ -964,13 +964,14 @@ th{
   padding: 2.25rem;
 }
 
-.p-\[7\%\]{
-  padding: 7%;
-}
-
 .px-8{
   padding-left: 2rem;
   padding-right: 2rem;
+}
+
+.px-\[7\%\]{
+  padding-left: 7%;
+  padding-right: 7%;
 }
 
 .py-12{
@@ -1105,13 +1106,21 @@ th{
   opacity: 0;
 }
 
+.drop-shadow{
+  --tw-drop-shadow: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
 .drop-shadow-card{
   --tw-drop-shadow: drop-shadow(0px -4px 10px rgba(0, 0, 0, 0.10));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
+.filter{
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
 .title{
-  margin-bottom: 2rem;
   border-left-width: 10px;
   --tw-border-opacity: 1;
   border-color: rgb(254 54 82 / var(--tw-border-opacity));

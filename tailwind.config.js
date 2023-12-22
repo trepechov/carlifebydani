@@ -26,6 +26,10 @@ module.exports = {
                     button: '#505050'
                 }
             },
+            lineHeight: {
+                11: '2.75rem',
+                12: '3rem'
+            },
             borderWidth: {
                 10: '10px',
                 20: '20px'
@@ -37,8 +41,10 @@ module.exports = {
                 '8xl': '8rem'
             },
             backgroundImage: ({ theme }) => ({
-                'carbon-stripe': "url('../images/bg/carbon-stripe.png')",
+                'carbon-stripe-black': "url('../images/bg/carbon-stripe-black.png')",
+                'carbon-stripe-black-20': "url('../images/bg/carbon-stripe-black-20.png')",
                 'carbon-stripe-white': "url('../images/bg/carbon-stripe-white.png')",
+                'carbon-stripe-white-20': "url('../images/bg/carbon-stripe-white-20.png')",
                 'from-black-gradient': 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%)',
                 'to-black-gradient': 'linear-gradient(0deg, rgba(0, 0, 0, 0.80) 0%, rgba(0, 0, 0, 0.00) 40%);',
                 'to-black-gradient-post': 'linear-gradient(360deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 40%);',

@@ -11,7 +11,7 @@ get_template_part('template-parts/header');
 <div class="container my-16">
     <?php
     if (have_posts()) { ?>
-
+    
         <h2 class="title"><?php single_cat_title(); ?></h2>
         <?php echo tag_description() ?>
         <?php
