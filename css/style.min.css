@@ -912,10 +912,6 @@ th{
   background-color: rgb(254 54 82 / var(--tw-bg-opacity));
 }
 
-.bg-carbon-stripe-black-20{
-  background-image: url('../images/bg/carbon-stripe-black-20.png');
-}
-
 .bg-carbon-stripe-white{
   background-image: url('../images/bg/carbon-stripe-white.png');
 }
@@ -925,7 +921,7 @@ th{
 }
 
 .bg-from-black-gradient{
-  background-image: linear-gradient(180deg, rgba(27, 27, 27, 0.9) 0%, rgba(27, 27, 27, 0) 100%);;
+  background-image: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 80%);
 }
 
 .bg-grey-stripe-gradient{
@@ -1106,18 +1102,10 @@ th{
   opacity: 0;
 }
 
-.drop-shadow{
-  --tw-drop-shadow: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
-.drop-shadow-card{
-  --tw-drop-shadow: drop-shadow(0px -4px 10px rgba(0, 0, 0, 0.10));
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
-.filter{
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+.shadow-card{
+  --tw-shadow: 0px -4px 10px rgba(0, 0, 0, 0.20);
+  --tw-shadow-colored: 0px -4px 10px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .title{

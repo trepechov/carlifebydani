@@ -17,9 +17,11 @@
                         $footer_menu = wp_get_nav_menu_object($locations['footer-menu']);
                         $footerMenuItems = wp_get_nav_menu_items($footer_menu->term_id);
 
-                        foreach ($footerMenuItems as $key => $menuItem) { ?>
+                        foreach ($footerMenuItems as $key => $menuItem) {
+                            $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
+                        ?>
                             <li>
-                                <a class="hover:text-brand-red" href="<?php echo  $menuItem->url ?>">
+                                <a class="hover:text-brand-red <?php echo $current ?>" href="<?php echo  $menuItem->url ?>">
                                     <?php echo $menuItem->title ?>
                                 </a>
                             </li>
@@ -70,7 +72,7 @@
                         <span class="text-xs text-brand-lightgrey">Имате нужда от повече информация или връзка с нас.</span>
                     </div>
                 </div>
-                <a class="w-24 h-24 flex items-center justify-center rounded-full bg-brand-red text-lg" href="#">
+                <a class="w-24 h-24 flex items-center justify-center rounded-full bg-brand-red text-lg hover:bg-brand-solidgrey" href="#">
                     <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/icons/arrow.svg" alt="To Top" class="mb-1" />
                 </a>
 

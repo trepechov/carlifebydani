@@ -2,7 +2,7 @@
 $news_posts = get_posts([
     'numberposts' => 11,
     'category' => NEWS_CATEGORY_ID,
-]); ?><div class="bg-carbon-stripe-black-20">
+]); ?><div class="bg-carbon-stripe-white-20">
     <div class="container py-6">
         <div class="flex mb-8 justify-between items-center">
             <h3 class="title">Новини</h3>

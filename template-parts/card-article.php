@@ -1,5 +1,5 @@
 <a href="<?php echo get_permalink($args['post']->ID) ?>" class="group">
-    <article class="h-full bg-black rounded-br-4xl overflow-hidden drop-shadow-card" style="filter: drop-shadow(0px -4px 10px rgba(0, 0, 0, 0.10));">
+    <article class="h-full bg-black rounded-br-4xl overflow-hidden shadow-card">
         <div class="relative">
             <div class="absolute z-10 bottom-4 flex items-center gap-2 pl-[7%]">
                 <?php if (isset($args['with_category']) && $args['with_category']) { ?>

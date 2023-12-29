@@ -84,8 +84,10 @@ if (!is_user_logged_in()) {
                         $main_menu = wp_get_nav_menu_object($locations['main-menu']);
                         $mainMenuItems = wp_get_nav_menu_items($main_menu->term_id);
 
-                        foreach ($mainMenuItems as $key => $menuItem) { ?>
-                            <li class="text-xl font-bold hover:text-brand-red">
+                        foreach ($mainMenuItems as $key => $menuItem) {
+                            $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
+                        ?>
+                            <li class="text-xl font-bold hover:text-brand-red <?php echo $current ?>">
                                 <a href="<?php echo  $menuItem->url ?>">
                                     <span class="block text-sm leading-4 text-brand-red font-normal"><?php echo str_pad($key + 1, 2, '0', STR_PAD_LEFT) ?></span>
                                     <?php echo $menuItem->title ?>

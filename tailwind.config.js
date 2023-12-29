@@ -45,16 +45,16 @@ module.exports = {
                 'carbon-stripe-black-20': "url('../images/bg/carbon-stripe-black-20.png')",
                 'carbon-stripe-white': "url('../images/bg/carbon-stripe-white.png')",
                 'carbon-stripe-white-20': "url('../images/bg/carbon-stripe-white-20.png')",
-                'from-black-gradient': 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%)',
+                'from-black-gradient': 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 80%)',
                 'to-black-gradient': 'linear-gradient(0deg, rgba(0, 0, 0, 0.80) 0%, rgba(0, 0, 0, 0.00) 40%);',
                 'to-black-gradient-post': 'linear-gradient(360deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 40%);',
                 'to-solidgray-gradient-post': 'linear-gradient(360deg, rgba(28,28,28,1) 0%, rgba(28,28,28,0) 40%);',
-                'from-black-gradient': 'linear-gradient(180deg, rgba(27, 27, 27, 0.9) 0%, rgba(27, 27, 27, 0) 100%);',
+                // 'from-black-gradient': 'linear-gradient(180deg, rgba(27, 27, 27, 0.9) 0%, rgba(27, 27, 27, 0) 100%);',
                 'from-red-gradient': 'linear-gradient(180deg, #FE3652 0%, rgba(254, 54, 82, 0) 100%);',
                 'grey-stripe-gradient': 'linear-gradient(180deg, rgba(38,38,38,0) 80.99%, rgba(38,38,38,1) 81%);'
             }),
-            dropShadow: {
-                card: '0px -4px 10px rgba(0, 0, 0, 0.10)'
+            boxShadow: {
+                card: '0px -4px 10px rgba(0, 0, 0, 0.20)'
             },
             backgroundSize: {
                 'size-1/4': '25%',
