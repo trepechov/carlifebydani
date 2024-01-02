@@ -33,6 +33,7 @@
         @apply text-xl/6 font-bold;
     }
 
+
     p {
         @apply mb-4;
     }

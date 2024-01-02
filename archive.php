@@ -6,42 +6,50 @@
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  */
 
+
+$current_category = get_the_category()[0];
+$bread_crumbs = array(
+    (object) [
+        'label' => 'Начало',
+        'link' => '/',
+    ],
+    (object) [
+        'label' => $current_category->name,
+        'link' => get_category_link($current_category->term_id),
+    ],
+);
+
+
 get_template_part('template-parts/header');
 ?>
-<div class="container my-16">
-    <?php
-    if (have_posts()) { ?>
-    
-        <h2 class="title"><?php single_cat_title(); ?></h2>
-        <?php echo tag_description() ?>
-        <?php
-        /* Start the Loop */
-        while (have_posts()) {
-            the_post();
-            $featured_image_url = get_the_post_thumbnail_url(get_the_ID(), 'medium');
-        ?>
-            <a href="<?php echo get_permalink(); ?>">
-                <article class="mb-8">
-                    <h4 class="mb-4"><?php the_title(); ?></h4>
-                    <div class="flex gap-8">
-                        <?php if ($featured_image_url) { ?>
-                            <img src="<?php echo $featured_image_url; ?>" alt="Featured Image">
-                        <?php
-                        } ?>
-                        <p><?php echo get_the_excerpt(); ?></p>
+
+
+<div class="bg-carbon-stripe-white-20">
+    <div class="bg-grey-stripe-gradient">
+        <div class="bg-from-black-gradient">
+            <div class="container py-8">
+
+                <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
+
+                <h3 class="title mt-6 mb-8"><?php echo $current_category->name ?></h2>
+                    <?php echo tag_description() ?>
+
+                    <div class="grid grid-cols-3 gap-8">
+                        <div class="col-span-2 grid gap-8">
+                            <?php
+                            get_template_part('template-parts/archive/main', 'archive_main', array('category' => $current_category));
+                            ?>
+                        </div>
+                        <div class="col-span-1">
+                            <?php
+                            get_template_part('template-parts/sidebar');
+                            ?>
+                        </div>
                     </div>
-                </article>
-            </a>
-        <?php
-        }
-    } else {
-        ?>
-
-        <p>Няма намерни новини. :(</p>
-
-    <?php
-    }
-    ?>
+            </div>
+        </div>
+    </div>
 </div>
 
+<?php get_template_part('template-parts/find-us'); ?>
 <?php get_template_part('template-parts/footer'); ?>

@@ -1,13 +1,8 @@
 <a href="<?php echo get_permalink($args['post']->ID) ?>" class="group">
     <article class="h-full bg-black rounded-br-4xl overflow-hidden shadow-card">
         <div class="relative">
-            <div class="absolute z-10 bottom-4 flex items-center gap-2 pl-[7%]">
-                <?php if (isset($args['with_category']) && $args['with_category']) { ?>
-                    <span class="font-bold uppercase"><?php echo get_the_category($args['post']->ID)[0]->name ?></span>
-
-                    <span class="w-1.5 h-1.5 bg-brand-red rounded"></span>
-                <?php } ?>
-                <span class="text-sm"><?php echo date("d.m.Y", strtotime($args['post']->post_date)) ?></span>
+            <div class="absolute z-10 bottom-4 pl-[7%]">
+                <?php get_template_part('template-parts/tags-category-date', 'tags', array('post' => $args['post'], 'with_category' => isset($args['with_category']) && $args['with_category'])); ?>
             </div>
             <div class="overlay bg-to-black-gradient-post group-hover:opacity-0"></div>
             <div class="overlay bg-to-solidgray-gradient-post opacity-0 group-hover:opacity-100"></div>
