@@ -14,7 +14,11 @@ module.exports = {
         },
         extend: {
             container: {
-                center: true
+                center: true,
+                padding: {
+                    DEFAULT: '1rem',
+                    lg: '1.5rem'
+                }
             },
             colors: {
                 brand: {
