@@ -7,7 +7,7 @@
         <div>
             <?php get_template_part('template-parts/tags-category-date', 'tags', array('post' => $args['post'], 'with_category' => isset($args['with_category'])  && $args['with_category'])); ?>
 
-            <h5 class="line-clamp-2"><?php echo $args['post']->post_title ?></h5>
+            <h6 class="line-clamp-2 mt-1"><?php echo $args['post']->post_title ?></h6>
         </div>
     </article>
 </a>
