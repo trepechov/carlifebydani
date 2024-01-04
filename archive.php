@@ -26,7 +26,7 @@ get_template_part('template-parts/header');
 
 <div class="bg-carbon-stripe-white-20">
     <div class="bg-grey-stripe-gradient">
-        <div class="bg-from-black-gradient">
+        <div class="bg-from-black-60-gradient">
             <div class="container py-8">
 
                 <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>

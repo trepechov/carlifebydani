@@ -71,7 +71,7 @@ if (!is_user_logged_in()) {
 
         <!-- Main Navigation -->
         <div class="container py-4 flex justify-between">
-            <div class="flex items-center gap-6 -mx-2.5">
+            <div class="flex items-center gap-6">
                 <!-- Logo -->
                 <a href="<?php echo get_home_url(); ?>">
                     <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo.svg" alt="Carlife by Dani" />

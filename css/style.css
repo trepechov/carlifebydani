@@ -36,27 +36,6 @@
     h6 {
         @apply text-lg/5 font-bold;
     }
-
-    p {
-        @apply mb-4;
-    }
-
-    table {
-        @apply mx-auto my-8 border-collapse bg-brand-darkgrey;
-    }
-
-    th,
-    td {
-        @apply border-t border-brand-button p-4;
-    }
-
-    tr > td:first-child {
-        @apply bg-brand-solidgrey;
-    }
-
-    th {
-        @apply bg-brand-red;
-    }
 }
 
 @tailwind components;
@@ -101,15 +80,40 @@
         before:hover:text-white;
     } */
 
-    .wp-block-gallery {
-        @apply my-8;
+    /* Post page specifict styles */
+    .post-content {
+        @apply grid gap-8;
     }
 
-    .wp-block-image a {
+    .post-content .wp-block-image a {
         @apply relative
         after:absolute
         after:inset-0
         after:content-['']
         after:hover:bg-to-black-gradient-post;
+    }
+
+    /* .post-content .bg-image {
+        @apply rounded-br-4xl bg-brand-solidgrey;
+    } */
+
+    .post-content iframe {
+        @apply aspect-video h-auto w-full;
+    }
+
+    .post-content table {
+        @apply w-full border-collapse bg-brand-darkgrey;
+    }
+
+    .post-content td {
+        @apply border-t border-brand-button p-4;
+    }
+
+    .post-content tr > td:first-child {
+        @apply bg-brand-solidgrey;
+    }
+
+    .post-content tr:first-of-type td {
+        @apply bg-brand-red;
     }
 }
