@@ -8,16 +8,16 @@
 
 
 $current_category = get_the_category()[0];
-$bread_crumbs = array(
-    (object) [
+$bread_crumbs = [
+    [
         'label' => 'Начало',
         'link' => '/',
     ],
-    (object) [
+    [
         'label' => $current_category->name,
         'link' => get_category_link($current_category->term_id),
     ],
-);
+];
 
 
 get_template_part('template-parts/header');

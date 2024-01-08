@@ -17,26 +17,26 @@ $cover_image = get_post_meta($current_post->ID, 'cover-image');
 
 $tags = get_the_tags();
 
-$bread_crumbs = array(
-    (object) [
+$bread_crumbs = [
+    [
         'label' => 'Начало',
         'link' => '/',
     ],
-    (object) [
+    [
         'label' => $current_category->name,
         'link' => get_category_link($current_category->term_id),
     ],
-    (object) [
+    [
         'label' => $current_post->post_title,
         'link' => get_permalink(),
     ],
-);
+];
 
 ?>
 
 <div class="relative">
 
-    <?php if (isset($cover_image[0])) { ?>
+    <?php if ([] != $cover_image) { ?>
         <div class="absolute h-192 w-full bg-cover bg-center bg-no-repeat" style="background-image: url(<?php echo $cover_image[0]; ?>);">
             <div class="h-2/5 bg-from-black-gradient opacity-60"></div>
             <div class="h-3/5 bg-to-black-gradient"></div>
@@ -75,7 +75,6 @@ $bread_crumbs = array(
                     if ($tags) {
                     ?>
                         <div class="flex flex-wrap gap-x-2">
-
                             <?php
                             foreach ($tags as $tag) {
                                 echo '<a href="' . get_tag_link($tag->term_id) . '"><h5>#' . $tag->name . '</h5></a>';
