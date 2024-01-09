@@ -38,13 +38,13 @@ $featured_query = new WP_Query($feaured_args);
                             <span><?php echo date('d.m.Y', strtotime($hero_query->posts[0]->post_date)) ?></span>
                         </div>
                         <h2>
-                            <a href='<?php echo get_permalink($hero_query->posts[0]->ID) ?>' class="link-transition hover:text-black line-clamp-4"><?php echo $featured_query->posts[0]->post_title ?></a>
+                            <a href='<?php echo get_permalink($hero_query->posts[0]->ID) ?>' class="link-transition hover:text-black line-clamp-4"><?php echo $hero_query->posts[0]->post_title ?></a>
                         </h2>
                     </div>
                 </article>
 
                 <!-- Featured articles -->
-                <div class="mt-12">
+                <div class="my-12">
                     <div class="flex mb-8 justify-between items-center">
                         <h3 class="title">Избрано за вас</h3>
                     </div>

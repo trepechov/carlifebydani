@@ -3,7 +3,7 @@ $news_posts = get_posts([
     'numberposts' => 11,
     'category' => NEWS_CATEGORY_ID,
 ]); ?><div class="bg-carbon-stripe-white-20">
-    <div class="container py-6">
+    <div class="container py-12">
         <div class="flex mb-8 justify-between items-center">
             <h3 class="title">Новини</h3>
             <a href="<?php echo get_category_link(NEWS_CATEGORY_ID); ?>" class="button">Виж всички</a>
@@ -21,7 +21,7 @@ $news_posts = get_posts([
                 ]);
             } ?>
         </div>
-        <div class="mb-8 lg:grid lg:grid-cols-4 lg:gap-8 lg:place-items-stretch">
+        <div class="lg:grid lg:grid-cols-4 lg:gap-8 lg:place-items-stretch">
             <?php for ($i = 3; $i < 11; $i++) {
                 // Reemove this once have enought posts
                 if (!isset($news_posts[$i])) {

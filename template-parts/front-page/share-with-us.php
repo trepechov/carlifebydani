@@ -25,20 +25,9 @@ $shareMenu = wp_get_nav_menu_items($share_menu->term_id);
 					<div class="overlay bg-from-black-gradient group-hover:bg-from-red-gradient"></div>
 
 					<div class="z-10 w-2/3 py-16 px-8 lg:w-full lg:py-10 lg:text-center">
-						<h4 class="mb-6"><?php echo $menuItem->title ?></h4>
+						<h4 class="mb-3"><?php echo $menuItem->title ?></h4>
 						<p class="text-lg italic text-brand-lightgrey group-hover:text-brand-solidgrey link-transition">
-							<?php
-							switch ($key) {
-								case 0:
-									echo 'Теми, които ме вълнуват';
-									break;
-								case 1:
-									echo 'Запиши колата си за ревю';
-									break;
-								default:
-									break;
-							}
-							?></p>
+							<?php echo get_post_meta($menuItem->object_id, 'post-subtitle', true); ?></p>
 					</div>
 				</div>
 			</a>

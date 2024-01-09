@@ -58,7 +58,8 @@ if (!is_user_logged_in()) {
                     }
                     ?>
                     <li>
-                        <a href='<?php echo $topMenuItems[$i]->url ?>' class="button ">
+                        <a href='<?php echo $topMenuItems[$i]->url ?>' class="button" target="_blank">
+                            <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/icons/heart.svg" alt="heart" class="w-4 -ml-1" />
                             <?php echo $topMenuItems[$i]->title ?>
                         </a>
                     </li>
@@ -102,18 +103,24 @@ if (!is_user_logged_in()) {
 
             <!-- Share with us menu -->
             <div class="flex flex-col items-start gap-1">
-                <span class="text-xs uppercase text-brand-red">сподели с нас...</span>
+                <span class="text-xs uppercase text-brand-red">Сподели с нас...</span>
 
                 <div class="flex gap-8">
-                    <a href="#" class="flex flex-col">
-                        <span class="text-lg font-bold link-transition hover:text-brand-red">Новини за EV NEWS</span>
-                        <span class="text-xs italic text-brand-lightgrey">Теми, които те вълнуват</span>
-                    </a>
+                    <?php
+                    $share_menu = wp_get_nav_menu_object($locations['share-menu']);
 
-                    <a href="#" class="flex flex-col">
-                        <span class="text-lg font-bold link-transition hover:text-brand-red">Твоята EV Кола</span>
-                        <span class="text-xs italic text-brand-lightgrey">запиши колата си за ревю</span>
-                    </a>
+                    $shareMenuItems = wp_get_nav_menu_items($share_menu->term_id);
+
+                    foreach ($shareMenuItems as $key => $menuItem) {
+                        $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
+                    ?>
+                        <a href="#" class="flex flex-col">
+                            <span class="text-lg font-bold link-transition hover:text-brand-red"><?php echo $menuItem->title; ?></span>
+                            <span class="text-xs italic text-brand-lightgrey"><?php echo get_post_meta($menuItem->object_id, 'post-subtitle', true); ?></span>
+                        </a>
+                    <?php
+                    }
+                    ?>
                 </div>
             </div>
         </div>

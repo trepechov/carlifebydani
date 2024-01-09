@@ -13,7 +13,7 @@ $current_post = get_post();
 
 $current_category = get_the_category()[0];
 
-$cover_image = get_post_meta($current_post->ID, 'cover-image');
+$cover_image = get_post_meta($current_post->ID, 'cover-image', true);
 
 $tags = get_the_tags();
 
@@ -36,8 +36,8 @@ $bread_crumbs = [
 
 <div class="relative">
 
-    <?php if ([] != $cover_image) { ?>
-        <div class="absolute h-192 w-full bg-cover bg-center bg-no-repeat" style="background-image: url(<?php echo $cover_image[0]; ?>);">
+    <?php if (!empty($cover_image)) { ?>
+        <div class="absolute h-192 w-full bg-cover bg-center bg-no-repeat" style="background-image: url(<?php echo $cover_image; ?>);">
             <div class="h-2/5 bg-from-black-gradient opacity-60"></div>
             <div class="h-3/5 bg-to-black-gradient"></div>
         </div>
@@ -51,7 +51,7 @@ $bread_crumbs = [
 
         <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
 
-        <h3 class="title mb-8 <?php echo isset($cover_image[0]) ? 'mt-112' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h3>
+        <h3 class="title mb-8 <?php echo !empty($cover_image) ? 'mt-112' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h3>
         <p class="mb-8"><?php echo $current_post->post_excerpt ?></p>
         <div class="grid grid-cols-3 gap-8">
             <div class="col-span-2 post-content">
