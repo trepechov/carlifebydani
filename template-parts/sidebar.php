@@ -11,7 +11,7 @@ $query = new WP_Query($args);
 <div class="grid gap-3 mt-5">
     <?php
     foreach ($query->posts as $post) {
-        get_template_part('template-parts/card-article-sidebar', 'article',  array('post' => $post, 'with_category' => true));
+        get_template_part('template-parts/card-article-sidebar', 'article', array('post' => $post, 'with_category' => true));
     }
     ?>
 </div>
@@ -20,7 +20,7 @@ $query = new WP_Query($args);
 <div class="grid gap-3 mt-5">
     <?php
     foreach ($query->posts as $key => $post) {
-        get_template_part('template-parts/card-article-sidebar', 'article',  array('post' => $post, 'with_category' => true, 'index' => $key));
+        get_template_part('template-parts/card-article-sidebar', 'article', array('post' => $post, 'with_category' => true, 'number' => $key + 1));
     }
     ?>
 </div>

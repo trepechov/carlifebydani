@@ -114,7 +114,7 @@ if (!is_user_logged_in()) {
                     foreach ($shareMenuItems as $key => $menuItem) {
                         $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
                     ?>
-                        <a href="#" class="flex flex-col">
+                        <a href="<?php echo $menuItem->url ?>" class="flex flex-col">
                             <span class="text-lg font-bold link-transition hover:text-brand-red"><?php echo $menuItem->title; ?></span>
                             <span class="text-xs italic text-brand-lightgrey"><?php echo get_post_meta($menuItem->object_id, 'post-subtitle', true); ?></span>
                         </a>

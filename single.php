@@ -51,8 +51,8 @@ $bread_crumbs = [
 
         <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
 
-        <h3 class="title mb-8 <?php echo !empty($cover_image) ? 'mt-112' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h3>
-        <p class="mb-8"><?php echo $current_post->post_excerpt ?></p>
+        <h2 class="title text-3xl/8 mb-8 <?php echo !empty($cover_image) ? 'mt-112' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h2>
+        <p class="mb-8 text-[1.0625rem"><?php echo $current_post->post_excerpt ?></p>
         <div class="grid grid-cols-3 gap-8">
             <div class="col-span-2 post-content">
                 <?php
@@ -61,7 +61,7 @@ $bread_crumbs = [
 
             </div>
             <div class="col-span-1">
-                <div class="mb-12 p-5 bg-brand-red rounded-br-4xl">
+                <div class="mb-12 p-5 pb-8 bg-brand-red rounded-br-4xl">
                     <p class="text-black">Категория</p>
                     <h5><a href="<?php echo get_category_link($current_category->term_id) ?>"><?php echo $current_category->name; ?></a></h5>
                     <p class="text-black mt-2">Дата на публикуване</p>
@@ -70,10 +70,11 @@ $bread_crumbs = [
                     <h5>
                         <a href="<?php echo get_author_posts_url(get_the_author_meta('ID'))  ?>"><?php echo get_the_author(); ?></a>
                     </h5>
-                    <p class="text-black mt-2">Тагове</p>
+
                     <?php
-                    if ($tags) {
+                    if ([] != $tags) {
                     ?>
+                        <p class="text-black mt-2">Тагове</p>
                         <div class="flex flex-wrap gap-x-2">
                             <?php
                             foreach ($tags as $tag) {

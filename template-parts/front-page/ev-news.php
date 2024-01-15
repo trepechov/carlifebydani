@@ -11,7 +11,7 @@ $ev_news_posts = get_posts(array(
         </div>
 
 
-        <div class="lg:grid lg:grid-cols-3 lg:gap-8 items-stretch justify-items-stretch">
+        <div class="mb-8 lg:grid lg:grid-cols-3 lg:gap-8 items-stretch justify-items-stretch">
             <?php
             for ($i = 0; $i < 3; $i++) {
                 // Reemove this once have enought posts

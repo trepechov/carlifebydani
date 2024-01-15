@@ -1,4 +1,4 @@
-<div class="flex items-center gap-2">
+<div class="flex items-center <?php echo !empty($args['small']) ? 'text-xs gap-1' : 'gap-2' ?>">
     <?php if (!empty($args['with_category'])) { ?>
         <span class="font-bold uppercase"><?php echo get_the_category($args['post']->ID)[0]->name ?></span>
 
