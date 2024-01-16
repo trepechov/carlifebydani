@@ -5,7 +5,7 @@
         <div>
             <?php echo get_the_post_thumbnail($args['post']->ID, 'medium', array('class' => 'w-full')); ?>
         </div>
-        <div class="px-8 p-6 mr-12">
+        <div class="px-8 p-4 mr-12">
             <span class="text-sm"><?php echo date("d.m.Y", strtotime($args['post']->post_date)) ?></span>
             <h3 class="mt-4 line-clamp-4 group-hover:text-brand-red link-transition"><?php echo $args['post']->post_title ?></h3>
         </div>

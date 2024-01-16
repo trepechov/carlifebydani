@@ -27,7 +27,8 @@
                 "*.php",
                 "*.png",
                 "*.css",
-                "css/style.min.css",
+                "css/*.css",
+                "js/*.js",
                 "images/**",
                 "template-parts/**"
             ],
