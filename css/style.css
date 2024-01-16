@@ -87,8 +87,8 @@
 
     .post-content h3,
     .post-content h4,
-    .post-content table,
     .post-content iframe,
+    .post-content .wp-block-table,
     .post-content .wp-block-gallery,
     .post-content .wp-block-image {
         @apply mb-8;
@@ -127,7 +127,7 @@
     }
 
     .post-content a {
-        @apply text-brand-red;
+        @apply text-brand-red hover:underline;
     }
 
     .post-content table {

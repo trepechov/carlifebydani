@@ -66,7 +66,7 @@ function add_tag_links_to_content($content)
             foreach ($post_tags as $tag) {
                 $tag_link = get_tag_link($tag->term_id);
                 $tag_link_html = '<a href="' . esc_url($tag_link) . '">' . esc_html($tag->name) . '</a>';
-                $content = preg_replace('/(<p.*?>.*?\b)(' . preg_quote($tag->name, '/') . ')(\b.*?<\/p>)/', '$1' . $tag_link_html . '$3', $content, 5);
+                $content = preg_replace('/(<(p|li).*?>.*?\b)(' . preg_quote($tag->name, '/') . ')(\b.*?<\/(p|li)>)/', '$1' . $tag_link_html . '$4', $content, 5);
             }
         }
     }

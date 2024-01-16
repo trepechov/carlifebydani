@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The main template file
+ * The single (post) template file
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  */
@@ -52,7 +52,7 @@ $bread_crumbs = [
         <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
 
         <h2 class="title text-3xl/8 mb-8 <?php echo !empty($cover_image) ? 'mt-112' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h2>
-        <p class="mb-8 text-[1.0625rem"><?php echo $current_post->post_excerpt ?></p>
+        <p class="mb-8 text-[1.0625rem]"><?php echo $current_post->post_excerpt ?></p>
         <div class="grid grid-cols-3 gap-8">
             <div class="col-span-2 post-content">
                 <?php

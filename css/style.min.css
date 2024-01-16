@@ -1158,6 +1158,10 @@ h6{
   line-height: 2.5rem;
 }
 
+.text-\[1\.0625rem\]{
+  font-size: 1.0625rem;
+}
+
 .text-base{
   font-size: 1rem;
   line-height: 1.5rem;
@@ -1304,8 +1308,8 @@ h6{
 
 .post-content h3,
     .post-content h4,
-    .post-content table,
     .post-content iframe,
+    .post-content .wp-block-table,
     .post-content .wp-block-gallery,
     .post-content .wp-block-image{
   margin-bottom: 2rem;
@@ -1366,6 +1370,10 @@ h6{
 .post-content a{
   --tw-text-opacity: 1;
   color: rgb(254 54 82 / var(--tw-text-opacity));
+}
+
+.post-content a:hover{
+  text-decoration-line: underline;
 }
 
 .post-content table{
