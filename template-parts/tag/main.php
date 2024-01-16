@@ -1,7 +1,7 @@
 <?php
 $catetgory_posts = get_posts([
     'numberposts' => 999,       //todo: pagination
-    'category' => $args['category']->term_id,
+    'tag' => $args['tag']->slug,
 ]);
 if (count($catetgory_posts) > 0) {
     foreach ($catetgory_posts as $post) {

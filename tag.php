@@ -1,11 +1,12 @@
 <?php
 
 /**
- * The category/autors template file
+ * The tag template file
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  */
 
+$tag = get_queried_object();
 
 $current_category = get_the_category()[0];
 
@@ -15,11 +16,10 @@ $bread_crumbs = [
         'link' => '/',
     ],
     [
-        'label' => $current_category->name,
-        'link' => get_category_link($current_category->term_id),
+        'label' => $tag->name,
+        'link' => get_category_link($tag->term_id),
     ],
 ];
-
 
 get_template_part('template-parts/header');
 ?>
@@ -33,13 +33,13 @@ get_template_part('template-parts/header');
 
         <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
 
-        <h2 class="title text-3xl/8 mt-6 mb-8"><?php echo $current_category->name ?></h2>
+        <h2 class="title text-3xl/8 mt-6 mb-8">#<?php echo $tag->name ?></h2>
         <?php echo tag_description() ?>
 
         <div class="grid grid-cols-3 gap-8">
             <div class="col-span-2 grid gap-8 content-start">
                 <?php
-                get_template_part('template-parts/archive/main', 'archive_main', array('category' => $current_category));
+                get_template_part('template-parts/tag/main', 'tag_main', array('tag' => $tag));
                 ?>
             </div>
             <div class="col-span-1">
