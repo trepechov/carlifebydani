@@ -861,10 +861,6 @@ h6{
   flex-wrap: wrap;
 }
 
-.content-center{
-  align-content: center;
-}
-
 .content-start{
   align-content: flex-start;
 }
@@ -944,10 +940,6 @@ h6{
 
 .overflow-hidden{
   overflow: hidden;
-}
-
-.scroll-smooth{
-  scroll-behavior: smooth;
 }
 
 .rounded{
@@ -1129,6 +1121,10 @@ h6{
 
 .pl-\[7\%\]{
   padding-left: 7%;
+}
+
+.pr-10{
+  padding-right: 2.5rem;
 }
 
 .pr-8{

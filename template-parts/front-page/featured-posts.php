@@ -26,7 +26,7 @@ $featured_query = new WP_Query($feaured_args);
             <div class="w-full lg:w-3/4 lg:rounded-br-8xl lg:border-b-20 lg:border-r-20 lg:pb-5 lg:pr-5 lg:border-white/10">
                 <div class="relative lg:rounded-br-6xl overflow-hidden">
                     <div class="overlay bg-to-black-80-gradient"></div>
-                    <?php echo get_the_post_thumbnail($hero_query->posts[0]->ID, 'large', array('class' => '')); ?>
+                    <?php echo get_the_post_thumbnail($hero_query->posts[0]->ID, 'large'); ?>
                 </div>
             </div>
 

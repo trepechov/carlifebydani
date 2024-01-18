@@ -8,7 +8,7 @@
 
 $tag = get_queried_object();
 
-$current_category = get_the_category()[0];
+// $current_category = get_the_category()[0];
 
 $bread_crumbs = [
     [

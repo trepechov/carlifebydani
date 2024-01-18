@@ -37,5 +37,3 @@ $shareMenu = wp_get_nav_menu_items($share_menu->term_id);
 
 	</div>
 </div>
-
-</div>
