@@ -34,7 +34,7 @@ get_template_part('template-parts/header');
         <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
 
         <h2 class="title text-3xl/8 mt-6 mb-8">#<?php echo $tag->name ?></h2>
-        <?php echo tag_description() ?>
+        <div class="mb-8"><?php echo tag_description() ?></div>
 
         <div class="grid grid-cols-3 gap-8">
             <div class="col-span-2 grid gap-8 content-start">
