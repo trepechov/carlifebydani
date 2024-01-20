@@ -25,17 +25,13 @@ if (!is_user_logged_in()) {
 
                 <ul class="list-none flex gap-4">
                     <?php
-                    $tags = get_tags([
-                        'orderby' => 'count',
-                        'order' => 'DESC',
-                        'number' => 5
-                    ]);
+                    $locations = get_nav_menu_locations();
+                    $top_tags_menu = wp_get_nav_menu_object($locations['top-tags-menu']);
+                    $top_tag_menu_items = wp_get_nav_menu_items($top_tags_menu->term_id);
 
-                    foreach ($tags as $tag) {
-                        $tag_link = get_tag_link($tag->term_id);
-                    ?>
+                    for ($i = 0; $i < count($top_tag_menu_items) - 1; $i++) { ?>
                         <li>
-                            <a href='<?php echo $tag_link; ?>' title='<?php echo $tag->name; ?>' class="hover:text-brand-red">#<?php echo $tag->name ?></a>
+                            <a href='<?php echo $top_tag_menu_items[$i]->url ?>' class="hover:text-brand-red"><?php echo $top_tag_menu_items[$i]->title ?></a>
                         </li>
                     <?php
                     }
@@ -47,7 +43,6 @@ if (!is_user_logged_in()) {
             <nav class="flex gap-5 text-sm">
                 <ul class="flex gap-4 items-center">
                     <?php
-                    $locations = get_nav_menu_locations();
                     $top_menu = wp_get_nav_menu_object($locations['top-menu']);
                     $topMenuItems = wp_get_nav_menu_items($top_menu->term_id);
 
@@ -84,9 +79,9 @@ if (!is_user_logged_in()) {
                     <ul class="flex gap-8">
                         <?php
                         $main_menu = wp_get_nav_menu_object($locations['main-menu']);
-                        $mainMenuItems = wp_get_nav_menu_items($main_menu->term_id);
+                        $main_menu_items = wp_get_nav_menu_items($main_menu->term_id);
 
-                        foreach ($mainMenuItems as $key => $menuItem) {
+                        foreach ($main_menu_items as $key => $menuItem) {
                             $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
                         ?>
                             <li class="text-xl font-bold hover:text-brand-red <?php echo $current ?>">

@@ -16,8 +16,10 @@ function register_my_menus()
     register_nav_menus(
         array(
             'top-menu' => __('Top Menu'),
+            'top-tags-menu' => __('Top Tags Menu'),
             'main-menu' => __('Main Menu'),
             'share-menu' => __('Share Menu'),
+            'top-10-menu' => __('Top 10'),
             'footer-menu' => __('Footer Menu'),
             'bottom-menu' => __('Bottom Menu'),
         )

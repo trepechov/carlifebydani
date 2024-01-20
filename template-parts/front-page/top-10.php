@@ -1,10 +1,9 @@
 <?php
-$meta_data = get_post_meta(TOP_10_PAGE_ID, 'top-10-order', true);
 
-$top_10_posts = get_posts([
-    'numberposts' => 10,
-    'include' => explode(',', $meta_data),
-]);
+$locations = get_nav_menu_locations();
+$top_10_menu = wp_get_nav_menu_object($locations['top-10-menu']);
+$top_10_menu_items = wp_get_nav_menu_items($top_10_menu->term_id);
+
 ?>
 
 <div class="container py-12">
@@ -16,9 +15,9 @@ $top_10_posts = get_posts([
     </div>
 
     <div class="">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <?php foreach ($top_10_posts as $key => $post) {
-                get_template_part('template-parts/card-article-top-10', 'article', array('post' => $post, 'number' => $key + 1));
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <?php foreach ($top_10_menu_items as $key => $menu_item) {
+                get_template_part('template-parts/card-article-top-10', 'article', array('menu_item' => $menu_item, 'number' => $key + 1));
             } ?>
         </div>
     </div>
