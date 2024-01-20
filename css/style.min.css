@@ -897,10 +897,6 @@ h6{
   flex-wrap: wrap;
 }
 
-.content-start{
-  align-content: flex-start;
-}
-
 .items-start{
   align-items: flex-start;
 }
@@ -935,6 +931,10 @@ h6{
 
 .gap-1{
   gap: 0.25rem;
+}
+
+.gap-12{
+  gap: 3rem;
 }
 
 .gap-14{
@@ -1002,8 +1002,17 @@ h6{
   border-bottom-width: 1px;
 }
 
+.border-b-2{
+  border-bottom-width: 2px;
+}
+
 .border-t{
   border-top-width: 1px;
+}
+
+.border-brand-button{
+  --tw-border-opacity: 1;
+  border-color: rgb(80 80 80 / var(--tw-border-opacity));
 }
 
 .border-brand-darkgrey{
@@ -1024,11 +1033,6 @@ h6{
   background-color: rgb(0 0 0 / 0.5);
 }
 
-.bg-brand-button{
-  --tw-bg-opacity: 1;
-  background-color: rgb(80 80 80 / var(--tw-bg-opacity));
-}
-
 .bg-brand-grey{
   --tw-bg-opacity: 1;
   background-color: rgb(38 38 38 / var(--tw-bg-opacity));
@@ -1037,11 +1041,6 @@ h6{
 .bg-brand-red{
   --tw-bg-opacity: 1;
   background-color: rgb(254 54 82 / var(--tw-bg-opacity));
-}
-
-.bg-brand-lightgrey{
-  --tw-bg-opacity: 1;
-  background-color: rgb(134 137 138 / var(--tw-bg-opacity));
 }
 
 .bg-carbon-stripe-white{
@@ -1517,13 +1516,6 @@ h6{
   opacity: 1;
 }
 
-@media (min-width: 768px){
-
-  .md\:grid-cols-2{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 @media (min-width: 1024px){
 
   .lg\:absolute{
@@ -1564,6 +1556,10 @@ h6{
 
   .lg\:w-full{
     width: 100%;
+  }
+
+  .lg\:grid-cols-2{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .lg\:grid-cols-3{

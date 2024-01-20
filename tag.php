@@ -37,7 +37,7 @@ get_template_part('template-parts/header');
         <div class="mb-8"><?php echo tag_description() ?></div>
 
         <div class="grid grid-cols-3 gap-8">
-            <div class="col-span-2 grid gap-8 content-start">
+            <div class="pb-8 col-span-2 border-b-2 border-brand-button">
                 <?php
                 get_template_part('template-parts/tag/main', 'tag_main', array('tag' => $tag));
                 ?>

@@ -7,8 +7,6 @@ $args  = array(
 );
 $query = new WP_Query($args);
 
-
-
 $locations = get_nav_menu_locations();
 $top_10_menu = wp_get_nav_menu_object($locations['top-10-menu']);
 $top_10_menu_items = wp_get_nav_menu_items($top_10_menu->term_id);
