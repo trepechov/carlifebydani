@@ -1,10 +1,11 @@
 <?php
 $category_posts = get_posts(array(
     'numberposts'   => 3,
+    'orderby'       => 'rand',
     'category'      => $args['category_id']
 ));
 ?>
-<div class="container py-12">
+<div class="container">
     <div class="flex mb-8 justify-between items-center">
         <h3 class="title">Още от тази категория</h3>
     </div>
