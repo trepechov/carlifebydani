@@ -29,9 +29,9 @@ if (!is_user_logged_in()) {
                     $top_tags_menu = wp_get_nav_menu_object($locations['top-tags-menu']);
                     $top_tag_menu_items = wp_get_nav_menu_items($top_tags_menu->term_id);
 
-                    for ($i = 0; $i < count($top_tag_menu_items) - 1; $i++) { ?>
+                    foreach ($top_tag_menu_items as $menuItem) { ?>
                         <li>
-                            <a href='<?php echo $top_tag_menu_items[$i]->url ?>' class="hover:text-brand-red"><?php echo $top_tag_menu_items[$i]->title ?></a>
+                            <a href='<?php echo $menuItem->url ?>' class="hover:text-brand-red"><?php echo $menuItem->title ?></a>
                         </li>
                     <?php
                     }
