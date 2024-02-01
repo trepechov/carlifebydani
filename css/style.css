@@ -112,6 +112,16 @@
         @apply aspect-video h-auto w-full;
     }
 
+    /* Pagination */
+    .nav-links {
+        @apply flex items-center items-center justify-center gap-2;
+    }
+
+    .nav-links .current div {
+        @apply bg-brand-red;
+    }
+
+    /* Topography */
     .post-content p,
     .post-content ol,
     .post-content ul {

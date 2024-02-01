@@ -77,5 +77,4 @@ function add_tag_links_to_content($content)
 
     return $content;
 }
-
 add_filter('the_content', 'add_tag_links_to_content');

@@ -13,6 +13,11 @@ $bread_crumbs = [
     ],
 ];
 
+$args = array(
+    'posts_per_page' => get_option('posts_per_page'),
+    'paged' => (get_query_var('paged') ? get_query_var('paged') : 1),
+);
+
 switch (true) {
     case is_tag():
         $tag = get_queried_object();
@@ -25,12 +30,7 @@ switch (true) {
         $title = '#' . $tag->name;
         $description = $tag->description;
 
-        // var_dump($description);
-
-        $archive_posts = get_posts([
-            'numberposts' => 999,       //todo: pagination
-            'tag' => $tag->slug,
-        ]);
+        $args['tag'] = $tag->slug;
 
         break;
 
@@ -45,10 +45,7 @@ switch (true) {
         $title = $author->display_name;
         $description = get_the_author_meta('description');
 
-        $archive_posts = get_posts([
-            'numberposts' => 999,
-            'author' => $author->ID,
-        ]);
+        $args['author'] = $author->ID;
 
         break;
 
@@ -63,13 +60,11 @@ switch (true) {
         $title = $current_category->name;
         $description = $current_category->description;
 
-        $archive_posts = get_posts([
-            'numberposts' => 999,
-            'category' => $current_category->term_id,
-        ]);
+        $args['category'] = $current_category->term_id;
         break;
 };
 
+$archive_posts = get_posts($args);
 
 get_template_part('template-parts/header');
 ?>
@@ -98,6 +93,16 @@ get_template_part('template-parts/header');
                                 'post' => $post,
                             ]);
                         }
+
+                        the_posts_pagination(array(
+                            'mid_size' => 1,
+                            'type' => 'plain',
+                            'before_page_number' => '<div class="flex w-12 h-12 rounded-br-lg justify-center items-center bg-black">',
+                            'after_page_number' => '</div>',
+                            'mid_size'  => 2,
+                            'prev_text' => false,
+                            'next_text' => false,
+                        ));
                     } else {
                     ?>
                         <p>Няма намерни публикации. :(</p>
