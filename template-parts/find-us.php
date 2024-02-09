@@ -32,7 +32,7 @@ $socialMedias = [
 	]
 ];
 ?>
-<div class="container py-12 bg-brand-grey">
+<div class="wrapper py-12 bg-brand-grey">
 	<div class="flex mb-8 justify-between items-center">
 		<h3 class="title">Намерете ни в</h3>
 	</div>

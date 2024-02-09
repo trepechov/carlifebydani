@@ -16,7 +16,7 @@ if (!is_user_logged_in()) {
 
 <body class="body">
     <header class="bg-black">
-        <div class="container py-2 flex justify-between items-center">
+        <div class="wrapper py-2 flex justify-between items-center">
             <!-- Popular tags menu -->
             <nav class="flex items-center gap-2 text-xs">
                 <span class="font-bold uppercase">Популярни теми</span>
@@ -67,7 +67,7 @@ if (!is_user_logged_in()) {
         <div class="border-b border-b-brand-red/50"></div>
 
         <!-- Main Navigation -->
-        <div class="container py-4 flex justify-between">
+        <div class="wrapper py-4 flex justify-between">
             <div class="flex items-center gap-6">
                 <!-- Logo -->
                 <a href="<?php echo get_home_url(); ?>">

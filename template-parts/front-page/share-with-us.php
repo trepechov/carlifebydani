@@ -4,7 +4,7 @@ $share_menu = wp_get_nav_menu_object($locations['share-menu']);
 $shareMenu = wp_get_nav_menu_items($share_menu->term_id);
 ?>
 <div class="bg-black">
-	<div class="container py-20 grid gap-8 lg:grid-cols-3">
+	<div class="wrapper py-20 grid gap-8 lg:grid-cols-3">
 		<div class="relative lg:pt-12 lg:pr-14">
 			<div class="mb-8 uppercase">
 				<h3 class="title">Сподели с нас</h3>

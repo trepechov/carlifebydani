@@ -20,7 +20,7 @@ $featured_query = new WP_Query($feaured_args);
     <div class="absolute h-192 w-full bg-carbon-stripe-white-20">
         <div class="h-full bg-from-black-60-gradient"></div>
     </div>
-    <div class="container py-8 relative">
+    <div class="wrapper py-8 relative">
         <!-- Hero article -->
         <article class="relative">
             <div class="w-full lg:w-3/4 lg:rounded-br-8xl lg:border-b-20 lg:border-r-20 lg:pb-5 lg:pr-5 lg:border-white/10">

@@ -5,7 +5,7 @@ $category_posts = get_posts(array(
     'category'      => $args['category_id']
 ));
 ?>
-<div class="container">
+<div class="wrapper">
     <div class="flex mb-8 justify-between items-center">
         <h3 class="title">Още от тази категория</h3>
     </div>

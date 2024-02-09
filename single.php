@@ -47,7 +47,7 @@ $bread_crumbs = [
         </div>
     <?php } ?>
 
-    <div class="container py-8 relative">
+    <div class="wrapper py-8 relative">
         <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
 
         <h2 class="title text-3xl/8 mb-8 <?php echo !empty($cover_image) ? 'mt-112' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h2>

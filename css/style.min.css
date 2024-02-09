@@ -543,10 +543,6 @@ h6{
 
 .container{
   width: 100%;
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: 1rem;
-  padding-left: 1rem;
 }
 
 @media (min-width: 640px){
@@ -567,8 +563,6 @@ h6{
 
   .container{
     max-width: 1024px;
-    padding-right: 1.5rem;
-    padding-left: 1.5rem;
   }
 }
 
@@ -579,9 +573,24 @@ h6{
   }
 }
 
+@media (min-width: 1440px){
+
+  .container{
+    max-width: 1440px;
+  }
+}
+
 .overlay{
   position: absolute;
   inset: 0px;
+}
+
+.wrapper{
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1440px;
+  padding-left: 4rem;
+  padding-right: 4rem;
 }
 
 .visible{
@@ -627,6 +636,11 @@ h6{
 .mx-2{
   margin-left: 0.5rem;
   margin-right: 0.5rem;
+}
+
+.mx-auto{
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .my-12{
@@ -855,6 +869,10 @@ h6{
 
 .w-full{
   width: 100%;
+}
+
+.max-w-screen-2xl{
+  max-width: 1440px;
 }
 
 .flex-1{
@@ -1117,6 +1135,11 @@ h6{
 
 .p-9{
   padding: 2.25rem;
+}
+
+.px-16{
+  padding-left: 4rem;
+  padding-right: 4rem;
 }
 
 .px-6{

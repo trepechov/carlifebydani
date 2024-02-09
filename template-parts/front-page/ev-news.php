@@ -4,7 +4,7 @@ $ev_news_posts = get_posts(array(
     'category'      => EV_NEWS_CATEGORY_ID
 ));
 ?><div class="bg-carbon-stripe-white-20">
-    <div class="container py-12">
+    <div class="wrapper py-12">
         <div class="flex mb-8 justify-between items-center">
             <h3 class="title">EV News</h3>
             <a href="<?php echo get_category_link(EV_NEWS_CATEGORY_ID) ?>" class="button">Виж всички</a>

@@ -8,7 +8,7 @@
 
 get_template_part('template-parts/header');
 ?>
-<div class="container">
+<div class="wrapper">
     <?php
     if (have_posts()) {
         /* Start the Loop */

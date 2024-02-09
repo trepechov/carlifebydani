@@ -6,7 +6,7 @@ $top_10_menu_items = wp_get_nav_menu_items($top_10_menu->term_id);
 
 ?>
 
-<div class="container py-12">
+<div class="wrapper py-12">
     <div class="flex mb-8 justify-between items-center">
         <h3 class="title flex gap-4 items-center">
             <?php echo get_the_post_thumbnail(TOP_10_PAGE_ID, 'full', array('class' => 'h-5 mb-1 w-auto')); ?>

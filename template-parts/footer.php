@@ -1,7 +1,7 @@
 </main>
 
 <footer class="bg-black">
-    <div class="container pt-12 pb-8">
+    <div class="wrapper pt-12 pb-8">
         <div class="flex gap-14 items-stretch">
             <a href="<?php echo get_home_url(); ?>" class="my-3">
                 <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo.svg" alt="Carlife by Dani" class="w-48" />

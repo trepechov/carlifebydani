@@ -4,7 +4,7 @@ $ev_reviews_posts = get_posts(array(
     'category'      => EV_REVIEWS_CATEGORY_ID
 ));
 ?><div>
-    <div class="container py-12">
+    <div class="wrapper py-12">
         <div class="flex mb-8 justify-between items-center">
             <h3 class="title">EV Reviews</h3>
             <a href="<?php echo get_category_link(EV_REVIEWS_CATEGORY_ID) ?>" class="button">Виж всички</a>

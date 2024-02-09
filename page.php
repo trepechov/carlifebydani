@@ -21,7 +21,7 @@ $current_post = get_post();
         <div class="h-full bg-from-black-60-gradient"></div>
     </div>
 
-    <div class="container py-8 relative">
+    <div class="wrapper py-8 relative">
 
         <h2 class="title text-3xl/8 mb-8 mt-6' ?>"><?php echo $current_post->post_title; ?></h2>
         <p class="mb-8 text-[1.0625rem]"><?php echo $current_post->post_excerpt ?></p>

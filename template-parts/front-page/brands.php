@@ -41,7 +41,7 @@ $tags = get_tags([
 
 ?>
 
-<div class="container py-12">
+<div class="wrapper py-12">
     <div class="flex mb-8 justify-between items-center">
         <h3 class="title">Пpоизводители</h3>
     </div>

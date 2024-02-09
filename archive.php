@@ -74,7 +74,7 @@ get_template_part('template-parts/header');
     <div class="absolute h-80 w-full bg-carbon-stripe-white-20">
         <div class="h-full bg-from-black-60-gradient"></div>
     </div>
-    <div class="container py-8 relative">
+    <div class="wrapper py-8 relative">
 
         <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
 
