@@ -52,13 +52,13 @@ $bread_crumbs = [
 
         <h2 class="title text-3xl/8 mb-8 <?php echo !empty($cover_image) ? 'mt-112' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h2>
         <p class="mb-8 text-[1.0625rem]"><?php echo $current_post->post_excerpt ?></p>
-        <div class="grid grid-cols-3 gap-8">
+        <div class="lg:grid lg:grid-cols-3 lg:gap-8">
             <div class="col-span-2 post-content">
                 <?php
                 echo apply_filters('the_content', $current_post->post_content);
                 ?>
             </div>
-            <div class="col-span-1 flex flex-col gap-12">
+            <div class="hidden lg:flex lg:col-span-1 lg:flex-col lg:gap-12">
                 <?php get_template_part('template-parts/single/sidebar', 'single-sidebar', array('post' => $current_post, 'category' => $current_category, 'tags' => $tags)); ?>
                 <?php get_template_part('template-parts/sidebar'); ?>
             </div>

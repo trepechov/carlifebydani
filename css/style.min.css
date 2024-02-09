@@ -625,22 +625,17 @@ h6{
   z-index: 10;
 }
 
-.col-span-1{
-  grid-column: span 1 / span 1;
-}
-
 .col-span-2{
   grid-column: span 2 / span 2;
+}
+
+.col-span-1{
+  grid-column: span 1 / span 1;
 }
 
 .mx-2{
   margin-left: 0.5rem;
   margin-right: 0.5rem;
-}
-
-.mx-auto{
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .my-12{
@@ -871,10 +866,6 @@ h6{
   width: 100%;
 }
 
-.max-w-screen-2xl{
-  max-width: 1440px;
-}
-
 .flex-1{
   flex: 1 1 0%;
 }
@@ -903,12 +894,12 @@ h6{
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.grid-cols-3{
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
 .grid-cols-4{
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.grid-cols-3{
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .flex-col{
@@ -955,10 +946,6 @@ h6{
   gap: 0.25rem;
 }
 
-.gap-12{
-  gap: 3rem;
-}
-
 .gap-14{
   gap: 3.5rem;
 }
@@ -989,6 +976,10 @@ h6{
 
 .gap-8{
   gap: 2rem;
+}
+
+.gap-12{
+  gap: 3rem;
 }
 
 .gap-x-2{
@@ -1137,11 +1128,6 @@ h6{
   padding: 2.25rem;
 }
 
-.px-16{
-  padding-left: 4rem;
-  padding-right: 4rem;
-}
-
 .px-6{
   padding-left: 1.5rem;
   padding-right: 1.5rem;
@@ -1284,6 +1270,19 @@ h6{
   line-height: 1rem;
 }
 
+.text-2xl\/7{
+  font-size: 1.5rem;
+  line-height: 1.75rem;
+}
+
+.text-\[3vw\]{
+  font-size: 3vw;
+}
+
+.text-\[2vw\]{
+  font-size: 2vw;
+}
+
 .font-bold{
   font-weight: 700;
 }
@@ -1304,6 +1303,18 @@ h6{
   line-height: 1rem;
 }
 
+.leading-none{
+  line-height: 1;
+}
+
+.leading-normal{
+  line-height: 1.5;
+}
+
+.leading-tight{
+  line-height: 1.25;
+}
+
 .text-black{
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
@@ -1322,6 +1333,10 @@ h6{
 .text-brand-red{
   --tw-text-opacity: 1;
   color: rgb(254 54 82 / var(--tw-text-opacity));
+}
+
+.text-\[3\]{
+  color: 3;
 }
 
 .opacity-0{
@@ -1577,8 +1592,20 @@ h6{
     top: 1.25rem;
   }
 
+  .lg\:col-span-1{
+    grid-column: span 1 / span 1;
+  }
+
+  .lg\:mt-2{
+    margin-top: 0.5rem;
+  }
+
   .lg\:block{
     display: block;
+  }
+
+  .lg\:flex{
+    display: flex;
   }
 
   .lg\:grid{
@@ -1621,12 +1648,20 @@ h6{
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
+  .lg\:flex-col{
+    flex-direction: column;
+  }
+
   .lg\:place-items-stretch{
     place-items: stretch;
   }
 
   .lg\:items-start{
     align-items: flex-start;
+  }
+
+  .lg\:gap-12{
+    gap: 3rem;
   }
 
   .lg\:gap-8{
@@ -1693,11 +1728,45 @@ h6{
   .lg\:text-center{
     text-align: center;
   }
+
+  .lg\:text-2xl\/7{
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  }
+
+  .lg\:text-xl\/7{
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .lg\:text-xl\/6{
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+  }
 }
 
 @media (min-width: 1280px){
 
+  .xl\:mt-4{
+    margin-top: 1rem;
+  }
+
   .xl\:p-9{
     padding: 2.25rem;
+  }
+
+  .xl\:text-2xl\/7{
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  }
+
+  .xl\:text-3xl\/7{
+    font-size: 1.875rem;
+    line-height: 1.75rem;
+  }
+
+  .xl\:text-3xl\/8{
+    font-size: 1.875rem;
+    line-height: 2rem;
   }
 }

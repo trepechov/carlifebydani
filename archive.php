@@ -83,7 +83,7 @@ get_template_part('template-parts/header');
             <p class="mb-8"><?php echo $description ?></p>
         <?php } ?>
 
-        <div class="grid grid-cols-3 gap-8">
+        <div class="lg:grid lg:grid-cols-3 lg:gap-8">
             <div class="pb-8 col-span-2 border-b-2 border-brand-button">
                 <div class="flex flex-col gap-8">
                     <?php
@@ -111,7 +111,7 @@ get_template_part('template-parts/header');
                     ?>
                 </div>
             </div>
-            <div class="col-span-1 flex flex-col gap-12">
+            <div class="hidden lg:flex lg:col-span-1 lg:flex-col lg:gap-12">
                 <?php
                 get_template_part('template-parts/sidebar');
                 ?>
