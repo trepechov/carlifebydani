@@ -46,7 +46,7 @@
     }
 
     .wrapper {
-        @apply mx-auto max-w-screen-2xl px-16;
+        @apply mx-auto max-w-screen-2xl px-[4%];
     }
 }
 

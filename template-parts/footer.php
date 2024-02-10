@@ -63,7 +63,7 @@
                     </ul>
                 </nav>
             </div>
-            <div class="flex-1 flex gap-16 justify-end items-center">
+            <div class="hidden flex-1 lg:flex gap-16 justify-end items-center">
                 <div class="flex gap-8 items-end">
                     <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/mail.svg" alt="mai" class="h-14" />
                     <div class="flex flex-col gap-1">
