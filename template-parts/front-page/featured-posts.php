@@ -49,7 +49,7 @@ $featured_query = new WP_Query($feaured_args);
             <div class="flex mb-8 justify-between items-center">
                 <h3 class="title">Избрано за вас</h3>
             </div>
-            <div class="lg:grid lg:grid-cols-3 lg:gap-8 items-stretch justify-items-stretch">
+            <div class="grid gap-8 grid-cols-1 lg:grid-cols-3 items-stretch justify-items-stretch">
                 <?php
                 $i = 0;
                 foreach ($featured_query->posts as $post) {

@@ -9,7 +9,8 @@ $category_posts = get_posts(array(
     <div class="flex mb-8 justify-between items-center">
         <h3 class="title">Още от тази категория</h3>
     </div>
-    <div class="mb-8 lg:grid lg:grid-cols-3 lg:gap-8 items-stretch justify-items-stretch">
+
+    <div class="mb-8 grid gap-8 grid-cols-1 lg:grid-cols-3 items-stretch justify-items-stretch">
         <?php
         for ($i = 0; $i < 3; $i++) {
             // Remove this once have enought posts

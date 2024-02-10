@@ -10,7 +10,7 @@ $ev_reviews_posts = get_posts(array(
             <a href="<?php echo get_category_link(EV_REVIEWS_CATEGORY_ID) ?>" class="button">Виж всички</a>
         </div>
 
-        <div class="lg:grid lg:grid-cols-4 lg:gap-8 lg:place-items-stretch">
+        <div class="grid gap-8 grid-cols-1 lg:grid-cols-4 lg:place-items-stretch">
             <?php
             for ($i = 0; $i < 8; $i++) {
                 // Reemove this once have enought posts
