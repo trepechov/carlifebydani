@@ -3,7 +3,7 @@
         <!-- <div class="overlay bg-to-black-gradient-post"></div>
         <div class="overlay bg-to-solidgray-gradient-post opacity-0 group-hover:opacity-100 link-transition"></div> -->
         <div>
-            <?php echo get_the_post_thumbnail($args['post']->ID, 'medium', array('class' => 'w-full')); ?>
+            <?php get_template_part('template-parts/featured-image', 'featured-image', array('post_id' => $args['post']->ID, 'size' => 'medium', 'class' => 'w-full')); ?>
         </div>
         <div class="px-8 p-4 mr-12">
             <span class="text-sm"><?php echo date("d.m.Y", strtotime($args['post']->post_date)) ?></span>

@@ -6,7 +6,7 @@
             </div>
             <div class="overlay bg-to-black-gradient-post group-hover:opacity-0"></div>
             <div class="overlay bg-to-solidgray-gradient-post opacity-0 group-hover:opacity-100"></div>
-            <?php echo get_the_post_thumbnail($args['post']->ID, 'medium', array('class' => 'w-full')); ?>
+            <?php get_template_part('template-parts/featured-image', 'featured-image', array('post_id' => $args['post']->ID, 'size' => 'medium', 'class' => 'w-full')); ?>
         </div>
 
         <div class="h-full px-[7%] pb-[12%] group-hover:text-brand-red group-hover:bg-brand-solidgrey">
