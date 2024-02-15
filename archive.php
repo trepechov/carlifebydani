@@ -99,10 +99,10 @@ get_template_part('template-parts/header');
                             the_posts_pagination(array(
                                 'mid_size' => 1,
                                 'type' => 'plain',
-                                'before_page_number' => '<div class="flex w-14 h-14 text-2xl rounded-br-lg justify-center items-center bg-black">',
+                                'before_page_number' => '<div class="flex w-14 h-14 text-2xl rounded-br-lg justify-center items-center bg-black hover:bg-brand-solidgrey">',
                                 'after_page_number' => '</div>',
                                 'mid_size'  => 2,
-                                'prev_text' => '<div class="text-4xl">&lsaquo;</div>',
+                                'prev_text' => '<div class="text-4xl hover:text-brand-lightgrey">&lsaquo;</div>',
                                 'next_text' => '<div class="text-4xl">&rsaquo;</div>',
                             ));
                             ?>

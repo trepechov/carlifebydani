@@ -32,13 +32,10 @@ module.exports = {
                 brand: {
                     red: '#FE3652',
                     lightgrey: '#86898A',
+                    button: '#505050',
                     grey: '#262626',
                     darkgrey: '#202020',
                     solidgrey: '#1C1C1C',
-                    darkgrey: '#202020',
-                    grey: '#262626',
-                    button: '#505050',
-                    lightgrey: '#86898A'
                 }
             },
             lineHeight: {

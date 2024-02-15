@@ -1303,11 +1303,6 @@ h6{
   line-height: 1rem;
 }
 
-.text-5xl{
-  font-size: 3rem;
-  line-height: 1;
-}
-
 .font-bold{
   font-weight: 700;
 }
@@ -1559,6 +1554,11 @@ h6{
 .hover\:text-black:hover{
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+
+.hover\:text-brand-lightgrey:hover{
+  --tw-text-opacity: 1;
+  color: rgb(134 137 138 / var(--tw-text-opacity));
 }
 
 .hover\:text-brand-red:hover{
