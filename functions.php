@@ -45,15 +45,18 @@ function j0e_remove_large_image_sizes()
     remove_image_size('2048x2048');             // 2 x Large (2048 x 2048)
 }
 
-function glightbox_class($content)
-{
-    // global $post;
-    $pattern = "/<a(.*?)href=('|\")(.*?).(bmp|gif|jpeg|jpg|png)('|\")(.*?)>/i";
-    $replacement = '<a$1 class="glightbox" href=$2$3.$4$5$6>';
-    $content = preg_replace($pattern, $replacement, $content);
-    return $content;
-}
-add_filter('the_content', 'glightbox_class');
+// Use jquery selectroin glightbox.initjs instead of this
+// function glightbox_class($content)
+// {
+//     // global $post;
+//     $pattern = "/<a(.*?)href=('|\")(.*?).(bmp|gif|jpeg|jpg|png)('|\")(.*?)>/i";
+//     $replacement = '<a$1 class="glightbox" href=$2$3.$4$5$6>';
+//     $content = preg_replace($pattern, $replacement, $content);
+//     return $content;
+// }
+// add_filter('the_content', 'glightbox_class');
+
+
 
 function add_tag_links_to_content($content)
 {

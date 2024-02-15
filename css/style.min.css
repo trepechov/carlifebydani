@@ -1445,20 +1445,24 @@ h6{
   margin-bottom: 2rem;
 }
 
-.post-content .wp-block-image a{
+.glightbox{
   position: relative;
+  display: block;
+  overflow: hidden;
 }
 
-.post-content .wp-block-image a::after{
-  position: absolute;
-  inset: 0px;
-  --tw-content: '';
-  content: var(--tw-content);
+.glightbox img{
+  transition-property: all;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.post-content .wp-block-image a:hover::after{
-  content: var(--tw-content);
-  background-image: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 40%);;
+.glightbox img:hover{
+  --tw-scale-x: 1.05;
+  --tw-scale-y: 1.05;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  --tw-brightness: brightness(1.1);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 /* Transparent image, e.g. chart  */
