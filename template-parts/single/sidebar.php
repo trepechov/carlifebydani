@@ -5,7 +5,7 @@
     <h5><?php echo date("d.m.Y", strtotime($args['post']->post_date)) ?></h5>
     <p class="text-black mt-2">Автор</p>
     <h5>
-        <a href="<?php echo get_author_posts_url(get_the_author_meta('ID'))  ?>"><?php echo get_the_author(); ?></a>
+        <a href="<?php echo get_author_posts_url(get_the_author_meta('ID')) ?>" class="hover:underline"><?php echo get_the_author(); ?></a>
     </h5>
 
     <?php
@@ -15,7 +15,7 @@
         <div class="flex flex-wrap gap-x-2">
             <?php
             foreach ($args['tags'] as $tag) {
-                echo '<a href="' . get_tag_link($tag->term_id) . '"><h5>#' . $tag->name . '</h5></a>';
+                echo '<a href="' . get_tag_link($tag->term_id) . '" class="hover:underline"><h5>#' . $tag->name . '</h5></a>';
             }
             ?>
         </div>

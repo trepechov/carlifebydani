@@ -93,16 +93,21 @@ get_template_part('template-parts/header');
                                 'post' => $post,
                             ]);
                         }
-
-                        the_posts_pagination(array(
-                            'mid_size' => 1,
-                            'type' => 'plain',
-                            'before_page_number' => '<div class="flex w-12 h-12 rounded-br-lg justify-center items-center bg-black">',
-                            'after_page_number' => '</div>',
-                            'mid_size'  => 2,
-                            'prev_text' => false,
-                            'next_text' => false,
-                        ));
+                    ?>
+                        <div class="my-8">
+                            <?php
+                            the_posts_pagination(array(
+                                'mid_size' => 1,
+                                'type' => 'plain',
+                                'before_page_number' => '<div class="flex w-14 h-14 text-2xl rounded-br-lg justify-center items-center bg-black">',
+                                'after_page_number' => '</div>',
+                                'mid_size'  => 2,
+                                'prev_text' => '<div class="text-4xl">&lsaquo;</div>',
+                                'next_text' => '<div class="text-4xl">&rsaquo;</div>',
+                            ));
+                            ?>
+                        </div>
+                    <?php
                     } else {
                     ?>
                         <p>Няма намерни публикации. :(</p>

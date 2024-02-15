@@ -6,12 +6,14 @@ $shareMenu = wp_get_nav_menu_items($share_menu->term_id);
 <div class="bg-black">
 	<div class="wrapper py-20 grid gap-8 lg:grid-cols-3">
 		<div class="relative lg:pt-12 lg:pr-14">
-			<div class="mb-8 uppercase">
+			<div class="mb-8 uppercase"> 
 				<h3 class="title">Сподели с нас</h3>
 			</div>
 
 			<div class="text-base text-brand-lightgrey">
-				Lorem Ipsum е елементарен примерен текст, използван в печатарската и типографската индустрия.
+				Стани част от нашата електромобилна общност!
+				Споделяй с нас последните новини и вълнуващи разработки в света на електрическите автомобили,
+				помагайки ни да създадем още по-забележително преживяване за нашите читатели и зрители.
 			</div>
 
 			<div class="hidden lg:block absolute top-[50px] -right-8 w-12 h-5/6 bg-carbon-stripe-white"></div>
