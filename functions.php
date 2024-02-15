@@ -4,12 +4,16 @@ require_once 'constants.php';
 
 add_theme_support('post-thumbnails');
 
-add_action('wp_enqueue_scripts', function () {
+function wpdocs_carlifebydani_scripts()
+{
     wp_enqueue_style('theme-css', get_stylesheet_directory_uri() . '/css/style.min.css', [], time());
     wp_enqueue_style('glightbox-css', get_stylesheet_directory_uri() . '/css/glightbox.min.css', [], time());
+    wp_enqueue_script('gtag', get_stylesheet_directory_uri() . '/js/gtag.js', false, time());
     wp_enqueue_script('glightbox', get_stylesheet_directory_uri() . '/js/glightbox.min.js', [], time());
     wp_enqueue_script('glightbox-init', get_stylesheet_directory_uri() . '/js/glightbox.init.js', ['glightbox'], time());
-});
+};
+add_action('wp_enqueue_scripts', 'wpdocs_carlifebydani_scripts');
+
 
 function register_my_menus()
 {
