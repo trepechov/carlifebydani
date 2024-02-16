@@ -1,7 +1,7 @@
 <a href="<?php echo get_permalink($args['post']->ID) ?>" class="group">
     <article class="h-full bg-black rounded-br-4xl overflow-hidden shadow-card">
         <div class="relative">
-            <div class="absolute z-10 bottom-4 pl-[7%]">
+            <div class="absolute z-10 bottom-4 pl-[7%] text-brand-lightgrey">
                 <?php get_template_part('template-parts/tags-category-date', 'tags', array('post' => $args['post'], 'with_category' => !empty($args['with_category']))); ?>
             </div>
             <div class="overlay bg-to-black-gradient-post group-hover:opacity-0"></div>
