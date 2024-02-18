@@ -38,7 +38,7 @@ $bread_crumbs = [
 
     <?php if (!empty($cover_image)) { ?>
         <div class="absolute h-192 w-full bg-cover bg-center bg-no-repeat" style="background-image: url(<?php echo $cover_image; ?>);">
-            <div class="h-2/5 bg-from-black-gradient opacity-60"></div>
+            <div class="h-2/5 bg-from-black-80-gradient opacity-75"></div>
             <div class="h-3/5 bg-to-black-gradient"></div>
         </div>
     <?php } else { ?>

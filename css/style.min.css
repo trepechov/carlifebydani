@@ -1095,8 +1095,8 @@ h6{
   background-image: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 80%);
 }
 
-.bg-from-black-gradient{
-  background-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);;
+.bg-from-black-80-gradient{
+  background-image: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);;
 }
 
 .bg-to-black-80-gradient{
@@ -1351,8 +1351,8 @@ h6{
   opacity: 0.5;
 }
 
-.opacity-60{
-  opacity: 0.6;
+.opacity-75{
+  opacity: 0.75;
 }
 
 .shadow-card{
@@ -1595,6 +1595,11 @@ h6{
 .group:hover .group-hover\:text-brand-solidgrey{
   --tw-text-opacity: 1;
   color: rgb(28 28 28 / var(--tw-text-opacity));
+}
+
+.group:hover .group-hover\:text-white{
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
 .group:hover .group-hover\:opacity-0{

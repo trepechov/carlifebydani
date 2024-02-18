@@ -24,7 +24,7 @@ $featured_query = new WP_Query($feaured_args);
         <!-- Hero article -->
         <article class="relative">
             <div class="w-full lg:w-3/4 lg:rounded-br-8xl lg:border-b-20 lg:border-r-20 lg:pb-5 lg:pr-5 lg:border-white/10">
-                <div class="relative lg:rounded-br-6xl overflow-hidden">
+                <div class="relative lg:rounded-br-6xl cursor-pointer overflow-hidden" onclick="window.location.href='<?php echo get_permalink($hero_query->posts[0]->ID) ?>'">
                     <div class="overlay bg-to-black-80-gradient"></div>
                     <?php get_template_part('template-parts/featured-image', 'featured-image', array('post_id' => $hero_query->posts[0]->ID, 'size' => 'large')); ?>
                 </div>

@@ -35,7 +35,7 @@ module.exports = {
                     button: '#505050',
                     grey: '#262626',
                     darkgrey: '#202020',
-                    solidgrey: '#1C1C1C',
+                    solidgrey: '#1C1C1C'
                 }
             },
             lineHeight: {
@@ -57,7 +57,7 @@ module.exports = {
                 'carbon-stripe-black-20': "url('../images/bg/carbon-stripe-black-20.png')",
                 'carbon-stripe-white': "url('../images/bg/carbon-stripe-white.png')",
                 'carbon-stripe-white-20': "url('../images/bg/carbon-stripe-white-20.png')",
-                'from-black-gradient': 'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);',
+                'from-black-80-gradient': 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);',
                 'from-black-60-gradient': 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 80%)',
                 'to-black-80-gradient': 'linear-gradient(0deg, rgba(0, 0, 0, 0.80) 0%, rgba(0, 0, 0, 0.00) 40%);',
                 'to-black-gradient-post': 'linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 40%);',
