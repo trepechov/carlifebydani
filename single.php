@@ -37,7 +37,7 @@ $bread_crumbs = [
 <div class="relative">
 
     <?php if (!empty($cover_image)) { ?>
-        <div class="absolute h-192 w-full bg-cover bg-center bg-no-repeat" style="background-image: url(<?php echo $cover_image; ?>);">
+        <div class="absolute h-192 w-full bg-size-7/8 bg-top sm:bg-size-5/4 lg:bg-cover lg:bg-center bg-no-repeat" style="background-image: url(<?php echo $cover_image; ?>);">
             <div class="h-2/5 bg-from-black-80-gradient opacity-75"></div>
             <div class="h-3/5 bg-to-black-gradient"></div>
         </div>
@@ -50,9 +50,46 @@ $bread_crumbs = [
     <div class="wrapper py-8 relative">
         <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
 
-        <h1 class="title text-3xl/8 mb-8 font-bold <?php echo !empty($cover_image) ? 'mt-112' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h1>
-        <p class="mb-8 text-[1.0625rem]"><?php echo $current_post->post_excerpt ?></p>
+        <h1 class="title text-3xl/8 mb-8 font-bold <?php echo !empty($cover_image) ? 'mt-80 lg:mt-128' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h1>
+
         <div class="lg:grid lg:grid-cols-3 lg:gap-8">
+            <div class="col-span-3">
+                <div class="mb-4 flex flex-wrap md:flex-nowrap gap-4 md:gap-8 lg:hidden">
+                    <div>
+                        <p class="text-sm text-brand-lightgrey">Категория</p>
+                        <h5 class="text-[1.0625rem]"><a href="<?php echo get_category_link($current_category->term_id) ?>"><?php echo $current_category->name; ?></a></h5>
+                    </div>
+
+                    <div>
+                        <p class="text-sm text-brand-lightgrey whitespace-nowrap">Дата на публикуване</p>
+                        <h5 class="text-[1.0625rem]"><?php echo date("d.m.Y", strtotime($current_post->post_date)) ?></h5>
+                    </div>
+
+                    <div>
+                        <p class="text-sm text-brand-lightgrey">Автор</p>
+                        <h5 class="text-[1.0625rem]"><a href="<?php echo get_author_posts_url(get_the_author_meta('ID')) ?>" class="hover:underline"><?php echo get_the_author(); ?></a></h5>
+                    </div>
+
+                    <?php
+                    if ([] != $tags) {
+                    ?>
+                        <div>
+                            <p class="text-sm text-brand-lightgrey">Тагове</p>
+                            <div class="flex flex-wrap gap-x-2">
+                                <?php
+                                foreach ($tags as $tag) {
+                                    echo '<a href="' . get_tag_link($tag->term_id) . '" class="hover:underline"><h5 class="text-[1.0625rem]">#' . $tag->name . '</h5></a>';
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    <?php
+                    }
+                    ?>
+                </div>
+
+                <p class="mb-4 lg:mb-0 text-[1.0625rem]"><?php echo $current_post->post_excerpt ?></p>
+            </div>
             <div class="col-span-2 post-content">
                 <?php
                 echo apply_filters('the_content', $current_post->post_content);

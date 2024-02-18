@@ -11,7 +11,7 @@
         <div class="flex mt-12">
             <div class="flex-1 mx-2">
                 <nav>
-                    <ul class="flex gap-8 text-xl font-bold ">
+                    <ul class="flex gap-4 text-md sm:gap-8 sm:text-xl font-bold ">
                         <?php
                         $locations = get_nav_menu_locations();
                         $footer_menu = wp_get_nav_menu_object($locations['footer-menu']);
