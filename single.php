@@ -50,7 +50,7 @@ $bread_crumbs = [
     <div class="wrapper py-8 relative">
         <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
 
-        <h2 class="title text-3xl/8 mb-8 <?php echo !empty($cover_image) ? 'mt-112' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h2>
+        <h1 class="title text-3xl/8 mb-8 font-bold <?php echo !empty($cover_image) ? 'mt-112' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h1>
         <p class="mb-8 text-[1.0625rem]"><?php echo $current_post->post_excerpt ?></p>
         <div class="lg:grid lg:grid-cols-3 lg:gap-8">
             <div class="col-span-2 post-content">

@@ -78,7 +78,7 @@ get_template_part('template-parts/header');
 
         <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
 
-        <h2 class="title text-3xl/8 mt-6 mb-8"><?php echo $title ?></h2>
+        <h1 class="title text-3xl/8 font-bold mt-6 mb-8"><?php echo $title ?></h1>
         <?php if (!empty($description)) { ?>
             <p class="mb-8"><?php echo $description ?></p>
         <?php } ?>
