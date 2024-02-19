@@ -80,7 +80,7 @@
         </div>
 
         <div class="mt-12 pt-8 text-xs text-center border-t border-brand-darkgrey">
-            &copy;2023 <a href="<?php echo get_home_url(); ?>" class="hover:text-brand-red">carlifebydani.com</a> Всички права запазени!
+            &copy;<?php echo date("Y"); ?> <a href="<?php echo get_home_url(); ?>" class="hover:text-brand-red">carlifebydani.com</a> Всички права запазени!
         </div>
     </div>
 </footer>
