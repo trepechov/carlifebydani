@@ -79,7 +79,13 @@
             </div>
         </div>
 
+        <?php
+        $videos_and_pictures_post = get_post(VIDEOS_AND_PICTURES);
+        $videos_and_pictures_link = $videos_and_pictures_post ? get_permalink($videos_and_pictures_post->ID) : get_home_url();
+        ?>
+
         <div class="mt-12 pt-8 text-xs text-center border-t border-brand-darkgrey">
+            <p>В сайта се използват авторски текстове, <a href="<?php echo $videos_and_pictures_link; ?>" class="hover:text-brand-red">видео и снимки*</a>. Цитирането на източник Car Life by Dani е задължително!</p>
             &copy;<?php echo date("Y"); ?> <a href="<?php echo get_home_url(); ?>" class="hover:text-brand-red">carlifebydani.com</a> Всички права запазени!
         </div>
     </div>
