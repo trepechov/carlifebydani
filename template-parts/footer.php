@@ -73,7 +73,9 @@
                     </div>
                 </div>
                 <a class="w-24 h-24 flex items-center justify-center rounded-full bg-brand-red text-lg hover:bg-brand-solidgrey" href="#">
-                    <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/icons/arrow.svg" alt="To Top" class="mb-1" />
+                    <span class="material-symbols-outlined text-7xl mb-1">
+                        keyboard_arrow_up
+                    </span>
                 </a>
 
             </div>

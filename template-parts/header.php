@@ -14,7 +14,7 @@ if (!is_user_logged_in()) {
     <?php wp_head(); ?>
 </head>
 
-<body class="body relative1">
+<body class="body">
     <header class="bg-black">
         <div class="hidden wrapper py-2 justify-between items-center lg:flex">
             <!-- Popular tags menu -->
@@ -55,7 +55,7 @@ if (!is_user_logged_in()) {
                     ?>
                     <li>
                         <a href='<?php echo $topMenuItems[$i]->url ?>' class="button" target="_blank">
-                            <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/icons/heart.svg" alt="heart" class="w-4 -ml-1" />
+                            <span class="material-symbols-outlined text-base -ml-1">favorite</span>
                             <?php echo $topMenuItems[$i]->title ?>
                         </a>
                     </li>
@@ -77,8 +77,9 @@ if (!is_user_logged_in()) {
 
                 <label class="cursor-pointer lg:w-full" for="mobile-menu">
                     <input class="peer hidden" type="checkbox" id="mobile-menu" />
-                    <p class="text-6xl lg:hidden">&equiv;
-                    </p>
+                    <span class="material-symbols-outlined text-5xl lg:hidden">
+                        menu
+                    </span>
                     <div class="fixed inset-0 z-40 hidden h-full w-full bg-black/50 backdrop-blur-sm peer-checked:block lg:!hidden">
                         &nbsp;
                     </div>
