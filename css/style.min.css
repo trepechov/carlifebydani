@@ -1324,7 +1324,7 @@ h6{
   .md\:gap-8{
     gap: 2rem;
   }
-}
+  }
 @media (min-width: 1024px){
   .lg\:static{
     position: static;
@@ -1346,6 +1346,12 @@ h6{
   }
   .lg\:mt-128{
     margin-top: 32rem;
+  }
+  .lg\:mt-112{
+    margin-top: 28rem;
+  }
+  .lg\:mt-96{
+    margin-top: 24rem;
   }
   .lg\:block{
     display: block;
