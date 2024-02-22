@@ -53,7 +53,9 @@ $bread_crumbs = [
         <h1 class="title text-3xl/8 mb-8 font-bold <?php echo !empty($cover_image) ? 'mt-80 lg:mt-96' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h1>
 
         <div class="lg:grid lg:grid-cols-3 lg:gap-x-8">
-            <div class="-mx-[4%] px-[4%] mb-4 pb-4 sm:mx-0 sm:px-0 sm:mb-0 col-span-3 bg-black">
+            <div class="col-span-3 <?php if (!empty($cover_image)) {
+                                        echo "-mx-[4%] px-[4%] mb-4 pb-4 sm:mx-0 sm:px-0 sm:mb-0 bg-black";
+                                    } ?>">
                 <div class="mb-4 flex flex-wrap md:flex-nowrap gap-4 md:gap-8 lg:hidden">
                     <div>
                         <p class="text-sm text-brand-lightgrey">Категория</p>
