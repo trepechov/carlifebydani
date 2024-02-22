@@ -50,10 +50,10 @@ $bread_crumbs = [
     <div class="wrapper py-8 relative">
         <?php get_template_part('template-parts/bread-crumbs', 'bread_crumbs', array('bread_crumbs' => $bread_crumbs)); ?>
 
-        <h1 class="title text-3xl/8 mb-8 font-bold <?php echo !empty($cover_image) ? 'mt-80 lg:mt-128' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h1>
+        <h1 class="title text-3xl/8 mb-8 font-bold <?php echo !empty($cover_image) ? 'mt-80 lg:mt-96' : 'mt-6' ?>"><?php echo $current_post->post_title; ?></h1>
 
-        <div class="lg:grid lg:grid-cols-3 lg:gap-8">
-            <div class="col-span-3">
+        <div class="lg:grid lg:grid-cols-3 lg:gap-x-8">
+            <div class="-mx-[4%] px-[4%] mb-4 pb-4 sm:mx-0 sm:px-0 sm:mb-0 col-span-3 bg-black">
                 <div class="mb-4 flex flex-wrap md:flex-nowrap gap-4 md:gap-8 lg:hidden">
                     <div>
                         <p class="text-sm text-brand-lightgrey">Категория</p>
@@ -88,7 +88,7 @@ $bread_crumbs = [
                     ?>
                 </div>
 
-                <p class="mb-4 lg:mb-0 text-[1.0625rem]"><?php echo $current_post->post_excerpt ?></p>
+                <div class="lg:mb-0 post-content"><?php echo apply_filters('the_content', $current_post->post_excerpt); ?></div>
             </div>
             <div class="col-span-2 post-content">
                 <?php
