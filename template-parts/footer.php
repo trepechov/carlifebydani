@@ -13,6 +13,7 @@
                 <nav>
                     <ul class="flex gap-4 text-md sm:gap-8 sm:text-xl font-bold ">
                         <?php
+                        
                         $locations = get_nav_menu_locations();
                         $footer_menu = wp_get_nav_menu_object($locations['footer-menu']);
                         $footerMenuItems = wp_get_nav_menu_items($footer_menu->term_id);
@@ -63,9 +64,9 @@
                     </ul>
                 </nav>
             </div>
-            <div class="hidden flex-1 lg:flex gap-16 justify-end items-center">
+            <div class="hidden flex-1 lg:flex gap-12 justify-end items-center">
                 <div class="flex gap-8 items-end">
-                    <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/mail.svg" alt="mai" class="h-14" />
+                    <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/mail.svg" alt="mail" class="h-14 hidden xl:block" />
                     <div class="flex flex-col gap-1">
                         <span class="text-xs text-brand-red">Контакти</span>
                         <a class="text-3xl" href="mailto:info@carlifebydani.com">info@carlifebydani.com</a>
@@ -77,7 +78,6 @@
                         keyboard_arrow_up
                     </span>
                 </a>
-
             </div>
         </div>
 
@@ -88,7 +88,7 @@
 
         <div class="mt-12 pt-8 text-xs text-center border-t border-brand-darkgrey">
             <p>В сайта се използват авторски текстове, <a href="<?php echo $videos_and_pictures_link; ?>" class="hover:text-brand-red">видео и снимки*</a>. Цитирането на източник Car Life by Dani е задължително!</p>
-            &copy;<?php echo date("Y"); ?> <a href="<?php echo get_home_url(); ?>" class="hover:text-brand-red">carlifebydani.com</a> Всички права запазени!
+            &copy; <?php echo date("Y"); ?> <a href="<?php echo get_home_url(); ?>" class="hover:text-brand-red">carlifebydani.com</a> Всички права запазени!
         </div>
     </div>
 </footer>

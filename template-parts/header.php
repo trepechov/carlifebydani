@@ -16,7 +16,7 @@ if (!is_user_logged_in()) {
 
 <body class="body">
     <header class="bg-black">
-        <div class="hidden wrapper py-2 justify-between items-center lg:flex">
+        <div class="hidden wrapper py-2 justify-between items-center border-b border-b-brand-red/50 lg:flex">
             <!-- Popular tags menu -->
             <nav class="flex items-center gap-2 text-xs">
                 <span class="font-bold uppercase">Популярни теми</span>
@@ -41,7 +41,7 @@ if (!is_user_logged_in()) {
 
             <!-- Top menu -->
             <nav class="flex gap-5 text-sm">
-                <ul class="flex gap-4 items-center">
+                <ul class="hidden xl:flex items-center gap-4">
                     <?php
                     $top_menu = wp_get_nav_menu_object($locations['top-menu']);
                     $topMenuItems = wp_get_nav_menu_items($top_menu->term_id);
@@ -53,87 +53,120 @@ if (!is_user_logged_in()) {
                     <?php
                     }
                     ?>
-                    <li>
-                        <a href='<?php echo $topMenuItems[$i]->url ?>' class="button" target="_blank">
-                            <span class="material-symbols-outlined text-base -ml-1">favorite</span>
-                            <?php echo $topMenuItems[$i]->title ?>
-                        </a>
-                    </li>
                 </ul>
+                <a href='<?php echo $topMenuItems[$i]->url ?>' class="button" target="_blank">
+                    <span class="material-symbols-outlined text-base -ml-1">favorite</span>
+                    <?php echo $topMenuItems[$i]->title ?>
+                </a>
             </nav>
         </div>
-
-        <!-- Full width separator -->
-        <div class="border-b border-b-brand-red/50"></div>
 
         <!-- Main Navigation -->
         <div class="wrapper py-4 flex justify-between">
 
-            <div class="w-full flex gap-6 justify-between items-center">
-                <!-- Logo -->
-                <a href="<?php echo get_home_url(); ?>">
-                    <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo.svg" alt="Carlife by Dani" />
-                </a>
+            <div class="w-full flex gap-6 justify-between ">
 
-                <label class="cursor-pointer lg:w-full" for="mobile-menu">
-                    <input class="peer hidden" type="checkbox" id="mobile-menu" />
-                    <span class="material-symbols-outlined text-5xl lg:hidden">
-                        menu
-                    </span>
-                    <div class="fixed inset-0 z-40 hidden h-full w-full bg-black/50 backdrop-blur-sm peer-checked:block lg:!hidden">
-                        &nbsp;
-                    </div>
-                    <nav class="fixed top-0 right-0 z-40 h-full w-full md:w-1/2 lg:w-auto bg-black flex flex-col p-9
-                        lg:p-0 lg:static lg:flex-row lg:flex-1 lg:justify-between lg:items-center
-                        translate-x-full peer-checked:translate-x-0 lg:translate-x-0 transition duration-300
-                    ">
-                        <!-- flex flex-1 justify-between items-center -->
-                        <!-- Main menu with categories -->
-                        <ul class="flex flex-col gap-8 lg:flex-row">
+                <!-- Left section -->
+                <div class="flex gap-6 items-center">
+                    <!-- Logo -->
+                    <a href="<?php echo get_home_url(); ?>">
+                        <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo.svg" alt="Car Life by Dani" class="h-16 sm:h-20" />
+                    </a>
+
+                    <!-- Main menu with categories -->
+                    <ul class="hidden lg:flex flex-row gap-8">
+                        <?php
+                        $main_menu = wp_get_nav_menu_object($locations['main-menu']);
+                        $main_menu_items = wp_get_nav_menu_items($main_menu->term_id);
+
+                        foreach ($main_menu_items as $key => $menuItem) {
+                            $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
+                        ?>
+                            <li class="text-xl font-bold hover:text-brand-red <?php echo $current ?>">
+                                <a href="<?php echo  $menuItem->url ?>">
+                                    <span class="block text-sm leading-4 text-brand-red font-normal"><?php echo str_pad($key + 1, 2, '0', STR_PAD_LEFT) ?></span>
+                                    <?php echo $menuItem->title ?>
+                                </a>
+                            </li>
+                        <?php
+                        }
+                        ?>
+                    </ul>
+                </div>
+
+                <!-- Right section -->
+                <div class="flex items-center">
+                    <!-- Support us button -->
+                    <a href='<?php echo $topMenuItems[$i]->url ?>' class="button mr-4 !hidden sm:!flex lg:!hidden" target="_blank">
+                        <span class="material-symbols-outlined text-base -ml-1">favorite</span>
+                        <?php echo $topMenuItems[$i]->title ?>
+                    </a>
+
+                    <!-- Seach menu with button -->
+                    <label class="relative cursor-pointer p-1 mt-2 2xl:mt-6" for="search-menu">
+                        <input class="peer hidden" type="checkbox" id="search-menu" />
+                        <span class="material-symbols-outlined text-4xl z-40 peer-checked:z-[50] hover:text-brand-red link-transition">
+                            search
+                        </span>
+
+                        <div class="fixed inset-0 peer-checked:z-[50] hidden h-full w-full bg-brand-solidgrey/80 backdrop-blur-sm peer-checked:block">
+                            &nbsp;
+                        </div>
+                        <!-- <div class="fixed top-0 right-0 z-40 peer-checked:z-[50] h-full w-full -translate-y-[200px] overflow-x-auto overscroll-x-none transition duration-300 peer-checked:translate-y-0"> -->
+                        <div class="fixed top-0 right-0 z-40 peer-checked:z-[50] h-full w-full translate-x-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-x-0">
+                            <div class="relative h-[200px] w-full bg-black/80 px-6 pt-12 shadow-2xl">
+                                <span class="material-symbols-outlined text-4xl absolute right-4 top-4">
+                                    close
+                                </span>
+                                Търсенето не работи ;(<br /> Митака е виновен
+                            </div>
+                        </div>
+                    </label>
+                    <!-- Seach menu with button -->
+
+                    <!-- Mobile menu with button-->
+                    <label class="relative  cursor-pointer p-1 mt-2 2xl:mt-6 2xl:hidden" for="mobile-menu">
+                        <input class="peer hidden" type="checkbox" id="mobile-menu" />
+                        <span class="material-symbols-outlined text-4xl hover:text-brand-red link-transition">
+                            menu
+                        </span>
+                        <div class="fixed inset-0 z-40 hidden h-full w-full bg-brand-solidgrey/80 backdrop-blur-sm peer-checked:block">
+                            &nbsp;
+                        </div>
+                        <div class="fixed top-0 right-0 z-40 h-full w-full flex justify-end translate-x-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-x-0">
+                            <div class="relative h-full w-full px-8 py-12 bg-black/80 shadow-2xl sm:w-1/2">
+                                <span class="material-symbols-outlined text-4xl absolute right-4 top-4">
+                                    close
+                                </span>
+
+                                <?php get_template_part('template-parts/menus/mobile-menu'); ?>
+                            </div>
+                        </div>
+                    </label>
+                    <!-- Mobile menu with button-->
+
+                    <!-- Share with us menu -->
+                    <div class="hidden 2xl:flex flex-col items-start gap-1">
+                        <span class="text-xs uppercase text-brand-red">Сподели с нас...</span>
+
+                        <div class="flex gap-8 flex-row">
                             <?php
-                            $main_menu = wp_get_nav_menu_object($locations['main-menu']);
-                            $main_menu_items = wp_get_nav_menu_items($main_menu->term_id);
+                            $share_menu = wp_get_nav_menu_object($locations['share-menu']);
+                            $shareMenuItems = wp_get_nav_menu_items($share_menu->term_id);
 
-                            foreach ($main_menu_items as $key => $menuItem) {
+                            foreach ($shareMenuItems as $key => $menuItem) {
                                 $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
                             ?>
-                                <li class="text-xl font-bold hover:text-brand-red <?php echo $current ?>">
-                                    <a href="<?php echo  $menuItem->url ?>">
-                                        <span class="block text-sm leading-4 text-brand-red font-normal"><?php echo str_pad($key + 1, 2, '0', STR_PAD_LEFT) ?></span>
-                                        <?php echo $menuItem->title ?>
-                                    </a>
-                                </li>
+                                <a href="<?php echo $menuItem->url ?>" class="flex flex-col">
+                                    <span class="text-xl font-bold link-transition hover:text-brand-red"><?php echo $menuItem->title; ?></span>
+                                    <span class="text-xs italic text-brand-lightgrey"><?php echo get_post_meta($menuItem->object_id, 'post-subtitle', true); ?></span>
+                                </a>
                             <?php
                             }
                             ?>
-                        </ul>
-                        <hr class="my-5 lg:hidden" />
-                        <!-- Share with us menu -->
-                        <div class="flex flex-col items-start gap-1">
-                            <span class="text-xs uppercase text-brand-red">Сподели с нас...</span>
-
-                            <div class="flex gap-8 flex-col lg:flex-row">
-                                <?php
-                                $share_menu = wp_get_nav_menu_object($locations['share-menu']);
-
-                                $shareMenuItems = wp_get_nav_menu_items($share_menu->term_id);
-
-                                foreach ($shareMenuItems as $key => $menuItem) {
-                                    $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
-                                ?>
-                                    <a href="<?php echo $menuItem->url ?>" class="flex flex-col">
-                                        <span class="text-lg font-bold link-transition hover:text-brand-red"><?php echo $menuItem->title; ?></span>
-                                        <span class="text-xs italic text-brand-lightgrey"><?php echo get_post_meta($menuItem->object_id, 'post-subtitle', true); ?></span>
-                                    </a>
-                                <?php
-                                }
-                                ?>
-                            </div>
                         </div>
-                        <hr class="my-5 lg:hidden" />
-
-                    </nav>
-                </label>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
