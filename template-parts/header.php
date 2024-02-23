@@ -109,20 +109,21 @@ if (!is_user_logged_in()) {
                     <!-- Seach menu with button -->
                     <label class="relative cursor-pointer p-1 mt-2 2xl:mt-6" for="search-menu">
                         <input class="peer hidden" type="checkbox" id="search-menu" />
-                        <span class="material-symbols-outlined text-4xl z-40 peer-checked:z-[50] hover:text-brand-red link-transition">
+                        <span class="material-symbols-outlined text-4xl z-40 peer-checked:z-40 hover:text-brand-red link-transition">
                             search
                         </span>
 
-                        <div class="fixed inset-0 peer-checked:z-[50] hidden h-full w-full bg-brand-solidgrey/80 backdrop-blur-sm peer-checked:block">
+                        <div class="fixed inset-0 peer-checked:z-40 hidden h-full w-full bg-brand-solidgrey/80 backdrop-blur-sm peer-checked:block">
                             &nbsp;
                         </div>
-                        <!-- <div class="fixed top-0 right-0 z-40 peer-checked:z-[50] h-full w-full -translate-y-[200px] overflow-x-auto overscroll-x-none transition duration-300 peer-checked:translate-y-0"> -->
-                        <div class="fixed top-0 right-0 z-40 peer-checked:z-[50] h-full w-full translate-x-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-x-0">
+                        <!-- <div class="fixed top-0 right-0 z-40 peer-checked:z-40 h-full w-full -translate-y-[200px] overflow-x-auto overscroll-x-none transition duration-300 peer-checked:translate-y-0"> -->
+                        <div class="fixed top-0 right-0 z-40 peer-checked:z-40 h-full w-full translate-x-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-x-0">
                             <div class="relative h-[200px] w-full bg-black/80 px-6 pt-12 shadow-2xl">
-                                <span class="material-symbols-outlined text-4xl absolute right-4 top-4">
+                                <span class="material-symbols-outlined text-4xl absolute right-4 top-4 hover:text-brand-red link-transition">
                                     close
                                 </span>
-                                Търсенето не работи ;(<br /> Митака е виновен
+
+                                <?php get_template_part('template-parts/menus/search'); ?>
                             </div>
                         </div>
                     </label>
@@ -139,7 +140,7 @@ if (!is_user_logged_in()) {
                         </div>
                         <div class="fixed top-0 right-0 z-40 h-full w-full flex justify-end translate-x-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-x-0">
                             <div class="relative h-full w-full px-8 py-12 bg-black/80 shadow-2xl sm:w-1/2">
-                                <span class="material-symbols-outlined text-4xl absolute right-4 top-4">
+                                <span class="material-symbols-outlined text-4xl absolute right-4 top-4 hover:text-brand-red link-transition">
                                     close
                                 </span>
 
