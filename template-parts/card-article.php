@@ -17,7 +17,7 @@
         ]); ?>
     </div>
 
-    <div class="px-[7%] pb-[12%] group-hover:text-brand-red ">
+    <div class="px-[7%] pb-[12%] group-hover:text-brand-red">
         <div class="hidden mt-6 mb-2 sm:block <?php echo empty($args['horizontal']) ? 'lg:hidden' : '' ?>">
             <?php get_template_part('template-parts/tags-category-date', 'tags', [
                 'post' => $args['post'],
@@ -25,7 +25,7 @@
             ]); ?>
         </div>
         <h3>
-            <a href="<?php echo get_permalink($args['post']->ID) ?>" class="line-clamp-4 <?php echo !empty($args['small_title']) ? 'lg:text-xl/6' : '' ?>">
+            <a href="<?php echo get_permalink($args['post']->ID) ?>" class="line-clamp-4 sm:text-2xl/7 md:text-3xl/8 <?php echo !empty($args['small_title']) ? 'lg:text-xl/6' : '' ?>">
                 <?php echo $args['post']->post_title ?>
             </a>
         </h3>
