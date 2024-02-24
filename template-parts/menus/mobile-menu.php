@@ -1,5 +1,5 @@
   <!-- Main menu with categories -->
-  <ul class="flex flex-col gap-4">
+  <ul class="flex flex-col gap-4 items-start">
       <?php
         $locations = get_nav_menu_locations();
         $main_menu = wp_get_nav_menu_object($locations['main-menu']);
@@ -22,7 +22,7 @@
   <hr class="my-8 border-2 border-brand-button/50" />
 
   <!-- Share with us menu -->
-  <div class="flex gap-4 flex-col">
+  <div class="flex gap-4 flex-col items-start">
       <span class="text-xs uppercase text-brand-red">Сподели с нас...</span>
       <?php
         $share_menu = wp_get_nav_menu_object($locations['share-menu']);

@@ -26,10 +26,10 @@ $bread_crumbs = [
         'label' => $current_category->name,
         'link' => get_category_link($current_category->term_id),
     ],
-    [
-        'label' => $current_post->post_title,
-        'link' => get_permalink(),
-    ],
+    // [
+    //     'label' => $current_post->post_title,
+    //     'link' => get_permalink(),
+    // ],
 ];
 
 ?>

@@ -1,4 +1,4 @@
-<form action="<?php echo home_url('/'); ?>" method="get" class="mx-8 sm:mx-24 md:mx-32 lg:mx-48">
+<form action="<?php echo home_url('/'); ?>" method="get" class="w-4/5">
     <div class="relative ">
         <div class="pointer-events-none absolute left-0">
             <span class="material-symbols-outlined text-5xl hover:text-brand-red link-transition">
@@ -8,7 +8,7 @@
         <input type="text" name="s" value="<?php the_search_query(); ?>" placeholder="Търсене в сайта..." class="bg-black text-white w-full text-2xl block pl-20 pt-2 pb-8 focus:outline-none border-b-2 border-b-brand-button focus:border-b-brand-lightgrey placeholder:text-brand-grey" />
     </div>
 
-    <ul class="mt-8 list-none flex gap-4 text-sm">
+    <ul class="mt-8 list-none flex flex-wrap gap-2 text-sm">
         <li>например:</li>
         <?php
         $locations = get_nav_menu_locations();

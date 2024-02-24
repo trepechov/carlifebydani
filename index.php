@@ -22,10 +22,10 @@ switch (true) {
     case is_tag():
         $tag = get_queried_object();
 
-        $bread_crumbs[] = [
-            'label' => '#' . $tag->name,
-            'link' => get_category_link($tag->term_id),
-        ];
+        // $bread_crumbs[] = [
+        //     'label' => '#' . $tag->name,
+        //     'link' => get_category_link($tag->term_id),
+        // ];
 
         $title = '#' . $tag->name;
         $description = $tag->description;
@@ -37,10 +37,10 @@ switch (true) {
     case is_author():
         $author = get_queried_object();
 
-        $bread_crumbs[] = [
-            'label' => $author->display_name,
-            'link' => get_category_link($author->term_id),
-        ];
+        // $bread_crumbs[] = [
+        //     'label' => $author->display_name,
+        //     'link' => get_category_link($author->term_id),
+        // ];
 
         $title = $author->display_name;
         $description = get_the_author_meta('description');
@@ -50,10 +50,10 @@ switch (true) {
         break;
 
     case is_search():
-        $bread_crumbs[] = [
-            'label' => 'Търсене',
-            'link' => get_search_link(),
-        ];
+        // $bread_crumbs[] = [
+        //     'label' => 'Търсене',
+        //     'link' => get_search_link(),
+        // ];
 
         $title = 'Резултати: ' . get_search_query();
         $args['s'] = get_search_query();
@@ -67,10 +67,10 @@ switch (true) {
     default:
         $current_category = get_the_category()[0];
 
-        $bread_crumbs[] = [
-            'label' => $current_category->name,
-            'link' => get_category_link($current_category->term_id),
-        ];
+        // $bread_crumbs[] = [
+        //     'label' => $current_category->name,
+        //     'link' => get_category_link($current_category->term_id),
+        // ];
 
         $title = $current_category->name;
         $description = $current_category->description;
