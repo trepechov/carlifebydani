@@ -13,11 +13,10 @@ $ev_reviews_posts = get_posts(array(
         <div class="grid gap-8 grid-cols-1 lg:grid-cols-4 lg:place-items-stretch">
             <?php
             for ($i = 0; $i < 8; $i++) {
-                // Reemove this once have enought posts
-                if (!isset($ev_reviews_posts[$i])) {
-                    continue;
-                }
-                get_template_part('template-parts/card-article', 'article',  ['post' => $ev_reviews_posts[$i], 'title_size' => 'small']);
+                get_template_part('template-parts/card-article', 'article',  [
+                    'post' => $ev_reviews_posts[$i],
+                    'small_title' => true
+                ]);
             }
             ?>
         </div>

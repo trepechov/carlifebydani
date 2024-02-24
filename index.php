@@ -104,8 +104,9 @@ get_template_part('template-parts/header');
                     <?php
                     if (count($archive_posts) > 0) {
                         foreach ($archive_posts as $post) {
-                            get_template_part('template-parts/card-article-horizontal', 'article', [
+                            get_template_part('template-parts/card-article', 'article', [
                                 'post' => $post,
+                                'horizontal' => true,
                             ]);
                         }
                     ?>
