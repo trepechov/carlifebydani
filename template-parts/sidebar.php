@@ -18,7 +18,10 @@ $meta_data = get_post_meta(TOP_10_PAGE_ID, 'top-10-order', true);
     <div class="flex flex-col gap-3 mt-5">
         <?php
         foreach ($query->posts as $post) {
-            get_template_part('template-parts/card-article-sidebar', 'article', array('post' => $post, 'with_category' => true));
+            get_template_part('template-parts/card-article-sidebar', 'article', [
+                'post' => $post,
+                'with_category' => true
+            ]);
         }
         ?>
     </div>
@@ -26,20 +29,18 @@ $meta_data = get_post_meta(TOP_10_PAGE_ID, 'top-10-order', true);
 
 <div>
     <h4 class="flex gap-4 items-center">
-        <?php echo get_the_post_thumbnail(TOP_10_PAGE_ID, 'full', array('class' => 'h-4 mb-0.5 w-auto')); ?>
+        <?php echo get_the_post_thumbnail(TOP_10_PAGE_ID, 'full', [
+            'class' => 'h-4 mb-0.5 w-auto'
+        ]); ?>
         Top 10
     </h4>
     <div class="flex flex-col gap-3 mt-5">
-        <?php
-        foreach ($top_10_menu_items as $key => $menu_item) {
-            $post = (object) array(
-                'ID' => $menu_item->object_id,
-                'post_title' => $menu_item->title,
-                'post_date' => get_the_date('', $menu_item->object_id),
-            );
-
-            get_template_part('template-parts/card-article-sidebar', 'article', array('post' => $post, 'with_category' => true, 'number' => $key + 1));
-        }
-        ?>
+        <?php foreach ($top_10_menu_items as $key => $menu_item) {
+            get_template_part('template-parts/card-article-top-10', 'article', [
+                'menu_item' => $menu_item,
+                'number' => $key + 1,
+                'is_sidebar' => true
+            ]);
+        } ?>
     </div>
 </div>
