@@ -13,11 +13,9 @@ $ev_news_posts = get_posts(array(
         <div class="mb-8 grid gap-8 grid-cols-1 lg:grid-cols-3 items-stretch justify-items-stretch">
             <?php
             for ($i = 0; $i < 3; $i++) {
-                // Reemove this once have enought posts
-                if (!isset($ev_news_posts[$i])) {
-                    continue;
-                }
-                get_template_part('template-parts/card-article', 'article',  array('post' => $ev_news_posts[$i], 'title_size' => 'normal'));
+                get_template_part('template-parts/card-article', 'article',  [
+                    'post' => $ev_news_posts[$i]
+                ]);
             }
             ?>
         </div>
@@ -25,11 +23,10 @@ $ev_news_posts = get_posts(array(
         <div class="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-4 lg:place-items-stretch">
             <?php
             for ($i = 3; $i < 7; $i++) {
-                // Reemove this once have enought posts
-                if (!isset($ev_news_posts[$i])) {
-                    continue;
-                }
-                get_template_part('template-parts/card-article', 'article',  ['post' => $ev_news_posts[$i], 'title_size' => 'small']);
+                get_template_part('template-parts/card-article', 'article',  [
+                    'post' => $ev_news_posts[$i],
+                    'small_title' => true
+                ]);
             }
             ?>
         </div>

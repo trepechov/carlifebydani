@@ -59,7 +59,10 @@ $featured_query = new WP_Query($feaured_args);
                     if ($post->ID == $hero_query->posts[0]->ID) {
                         continue;
                     }
-                    get_template_part('template-parts/card-article', 'article',  array('post' => $post, 'title_size' => 'normal', 'with_category' => true));
+                    get_template_part('template-parts/card-article', 'article',  [
+                        'post' => $post,
+                        'with_category' => true
+                    ]);
                     $i++;
                 }
                 ?>

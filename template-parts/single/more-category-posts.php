@@ -13,11 +13,9 @@ $category_posts = get_posts(array(
     <div class="mb-8 grid gap-8 grid-cols-1 lg:grid-cols-3 items-stretch justify-items-stretch">
         <?php
         for ($i = 0; $i < 3; $i++) {
-            // Remove this once have enought posts
-            if (!isset($category_posts[$i])) {
-                continue;
-            }
-            get_template_part('template-parts/card-article', 'article',  array('post' => $category_posts[$i], 'title_size' => 'normal'));
+            get_template_part('template-parts/card-article', 'article',  [
+                'post' => $category_posts[$i]
+            ]);
         }
         ?>
     </div>
