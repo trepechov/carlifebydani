@@ -20,7 +20,7 @@ if (!is_user_logged_in()) {
 
 <body class="body">
     <header class="bg-black">
-        <div class="hidden wrapper py-2 justify-between items-center border-b border-b-brand-red/50 lg:flex">
+        <div class="hidden wrapper py-2 justify-between items-center lg:flex">
             <!-- Popular tags menu -->
             <nav class="flex items-center gap-2 text-xs">
                 <span class="font-bold uppercase">Популярни теми</span>
@@ -64,6 +64,9 @@ if (!is_user_logged_in()) {
                 </a>
             </nav>
         </div>
+
+        <!-- Full width separator -->
+        <div class="border-b border-b-brand-red/50"></div>
 
         <!-- Main Navigation -->
         <div class="wrapper py-4 flex justify-between">
