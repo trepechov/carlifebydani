@@ -858,6 +858,9 @@ h6{
 .overflow-y-auto{
   overflow-y: auto;
 }
+.overflow-y-scroll{
+  overflow-y: scroll;
+}
 .overscroll-y-none{
   overscroll-behavior-y: none;
 }
@@ -872,6 +875,9 @@ h6{
 }
 .rounded-full{
   border-radius: 9999px;
+}
+.rounded-none{
+  border-radius: 0px;
 }
 .rounded-br-4xl{
   border-bottom-right-radius: 2rem;
@@ -1396,6 +1402,9 @@ h6{
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 @media (min-width: 640px){
+  .sm\:static{
+    position: static;
+  }
   .sm\:mx-0{
     margin-left: 0px;
     margin-right: 0px;
