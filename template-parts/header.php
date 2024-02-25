@@ -19,7 +19,7 @@ if (!is_user_logged_in()) {
 </head>
 
 <body class="body">
-    <header class="bg-black">
+    <header class="bg-black sticky top-0 z-10 sm:static">
         <div class="hidden wrapper py-2 justify-between items-center lg:flex">
             <!-- Popular tags menu -->
             <nav class="flex items-center gap-2 text-xs">
@@ -148,7 +148,7 @@ if (!is_user_logged_in()) {
                             &nbsp;
                         </div>
                         <div class="fixed top-0 right-0 z-[99999999] h-full w-full flex justify-end translate-x-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-x-0">
-                            <div class="relative h-full w-full px-8 py-12 bg-black/80 shadow-2xl sm:w-1/2">
+                            <div class="relative h-full w-full px-8 py-12 bg-black/80 shadow-2xl sm:w-1/2 overflow-y-scroll">
                                 <span class="material-symbols-outlined text-4xl absolute right-4 top-4 hover:text-brand-red link-transition">
                                     close
                                 </span>
