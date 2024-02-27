@@ -663,6 +663,12 @@ h6{
 .flex{
   display: flex;
 }
+.table{
+  display: table;
+}
+.table-caption{
+  display: table-caption;
+}
 .grid{
   display: grid;
 }

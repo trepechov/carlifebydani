@@ -6,5 +6,7 @@
         dl = l != 'dataLayer' ? '&l=' + l : '';
     j.async = true;
     j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+    j.setAttribute('data-category', 'analytics');
+    j.setAttribute('data-service', 'Google Analytics');
     f.parentNode.insertBefore(j, f);
 })(window, document, 'script', 'dataLayer', 'GTM-PXHNG3KC');

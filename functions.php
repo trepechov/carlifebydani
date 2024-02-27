@@ -8,9 +8,12 @@ function wpdocs_carlifebydani_scripts()
 {
     wp_enqueue_style('theme-css', get_stylesheet_directory_uri() . '/css/style.min.css', [], time());
     wp_enqueue_style('glightbox-css', get_stylesheet_directory_uri() . '/css/glightbox.min.css', [], time());
+    wp_enqueue_style('cookie-consent', get_stylesheet_directory_uri() . '/css/cookieconsent.min.css', [], time());
     wp_enqueue_script('gtag', get_stylesheet_directory_uri() . '/js/gtag.js', false, time());
     wp_enqueue_script('glightbox', get_stylesheet_directory_uri() . '/js/glightbox.min.js', [], time());
     wp_enqueue_script('glightbox-init', get_stylesheet_directory_uri() . '/js/glightbox.init.js', ['glightbox'], time());
+    wp_enqueue_script('cookie-consent', get_stylesheet_directory_uri() . '/js/cookieconsent.umd.js', [], time());
+    wp_enqueue_script('cookie-consent-config', get_stylesheet_directory_uri() . '/js/cookieconsent-config.js', ['cookie-consent'], time());
 };
 add_action('wp_enqueue_scripts', 'wpdocs_carlifebydani_scripts');
 
