@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,1,200'); 
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,1,200');
 
 @tailwind base;
 
@@ -91,7 +91,10 @@
     }
 
     .post-content h3,
-    .post-content h4,
+    .post-content h4 {
+        @apply mb-4 mt-8;
+    }
+
     .post-content iframe,
     .post-content .wp-block-table,
     .post-content .wp-block-gallery,
@@ -100,7 +103,7 @@
     }
 
     .glightbox {
-        @apply relative block overflow-hidden;
+        @apply relative block cursor-pointer overflow-hidden;
     }
 
     .glightbox img {

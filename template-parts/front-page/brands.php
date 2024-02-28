@@ -47,7 +47,7 @@ $tags = get_tags([
     </div>
 
     <div class="w-full lg:rounded-br-8xl lg:border-b-20 lg:border-r-20 lg:pb-5 lg:pr-5 lg:border-white/10">
-        <div class="bg-black p-8 pr-10 lg:rounded-br-6xl grid grid-cols-4 lg:grid-cols-6 gap-4">
+        <div class="bg-black p-8 pr-10 lg:rounded-br-6xl grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4">
             <?php
             foreach ($brandsOrder as $brand) {
                 foreach ($tags as $tag) {

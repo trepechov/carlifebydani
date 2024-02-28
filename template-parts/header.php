@@ -59,7 +59,7 @@ if (!is_user_logged_in()) {
                     ?>
                 </ul>
                 <a href='<?php echo $topMenuItems[$i]->url ?>' class="button" target="_blank">
-                    <span class="material-symbols-outlined text-base -ml-1">favorite</span>
+                    <span class="material-symbols-outlined -ml-1">favorite</span>
                     <?php echo $topMenuItems[$i]->title ?>
                 </a>
             </nav>
@@ -105,7 +105,7 @@ if (!is_user_logged_in()) {
                 <div class="flex items-center">
                     <!-- Support us button (mobile) -->
                     <a href='<?php echo $topMenuItems[$i]->url ?>' class="button mr-4 !hidden sm:!flex lg:!hidden" target="_blank">
-                        <span class="material-symbols-outlined text-base -ml-1">favorite</span>
+                        <span class="material-symbols-outlined -ml-1">favorite</span>
                         <?php echo $topMenuItems[$i]->title ?>
                     </a>
 
@@ -126,7 +126,7 @@ if (!is_user_logged_in()) {
                                 <div class="wrapper h-full">
                                     <div class="relative h-full flex justify-center items-center">
 
-                                        <span class="material-symbols-outlined text-4xl absolute right-0 top-[64px] lg:top-[116px] hover:text-brand-red link-transition cursor-pointer" for="mobile-menu-top">
+                                        <span class="material-symbols-outlined text-4xl absolute right-4 top-4 hover:text-brand-red link-transition cursor-pointer" for="mobile-menu-top">
                                             close
                                         </span>
 

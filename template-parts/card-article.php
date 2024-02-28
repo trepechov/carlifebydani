@@ -1,4 +1,4 @@
-<article onclick="windows.location='<?php echo get_permalink($args['post']->ID) ?>'" class="auto-rows-max group grid grid-cols-1 cursor-pointer bg-black rounded-br-4xl overflow-hidden shadow-card hover:bg-brand-solidgrey sm:grid-cols-2 sm:rounded-br-5xl <?php echo empty($args['horizontal']) ? 'lg:grid-cols-1 lg:rounded-br-4xl' : '' ?>">
+<article onclick="window.location='<?php echo get_permalink($args['post']->ID) ?>'" class="auto-rows-max group grid grid-cols-1 cursor-pointer bg-black rounded-br-4xl overflow-hidden shadow-card hover:bg-brand-solidgrey sm:grid-cols-2 sm:rounded-br-5xl <?php echo empty($args['horizontal']) ? 'lg:grid-cols-1 lg:rounded-br-4xl' : '' ?>">
     <div class="relative">
         <div class="sm:hidden <?php echo empty($args['horizontal']) ? 'lg:block' : '' ?>">
             <div class="absolute z-10 bottom-4 pl-[7%] text-brand-lightgrey">
