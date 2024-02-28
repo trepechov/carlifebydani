@@ -110,6 +110,11 @@
         @apply transition-all duration-300 ease-in-out hover:scale-105 hover:brightness-110;
     }
 
+    /* Black background with padding and borrom right roundiing  eg. for text-blocks   */
+    .post-content .bg-text-block {
+        @apply mb-8 rounded-br-4xl bg-black p-8;
+    }
+
     /* Transparent image, e.g. chart  */
     .post-content .bg-image {
         @apply rounded-br-4xl bg-gray-200 pb-8;

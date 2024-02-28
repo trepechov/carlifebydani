@@ -19,7 +19,7 @@ if (!is_user_logged_in()) {
 </head>
 
 <body class="body">
-    <header class="bg-black sticky top-0 z-10 sm:static">
+    <header class="bg-black sticky top-0 z-999 sm:static">
         <div class="hidden wrapper py-2 justify-between items-center lg:flex">
             <!-- Popular tags menu -->
             <nav class="flex items-center gap-2 text-xs">
@@ -112,15 +112,15 @@ if (!is_user_logged_in()) {
                     <!-- Seach menu with button -->
                     <label class="relative cursor-pointer p-1 mt-2 2xl:mt-6" for="search-menu">
                         <input class="peer hidden" type="checkbox" id="search-menu" />
-                        <span class="material-symbols-outlined text-4xl z-[99999999] peer-checked:z-[99999999] hover:text-brand-red link-transition">
+                        <span class="material-symbols-outlined text-4xl z-999 peer-checked:z-999 hover:text-brand-red link-transition">
                             search
                         </span>
 
-                        <div class="fixed inset-0 peer-checked:z-[99999999] hidden h-full w-full bg-brand-solidgrey/80 backdrop-blur-sm peer-checked:block">
+                        <div class="fixed inset-0 peer-checked:z-999 hidden h-full w-full bg-brand-solidgrey/80 backdrop-blur-sm peer-checked:block">
                             &nbsp;
                         </div>
 
-                        <div class="fixed top-0 left-0 z-[99999999] h-2/5 w-full flex justify-center items-center -translate-y-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-y-0">
+                        <div class="fixed top-0 left-0 z-999 h-2/5 w-full flex justify-center items-center -translate-y-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-y-0">
                             <div class="relative h-full w-full bg-black shadow-2xl">
 
                                 <div class="wrapper h-full">
@@ -144,11 +144,11 @@ if (!is_user_logged_in()) {
                         <span class="material-symbols-outlined text-4xl hover:text-brand-red link-transition">
                             menu
                         </span>
-                        <div class="fixed inset-0 z-[99999999] hidden h-full w-full bg-brand-solidgrey/80 backdrop-blur-sm peer-checked:block">
+                        <div class="fixed inset-0 z-999 hidden h-full w-full bg-brand-solidgrey/80 backdrop-blur-sm peer-checked:block">
                             &nbsp;
                         </div>
-                        <div class="fixed top-0 right-0 z-[99999999] h-full w-full flex justify-end translate-x-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-x-0">
-                            <div class="relative h-full w-full px-8 py-12 bg-black/80 shadow-2xl sm:w-1/2 overflow-y-scroll">
+                        <div class="fixed top-0 right-0 z-999 h-full w-full flex justify-end translate-x-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-x-0">
+                            <div class="relative h-full w-full px-8 py-12 bg-black/80 shadow-2xl sm:w-1/2 overflow-y-auto">
                                 <span class="material-symbols-outlined text-4xl absolute right-4 top-4 hover:text-brand-red link-transition">
                                     close
                                 </span>

@@ -550,6 +550,9 @@ h6{
 .z-\[99999999\]{
   z-index: 99999999;
 }
+.z-999{
+  z-index: 99999999;
+}
 .col-span-2{
   grid-column: span 2 / span 2;
 }
@@ -1268,6 +1271,14 @@ h6{
   --tw-brightness: brightness(1.1);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
+/* Black background with padding and borrom right roundiing  eg. for text-blocks   */
+.post-content .bg-text-block{
+  margin-bottom: 2rem;
+  border-bottom-right-radius: 2rem;
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
+  padding: 2rem;
+}
 /* Transparent image, e.g. chart  */
 .post-content .bg-image{
   border-bottom-right-radius: 2rem;
@@ -1392,6 +1403,9 @@ h6{
   opacity: 1;
 }
 .peer:checked ~ .peer-checked\:z-\[99999999\]{
+  z-index: 99999999;
+}
+.peer:checked ~ .peer-checked\:z-999{
   z-index: 99999999;
 }
 .peer:checked ~ .peer-checked\:block{
