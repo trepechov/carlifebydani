@@ -52,6 +52,9 @@ module.exports = {
                 '6xl': '6rem',
                 '8xl': '8rem'
             },
+            zIndex: {
+                999: '99999999'
+            },
             backgroundImage: ({ theme }) => ({
                 'carbon-stripe-black': "url('../images/bg/carbon-stripe-black.png')",
                 'carbon-stripe-black-20': "url('../images/bg/carbon-stripe-black-20.png')",
