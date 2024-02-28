@@ -1,9 +1,7 @@
 <?php
-
 $locations = get_nav_menu_locations();
 $top_10_menu = wp_get_nav_menu_object($locations['top-10-menu']);
 $top_10_menu_items = wp_get_nav_menu_items($top_10_menu->term_id);
-
 ?>
 
 <div class="wrapper py-12">
@@ -14,6 +12,10 @@ $top_10_menu_items = wp_get_nav_menu_items($top_10_menu->term_id);
             ]); ?>
             Top 10
         </h3>
+        <div class="text-xs text-right text-brand-lightgrey ">
+            Car Life Top 10 е месечна класация.<br />
+            Период на класацията <?php echo date('01.m.') . " - "  . date('t.m.Y'); ?>
+        </div>
     </div>
 
     <div>

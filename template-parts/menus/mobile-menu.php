@@ -57,7 +57,7 @@
         ?>
       <li>
           <a href='<?php echo $topMenuItems[$i]->url ?>' class="button" target="_blank">
-              <span class="material-symbols-outlined text-base -ml-1">favorite</span>
+              <span class="material-symbols-outlined -ml-1">favorite</span>
               <?php echo $topMenuItems[$i]->title ?>
           </a>
       </li>
