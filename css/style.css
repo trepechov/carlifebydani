@@ -19,7 +19,7 @@
     }
 
     h2 {
-        @apply text-[42px]/11 font-bold;
+        @apply text-4xl/9 font-bold;
     }
 
     h3 {
@@ -90,6 +90,7 @@
         /* @apply grid gap-8; */
     }
 
+    .post-content h2,
     .post-content h3,
     .post-content h4 {
         @apply mb-4 mt-8;
