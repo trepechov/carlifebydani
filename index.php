@@ -126,7 +126,22 @@ get_template_part('template-parts/header');
                     <?php
                     } else {
                     ?>
-                        <p>Няма намерни публикации. index :(</p>
+                        <p>Няма намерни публикации</p>
+
+                        <ul class="list-none flex flex-wrap gap-2 text-sm">
+                            <?php
+                            $locations = get_nav_menu_locations();
+                            $top_tags_menu = wp_get_nav_menu_object($locations['top-tags-menu']);
+                            $top_tag_menu_items = wp_get_nav_menu_items($top_tags_menu->term_id);
+
+                            foreach ($top_tag_menu_items as $menuItem) { ?>
+                                <li>
+                                    <a href="<?php echo home_url('/') . '?s=' . $menuItem->post_name; ?>" class="hover:text-brand-red"><?php echo substr($menuItem->title, 1); ?></a>
+                                </li>
+                            <?php
+                            }
+                            ?>
+                        </ul>
                     <?php
                     }
                     ?>

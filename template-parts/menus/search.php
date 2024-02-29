@@ -1,4 +1,4 @@
-<form action="<?php echo home_url('/'); ?>" method="get" class="w-4/5">
+<form action="<?php echo home_url('/'); ?>" method="get" class="w-11/12 sm:w-4/5">
     <div class="relative ">
         <div class="pointer-events-none absolute left-0">
             <span class="material-symbols-outlined text-5xl hover:text-brand-red link-transition">
@@ -17,7 +17,7 @@
 
         foreach ($top_tag_menu_items as $menuItem) { ?>
             <li>
-                <a href="<?php echo home_url('/') . '?s=' . $menuItem->post_name; ?>" class=""><?php echo substr($menuItem->title, 1); ?></a>
+                <a href="<?php echo home_url('/') . '?s=' . $menuItem->post_name; ?>" class="hover:text-brand-red"><?php echo substr($menuItem->title, 1); ?></a>
             </li>
         <?php
         }

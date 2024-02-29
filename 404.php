@@ -1,46 +1,50 @@
 <?php
 
 /**
- * The main template file
+ * The page template file
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  */
 
 get_template_part('template-parts/header');
+
+
+$current_post = get_post();
+
+
 ?>
-<div class="wrapper">
-    <?php
-    if (have_posts()) {
-        /* Start the Loop */
-        while (have_posts()) {
-            the_post();
-            if (!is_home() && !is_front_page()) {
-    ?>
-                <h3 class="mt-16 mb-4"><?php the_title(); ?></h3>
-                <p class="italic">Публикувано на <?php echo get_the_date('d.m.y'); ?> в категория
-                    <?php
-                    $categories = get_the_category();
-                    if ($categories) {
-                        foreach ($categories as $category) {
-                            echo '<a href="' . get_category_link($category->term_id) . '" class="hover:text-brand-red">' . $category->name . '</a> ';
-                        }
-                    }
-                    ?> от <?php echo get_the_author(); ?> <!-- Added this line -->
-                </p>
 
-                </p>
-        <?php
+<div class="relative">
+
+
+    <div class="absolute h-80 w-full bg-carbon-stripe-white-20">
+        <div class="h-full bg-from-black-60-gradient"></div>
+    </div>
+
+    <div class="wrapper py-8 relative">
+
+        <!-- <h1 class="title text-3xl/8 font-bold mb-8 mt-6' ?>">404</h1> -->
+        <div class="post-content">
+            <h1 class="mt-16 text-7xl text-center text-brand-lightgrey">404</h1>
+            <h3 class="text-center !mt-0">Страницата не е намерена</h3>
+
+
+        </div>
+        <ul class="mt-8 list-none flex flex-wrap gap-2 text-sm justify-center">
+            <?php
+            $locations = get_nav_menu_locations();
+            $top_tags_menu = wp_get_nav_menu_object($locations['top-tags-menu']);
+            $top_tag_menu_items = wp_get_nav_menu_items($top_tags_menu->term_id);
+
+            foreach ($top_tag_menu_items as $menuItem) { ?>
+                <li>
+                    <a href="<?php echo home_url('/') . '?s=' . $menuItem->post_name; ?>" class="text-brand-lightgrey hover:text-brand-red"><?php echo substr($menuItem->title, 1); ?></a>
+                </li>
+            <?php
             }
-            the_content();
-        }
-    } else {
-        ?>
+            ?>
+        </ul>
+    </div>
 
-        <p>No posts found. 404 :(</p>
-
-    <?php
-    }
-    ?>
-</div>
-
-<?php get_template_part('template-parts/footer'); ?>
+    <?php get_template_part('template-parts/find-us'); ?>
+    <?php get_template_part('template-parts/footer'); ?>

@@ -547,9 +547,6 @@ h6{
 .z-10{
   z-index: 10;
 }
-.z-\[99999999\]{
-  z-index: 99999999;
-}
 .z-999{
   z-index: 99999999;
 }
@@ -578,6 +575,9 @@ h6{
 .my-8{
   margin-top: 2rem;
   margin-bottom: 2rem;
+}
+.\!mt-0{
+  margin-top: 0px !important;
 }
 .-ml-1{
   margin-left: -0.25rem;
@@ -726,6 +726,9 @@ h6{
 .w-1\.5{
   width: 0.375rem;
 }
+.w-11\/12{
+  width: 91.666667%;
+}
 .w-12{
   width: 3rem;
 }
@@ -740,9 +743,6 @@ h6{
 }
 .w-24{
   width: 6rem;
-}
-.w-4\/5{
-  width: 80%;
 }
 .w-48{
   width: 12rem;
@@ -852,14 +852,17 @@ h6{
   -moz-column-gap: 0.5rem;
        column-gap: 0.5rem;
 }
+.gap-y-2{
+  row-gap: 0.5rem;
+}
 .overflow-hidden{
   overflow: hidden;
 }
 .overflow-y-auto{
   overflow-y: auto;
 }
-.overflow-y-scroll{
-  overflow-y: scroll;
+.overscroll-auto{
+  overscroll-behavior: auto;
 }
 .overscroll-y-none{
   overscroll-behavior-y: none;
@@ -1071,9 +1074,6 @@ h6{
 }
 .text-center{
   text-align: center;
-}
-.text-right{
-  text-align: right;
 }
 .text-2xl{
   font-size: 1.5rem;
@@ -1402,9 +1402,6 @@ h6{
 .group:hover .group-hover\:opacity-100{
   opacity: 1;
 }
-.peer:checked ~ .peer-checked\:z-\[99999999\]{
-  z-index: 99999999;
-}
 .peer:checked ~ .peer-checked\:z-999{
   z-index: 99999999;
 }
@@ -1448,11 +1445,20 @@ h6{
   .sm\:w-1\/2{
     width: 50%;
   }
+  .sm\:w-4\/5{
+    width: 80%;
+  }
   .sm\:grid-cols-2{
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .sm\:grid-cols-4{
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .sm\:flex-row{
+    flex-direction: row;
+  }
+  .sm\:items-center{
+    align-items: center;
   }
   .sm\:gap-8{
     gap: 2rem;
@@ -1479,6 +1485,9 @@ h6{
   }
   .sm\:pt-4{
     padding-top: 1rem;
+  }
+  .sm\:text-right{
+    text-align: right;
   }
   .sm\:text-2xl\/7{
     font-size: 1.5rem;
