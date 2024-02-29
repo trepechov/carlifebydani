@@ -148,7 +148,7 @@ if (!is_user_logged_in()) {
                             &nbsp;
                         </div>
                         <div class="fixed top-0 right-0 z-999 h-full w-full flex justify-end translate-x-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-x-0">
-                            <div class="relative h-full w-full px-8 py-12 bg-black/80 shadow-2xl sm:w-1/2 overflow-y-auto">
+                            <div class="relative h-full w-full px-8 py-12 bg-black/80 shadow-2xl sm:w-1/2 overflow-y-auto overscroll-auto">
                                 <span class="material-symbols-outlined text-4xl absolute right-4 top-4 hover:text-brand-red link-transition">
                                     close
                                 </span>
