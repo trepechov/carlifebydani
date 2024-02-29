@@ -338,8 +338,8 @@ a,
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 h2{
-  font-size: 42px;
-  line-height: 2.75rem;
+  font-size: 2.25rem;
+  line-height: 2.25rem;
   font-weight: 700;
 }
 h3{
@@ -1102,6 +1102,10 @@ h6{
 .text-\[1\.0625rem\]{
   font-size: 1.0625rem;
 }
+.text-\[42px\]\/11{
+  font-size: 42px;
+  line-height: 2.75rem;
+}
 .text-base{
   font-size: 1rem;
   line-height: 1.5rem;
@@ -1242,7 +1246,8 @@ h6{
 .post-content {
         /* @apply grid gap-8; */
     }
-.post-content h3,
+.post-content h2,
+    .post-content h3,
     .post-content h4{
   margin-bottom: 1rem;
   margin-top: 2rem;

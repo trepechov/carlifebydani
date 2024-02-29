@@ -38,7 +38,7 @@ $featured_query = new WP_Query($feaured_args);
 
                     <span><?php echo date('d.m.Y', strtotime($hero_query->posts[0]->post_date)) ?></span>
                 </div>
-                <h2>
+                <h2 class="text-[42px]/11">
                     <a href='<?php echo get_permalink($hero_query->posts[0]->ID) ?>' class="link-transition hover:text-black line-clamp-4"><?php echo $hero_query->posts[0]->post_title ?></a>
                 </h2>
             </div>
