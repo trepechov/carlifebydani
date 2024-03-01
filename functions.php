@@ -69,7 +69,7 @@ function add_tag_links_to_content($content)
         $post_tags = get_the_tags();
 
         if ($post_tags) {
-            foreach ($post_tags as $tag) {
+            while ($tag = array_pop($post_tags)) {      // Reverse loop, when have tags like #Renault #Renault 5, link the extended tag first
                 $tag_link = get_tag_link($tag->term_id);
                 $tag_link_html = '<a href="' . esc_url($tag_link) . '">' . esc_html($tag->name) . '</a>';
                 $content = preg_replace(
