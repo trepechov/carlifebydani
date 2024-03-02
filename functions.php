@@ -85,3 +85,15 @@ function add_tag_links_to_content($content)
     return $content;
 }
 add_filter('the_content', 'add_tag_links_to_content');
+
+
+function add_blank_to_links($content)
+{
+
+    if (is_single() || is_page()) {
+        $content = preg_replace('/<a\s+href\s*=\s*["\'](https?:\/\/(?!' . preg_quote($_SERVER['SERVER_NAME']) . ')[^"\']+)["\']([^>]*)>/iu', '<a href="$1" target="_blank" nof$2>', $content);
+    }
+
+    return $content;
+}
+add_filter('the_content', 'add_blank_to_links');
