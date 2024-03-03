@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html <?php language_attributes(); ?> class="scroll-smooth">
-
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,7 +10,6 @@
     <title><?php wp_title(); ?></title>
     <?php wp_head(); ?>
 </head>
-
 <body class="body">
     <header class="bg-black sticky top-0 z-999 sm:static">
         <div class="hidden wrapper py-2 justify-between items-center lg:flex">
@@ -80,8 +78,15 @@
                         $main_menu = wp_get_nav_menu_object($locations['main-menu']);
                         $main_menu_items = wp_get_nav_menu_items($main_menu->term_id);
 
+                        $current_category = get_the_category();
+                        if ($current_category) {
+                            $current_category_id = $current_category[0]->cat_ID;
+                        } else {
+                            $current_category_id = 0;
+                        }
+
                         foreach ($main_menu_items as $key => $menuItem) {
-                            $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
+                            $current = ($menuItem->object_id == get_queried_object_id() || $menuItem->object_id == $current_category_id) ? 'text-brand-red' : '';
                         ?>
                             <li class="text-xl font-bold hover:text-brand-red <?php echo $current ?>">
                                 <a href="<?php echo  $menuItem->url ?>">
