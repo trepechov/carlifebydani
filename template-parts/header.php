@@ -1,8 +1,3 @@
-<?php
-if (!is_user_logged_in()) {
-    wp_redirect('https://evtour.carlifebydani.com/');
-    exit;
-} ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?> class="scroll-smooth">
 
