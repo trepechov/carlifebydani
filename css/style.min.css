@@ -1508,6 +1508,9 @@ h6{
   }
 }
 @media (min-width: 768px){
+  .md\:grid-cols-4{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
   .md\:flex-nowrap{
     flex-wrap: nowrap;
   }
@@ -1558,9 +1561,6 @@ h6{
   }
   .lg\:h-\[600px\]{
     height: 600px;
-  }
-  .lg\:w-10\/12{
-    width: 83.333333%;
   }
   .lg\:w-2\/5{
     width: 40%;
@@ -1663,8 +1663,14 @@ h6{
   .xl\:flex{
     display: flex;
   }
-  .xl\:p-9{
-    padding: 2.25rem;
+  .xl\:w-10\/12{
+    width: 83.333333%;
+  }
+  .xl\:grid-cols-8{
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .xl\:p-7{
+    padding: 1.75rem;
   }
 }
 @media (min-width: 1440px){

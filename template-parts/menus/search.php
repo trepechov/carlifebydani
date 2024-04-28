@@ -17,7 +17,7 @@
 
         foreach ($top_tag_menu_items as $menuItem) { ?>
             <li>
-                <a href="<?php echo home_url('/') . '?s=' . $menuItem->post_name; ?>" class="hover:text-brand-red"><?php echo substr($menuItem->title, 1); ?></a>
+                <a href="<?php echo home_url('/') . '?s=' . $menuItem->title; ?>" class="hover:text-brand-red"><?php echo substr($menuItem->title, 1); ?></a>
             </li>
         <?php
         }
