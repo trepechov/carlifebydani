@@ -975,6 +975,9 @@ h6{
 .bg-to-solidgray-gradient-post{
   background-image: linear-gradient(0deg, rgba(28,28,28,1) 0%, rgba(28,28,28,0) 40%);;
 }
+.bg-contain{
+  background-size: contain;
+}
 .bg-size-1\/3{
   background-size: 33.33%;
 }

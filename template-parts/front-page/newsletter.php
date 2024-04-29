@@ -4,7 +4,7 @@
     </div>
 
     <div class="w-full lg:rounded-br-8xl lg:border-b-20 lg:border-r-20 lg:pb-5 lg:pr-5 lg:border-white/10">
-        <div class="bg-black p-10 bg-no-repeat bg-right-top lg:bg-newsletter lg:rounded-br-6xl">
+        <div class="bg-black p-10 bg-no-repeat bg-right-top bg-contain lg:bg-newsletter lg:rounded-br-6xl">
             <div class="lg:w-1/2">
                 <h5 class="uppercase text-brand-lightgrey">Newsletter</h5>
                 <h2 class="mt-4">Готов ли си да получиш<br />нашите нови неща?</h2>
