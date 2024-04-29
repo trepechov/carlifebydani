@@ -60,6 +60,7 @@ module.exports = {
                 'carbon-stripe-black-20': "url('../images/bg/carbon-stripe-black-20.png')",
                 'carbon-stripe-white': "url('../images/bg/carbon-stripe-white.png')",
                 'carbon-stripe-white-20': "url('../images/bg/carbon-stripe-white-20.png')",
+                newsletter: "url('../images/bg/newsletter.png')",
                 'from-black-80-gradient': 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);',
                 'from-black-60-gradient': 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 80%)',
                 'to-black-80-gradient': 'linear-gradient(0deg, rgba(0, 0, 0, 0.80) 0%, rgba(0, 0, 0, 0.00) 40%);',

@@ -505,6 +505,9 @@ h6{
 .visible{
   visibility: visible;
 }
+.invisible{
+  visibility: hidden;
+}
 .fixed{
   position: fixed;
 }
@@ -532,11 +535,17 @@ h6{
 .right-0{
   right: 0px;
 }
+.right-1{
+  right: 0.25rem;
+}
 .right-4{
   right: 1rem;
 }
 .top-0{
   top: 0px;
+}
+.top-1{
+  top: 0.25rem;
 }
 .top-4{
   top: 1rem;
@@ -939,6 +948,9 @@ h6{
 .bg-brand-solidgrey\/80{
   background-color: rgb(28 28 28 / 0.8);
 }
+.bg-transparent{
+  background-color: transparent;
+}
 .bg-carbon-stripe-white{
   background-image: url('../images/bg/carbon-stripe-white.png');
 }
@@ -972,6 +984,9 @@ h6{
 .bg-left{
   background-position: left;
 }
+.bg-right-top{
+  background-position: right top;
+}
 .bg-top{
   background-position: top;
 }
@@ -984,6 +999,9 @@ h6{
 }
 .p-1{
   padding: 0.25rem;
+}
+.p-10{
+  padding: 2.5rem;
 }
 .p-4{
   padding: 1rem;
@@ -1156,6 +1174,10 @@ h6{
 .text-brand-red{
   --tw-text-opacity: 1;
   color: rgb(254 54 82 / var(--tw-text-opacity));
+}
+.text-green-600{
+  --tw-text-opacity: 1;
+  color: rgb(22 163 74 / var(--tw-text-opacity));
 }
 .text-white{
   --tw-text-opacity: 1;
@@ -1562,6 +1584,9 @@ h6{
   .lg\:h-\[600px\]{
     height: 600px;
   }
+  .lg\:w-1\/2{
+    width: 50%;
+  }
   .lg\:w-2\/5{
     width: 40%;
   }
@@ -1622,6 +1647,9 @@ h6{
   }
   .lg\:border-white\/10{
     border-color: rgb(255 255 255 / 0.1);
+  }
+  .lg\:bg-newsletter{
+    background-image: url('../images/bg/newsletter.png');
   }
   .lg\:bg-cover{
     background-size: cover;

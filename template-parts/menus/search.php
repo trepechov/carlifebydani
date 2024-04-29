@@ -1,5 +1,5 @@
 <form action="<?php echo home_url('/'); ?>" method="get" class="w-11/12 sm:w-4/5">
-    <div class="relative ">
+    <div class="relative">
         <div class="pointer-events-none absolute left-0">
             <span class="material-symbols-outlined text-5xl hover:text-brand-red link-transition">
                 search
