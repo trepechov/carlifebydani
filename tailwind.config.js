@@ -31,6 +31,7 @@ module.exports = {
             colors: {
                 brand: {
                     red: '#FE3652',
+                    green: '#87C840',
                     lightgrey: '#86898A',
                     button: '#505050',
                     grey: '#262626',

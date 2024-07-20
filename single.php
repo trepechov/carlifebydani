@@ -96,6 +96,35 @@ $bread_crumbs = [
                 <?php
                 echo apply_filters('the_content', $current_post->post_content);
                 ?>
+
+                <div class="flex flex-col gap-3">
+                    <?php
+                    $news = get_post_meta($current_post->ID, 'news_csv', true);
+                    if ($news) {
+                        $csv = file_get_contents($news);
+                        $array = array_map("str_getcsv", explode("\n", $csv));
+
+                        // pop first element, csv headers
+                        array_shift($array);
+
+                        foreach ($array as $key => $news_item) {
+
+                            // if( $key>5 ) break;
+
+                            $article = (object) [
+                                'title' => $news_item[0],
+                                'link' => $news_item[2],
+                                'description' => $news_item[1],
+                                'upvote' => $news_item[4],
+                                'downvote' => $news_item[5],
+                            ];
+
+                            get_template_part('template-parts/single/card-article-external', 'content', array('article' => $article));
+                        }
+                    }
+                    ?>
+                </div>
+
             </div>
             <div class="hidden lg:flex lg:col-span-1 lg:flex-col lg:gap-12">
                 <?php get_template_part('template-parts/single/sidebar', 'single-sidebar', array('post' => $current_post, 'category' => $current_category, 'tags' => $tags)); ?>
