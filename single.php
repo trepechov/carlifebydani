@@ -92,15 +92,18 @@ $bread_crumbs = [
 
                 <div class="lg:mb-0 post-content"><?php echo apply_filters('the_content', $current_post->post_excerpt); ?></div>
             </div>
-            <div class="col-span-2 post-content">
-                <?php
-                echo apply_filters('the_content', $current_post->post_content);
-                ?>
 
-                <div class="flex flex-col gap-3">
+            <div class="col-span-2">
+                <div class=" post-content">
                     <?php
-                    $news = get_post_meta($current_post->ID, 'news_csv', true);
-                    if ($news) {
+                    echo apply_filters('the_content', $current_post->post_content);
+                    ?>
+                </div>
+                <?php
+                $news = get_post_meta($current_post->ID, 'news_csv', true);
+                if ($news) { ?>
+                    <div class="flex flex-col gap-3">
+                        <?php
                         $csv = file_get_contents($news);
                         $array = array_map("str_getcsv", explode("\n", $csv));
 
@@ -109,9 +112,10 @@ $bread_crumbs = [
 
                         foreach ($array as $key => $news_item) {
 
-                            // if( $key>5 ) break;
+                            // if ($key > 5) break;
 
                             $article = (object) [
+                                'id' => base64_encode($news_item[2]),
                                 'title' => $news_item[0],
                                 'link' => $news_item[2],
                                 'description' => $news_item[1],
@@ -121,11 +125,11 @@ $bread_crumbs = [
 
                             get_template_part('template-parts/single/card-article-external', 'content', array('article' => $article));
                         }
-                    }
-                    ?>
-                </div>
-
+                        ?>
+                    </div>
+                <?php } ?>
             </div>
+
             <div class="hidden lg:flex lg:col-span-1 lg:flex-col lg:gap-12">
                 <?php get_template_part('template-parts/single/sidebar', 'single-sidebar', array('post' => $current_post, 'category' => $current_category, 'tags' => $tags)); ?>
                 <?php get_template_part('template-parts/sidebar'); ?>
