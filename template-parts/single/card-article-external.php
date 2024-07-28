@@ -13,7 +13,7 @@
             </h5>
 
             <?php if (!empty($args['article']->description)) { ?>
-                <label class="flex  items-center gap-1 cursor-pointer" for="news-article-<?php echo $args['article']->id ?>">
+                <label class="mt-3 flex items-center gap-1 cursor-pointer" for="news-article-<?php echo $args['article']->id ?>">
                     <span class="w-[18px] h-[18px] text-md flex justify-center items-center bg-brand-solidgrey">
                         <input class="peer hidden" type="checkbox" id="news-article-<?php echo $args['article']->id ?>">
                         <span class="hidden peer-checked:block material-symbols-outlined">keyboard_arrow_up</span>
