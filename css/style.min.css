@@ -706,6 +706,9 @@ h6{
 .hidden{
   display: none;
 }
+.aspect-\[36\/20\]{
+  aspect-ratio: 36/20;
+}
 .h-1\.5{
   height: 0.375rem;
 }
@@ -1292,6 +1295,12 @@ h6{
   transition-property: opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+}
+.delay-1000{
+  transition-delay: 1000ms;
+}
+.duration-1000{
+  transition-duration: 1000ms;
 }
 .duration-300{
   transition-duration: 300ms;

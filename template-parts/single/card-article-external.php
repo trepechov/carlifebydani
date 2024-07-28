@@ -2,7 +2,7 @@
 
     <div class="w-36 h-20 bg-cover" style="background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/noimage-gray.png">
         <a href="<?php echo $args['article']->link ?>" target="_blank" rel="nofollow">
-            <div class="w-full h-full opacity-0 transition-opacity duration-300 bg-cover js-thumbnail"></div>
+            <img src="" alt="<?php echo $args['article']->title ?>" class="opacity-0 aspect-[36/20] transition-opacity delay-1000 duration-1000 js-thumbnail">
         </a>
     </div>
 

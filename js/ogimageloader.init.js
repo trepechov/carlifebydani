@@ -29,8 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetchOgImage(url)
             .then((imageUrl) => {
-                jQuery(this).find('.js-thumbnail').css('background-image', 'url(' + imageUrl + ')').addClass('opacity-100');
-      
+                jQuery(this).find('.js-thumbnail').attr('src', imageUrl).addClass('opacity-100');
             })
             .catch((error) => {
                 // console.error('Error:', error);
