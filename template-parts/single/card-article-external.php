@@ -14,17 +14,16 @@
 
             <?php if (!empty($args['article']->description)) { ?>
                 <label class="mt-3 flex items-center gap-1 cursor-pointer" for="news-article-<?php echo $args['article']->id ?>">
-                    <span class="w-[18px] h-[18px] text-md flex justify-center items-center bg-brand-solidgrey">
-                        <input class="peer hidden" type="checkbox" id="news-article-<?php echo $args['article']->id ?>">
-                        <span class="hidden peer-checked:block material-symbols-outlined">keyboard_arrow_up</span>
-                        <span class="peer-checked:hidden material-symbols-outlined">keyboard_arrow_down</span>
+                    <input class="peer hidden" type="checkbox" id="news-article-<?php echo $args['article']->id ?>">
+                    <span class="w-[18px] h-[18px] text-md flex justify-center items-center bg-brand-solidgrey delay-75 duration-150 peer-checked:rotate-180">
+                        <span class="material-symbols-outlined">keyboard_arrow_up</span>
                     </span>
 
                     <span class="text-brand-red">Виж още</span>
                 </label>
             <?php } ?>
         </div>
-        <p class="mt-2 text-base hidden peer-has-[:checked]:block"><?php echo $args['article']->description ?></p>
+        <p class="mt-2 text-base overflow-hidden transition-all ease-in-out duration-300 opacity-0 max-h-0 peer-has-[:checked]:max-h-60 peer-has-[:checked]:opacity-100"><?php echo $args['article']->description ?></p>
     </div>
 
     <div class="flex gap-3 items-center h-20">

@@ -763,6 +763,9 @@ h6{
 .h-full{
   height: 100%;
 }
+.max-h-0{
+  max-height: 0px;
+}
 .min-h-\[80px\]{
   min-height: 80px;
 }
@@ -1291,6 +1294,11 @@ h6{
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
+.transition-all{
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
 .transition-opacity{
   transition-property: opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -1299,11 +1307,20 @@ h6{
 .delay-1000{
   transition-delay: 1000ms;
 }
+.delay-75{
+  transition-delay: 75ms;
+}
 .duration-1000{
   transition-duration: 1000ms;
 }
+.duration-150{
+  transition-duration: 150ms;
+}
 .duration-300{
   transition-duration: 300ms;
+}
+.ease-in-out{
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 .title{
   border-left-width: 10px;
@@ -1520,9 +1537,6 @@ h6{
 .peer:checked ~ .peer-checked\:block{
   display: block;
 }
-.peer:checked ~ .peer-checked\:hidden{
-  display: none;
-}
 .peer:checked ~ .peer-checked\:translate-x-0{
   --tw-translate-x: 0px;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -1531,8 +1545,15 @@ h6{
   --tw-translate-y: 0px;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
-.peer:has(:checked) ~ .peer-has-\[\:checked\]\:block{
-  display: block;
+.peer:checked ~ .peer-checked\:rotate-180{
+  --tw-rotate: 180deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.peer:has(:checked) ~ .peer-has-\[\:checked\]\:max-h-60{
+  max-height: 15rem;
+}
+.peer:has(:checked) ~ .peer-has-\[\:checked\]\:opacity-100{
+  opacity: 1;
 }
 @media (min-width: 640px){
   .sm\:static{
