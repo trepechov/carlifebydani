@@ -16,7 +16,7 @@
                 <label class="mt-3 flex items-center gap-1 cursor-pointer" for="news-article-<?php echo $args['article']->id ?>">
                     <input class="peer hidden" type="checkbox" id="news-article-<?php echo $args['article']->id ?>">
                     <span class="w-[18px] h-[18px] text-md flex justify-center items-center bg-brand-solidgrey delay-75 duration-150 peer-checked:rotate-180">
-                        <span class="material-symbols-outlined">keyboard_arrow_up</span>
+                        <span class="material-symbols-outlined">keyboard_arrow_down</span>
                     </span>
 
                     <span class="text-brand-red">Виж още</span>
