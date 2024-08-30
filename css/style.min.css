@@ -548,9 +548,6 @@ h6{
 .-top-1{
   top: -0.25rem;
 }
-.bottom-4{
-  bottom: 1rem;
-}
 .left-0{
   left: 0px;
 }
@@ -1143,9 +1140,6 @@ h6{
 .pl-20{
   padding-left: 5rem;
 }
-.pl-\[7\%\]{
-  padding-left: 7%;
-}
 .pr-10{
   padding-right: 2.5rem;
 }
@@ -1677,6 +1671,9 @@ h6{
   }
   .lg\:mb-0{
     margin-bottom: 0px;
+  }
+  .lg\:mt-2{
+    margin-top: 0.5rem;
   }
   .lg\:mt-96{
     margin-top: 24rem;
