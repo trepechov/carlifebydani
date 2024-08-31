@@ -65,7 +65,7 @@ module.exports = {
                 'from-black-80-gradient': 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);',
                 'from-black-60-gradient': 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 80%)',
                 'to-black-80-gradient': 'linear-gradient(0deg, rgba(0, 0, 0, 0.80) 0%, rgba(0, 0, 0, 0.00) 40%);',
-                'to-black-gradient-post': 'linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 40%);',
+                // 'to-black-gradient-post': 'linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 40%);',
                 'to-black-gradient': 'linear-gradient(0deg, rgba(0,0,0,1) 50%, rgba(0, 0, 0, 0) 100%);',
                 'to-black-gradient-mobile': 'linear-gradient(0deg, rgba(0,0,0,1) 70%, rgba(0, 0, 0, 0) 100%);',
                 'to-solidgray-gradient-post': 'linear-gradient(0deg, rgba(28,28,28,1) 0%, rgba(28,28,28,0) 40%);',

@@ -2,7 +2,7 @@
     <div class="relative">
         <div class="sm:hidden <?php echo empty($args['horizontal']) ? 'lg:block' : '' ?>">
 
-            <div class="overlay bg-to-black-gradient-post group-hover:opacity-0"></div>
+        <!-- <div class="overlay bg-to-black-gradient-post group-hover:opacity-0"></div> -->
             <div class="overlay bg-to-solidgray-gradient-post opacity-0 group-hover:opacity-100"></div>
         </div>
         <?php get_template_part('template-parts/featured-image', 'featured-image', [
