@@ -13,7 +13,7 @@
     </div>
 
     <div class="px-[7%] pb-[12%] group-hover:text-brand-red">
-        <div class="hidden mt-6 mb-2 sm:block lg:mt-2">
+        <div class="mt-6 mb-2 sm:block lg:mt-2">
             <?php get_template_part('template-parts/tags-category-date', 'tags', [
                 'post' => $args['post'],
                 'with_category' => !empty($args['with_category'])
