@@ -95,7 +95,10 @@ function add_blank_to_links($content)
 {
 
     if (is_single() || is_page()) {
-        $content = preg_replace('/<a\s+href\s*=\s*["\'](https?:\/\/(?!' . preg_quote($_SERVER['SERVER_NAME']) . ')[^"\']+)["\']([^>]*)>/iu', '<a href="$1" target="_blank" rel="nofollow"$2>', $content);
+        $content = preg_replace(
+            '/<a\s+href\s*=\s*["\'](https?:\/\/(?!' . preg_quote($_SERVER['SERVER_NAME'], '/') . ')[^"\']+)["\'](?![^>]*\srel=)([^>]*)>/iu', '<a href="$1" target="_blank" rel="nofollow"$3>',
+            $content
+        );
     }
 
     return $content;
