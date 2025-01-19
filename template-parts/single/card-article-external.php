@@ -2,7 +2,9 @@
 
     <div class="hidden sm:block w-36 h-20 bg-cover" style="background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/noimage-gray.png">
         <a href="<?php echo $args['article']->link ?>" target="_blank" rel="nofollow">
-            <img src="" alt="<?php echo $args['article']->title ?>" class="opacity-0 aspect-[36/20] transition-opacity delay-1000 duration-1000 js-thumbnail">
+            <div class="aspect-[36/20] overflow-hidden relative">
+                <img src="" alt="<?php echo $args['article']->title ?>" class="absolute top-1/2 -translate-y-1/2 opacity-0 transition-opacity delay-1000 duration-1000 js-thumbnail">
+            </div>
         </a>
     </div>
 
