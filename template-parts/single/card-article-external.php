@@ -1,6 +1,6 @@
 <article class="p-5 bg-black flex items-start gap-5 rounded-br-2xl js-external-article">
 
-    <div class="w-36 h-20 bg-cover" style="background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/noimage-gray.png">
+    <div class="hidden sm:block w-36 h-20 bg-cover" style="background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/noimage-gray.png">
         <a href="<?php echo $args['article']->link ?>" target="_blank" rel="nofollow">
             <img src="" alt="<?php echo $args['article']->title ?>" class="opacity-0 aspect-[36/20] transition-opacity delay-1000 duration-1000 js-thumbnail">
         </a>
