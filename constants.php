@@ -9,3 +9,5 @@ define('NEWS_CATEGORY_ID', 6);
 define('TOP_10_PAGE_ID', 797); //prod
 // define('VIDEOS_AND_PICTURES', 2032);
 // define('VIDEOS_AND_PICTURES', 2158); //prod
+// define('SHARE_WITH_US_PAGE_ID', 2754);
+define('SHARE_WITH_US_PAGE_ID', 6396); // prod

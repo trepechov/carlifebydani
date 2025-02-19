@@ -74,6 +74,14 @@ npm run pack
 
 You will have the zip package in project root folder
 
+# Confic and Constants
+
+Constants used throughout the application.
+
+This file contains various constants that are used in different parts of the application.
+It is located under the `/constants.php` file.
+
+
 # References
 
 https://bonnick.dev/posts/tailwind-css-with-wordpress

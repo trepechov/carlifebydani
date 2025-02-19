@@ -32,7 +32,7 @@ $meta_data = get_post_meta(TOP_10_PAGE_ID, 'top-10-order', true);
         <?php echo get_the_post_thumbnail(TOP_10_PAGE_ID, 'full', [
             'class' => 'h-4 mb-0.5 w-auto'
         ]); ?>
-        Top 10
+        <?php echo get_the_title(TOP_10_PAGE_ID); ?>
     </h4>
     <div class="flex flex-col gap-3 mt-5">
         <?php foreach ($top_10_menu_items as $key => $menu_item) {

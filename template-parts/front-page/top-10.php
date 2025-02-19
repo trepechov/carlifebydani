@@ -10,7 +10,7 @@ $top_10_menu_items = wp_get_nav_menu_items($top_10_menu->term_id);
             <?php echo get_the_post_thumbnail(TOP_10_PAGE_ID, 'full', [
                 'class' => 'h-5 mb-1 w-auto'
             ]); ?>
-            Top 10
+            <?php echo get_the_title(TOP_10_PAGE_ID); ?>
         </h3>
         <div class="text-xs text-brand-lightgrey sm:text-right">
             Car Life Top 10 е месечна класация.<br />

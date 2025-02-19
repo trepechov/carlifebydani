@@ -23,7 +23,7 @@
 
   <!-- Share with us menu -->
   <div class="flex gap-4 flex-col items-start">
-      <span class="text-xs uppercase text-brand-red">Сподели с нас...</span>
+      <span class="text-xs uppercase text-brand-red"><?php echo get_the_title(SHARE_WITH_US_PAGE_ID); ?></span>
       <?php
         $share_menu = wp_get_nav_menu_object($locations['share-menu']);
         $shareMenuItems = wp_get_nav_menu_items($share_menu->term_id);

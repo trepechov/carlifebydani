@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html <?php language_attributes(); ?> class="scroll-smooth">
+
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,6 +11,7 @@
     <title><?php wp_title(); ?></title>
     <?php wp_head(); ?>
 </head>
+
 <body class="body">
     <header class="bg-black sticky top-0 z-999 sm:static">
         <div class="hidden wrapper py-2 justify-between items-center lg:flex">
@@ -162,7 +164,7 @@
 
                     <!-- Share with us menu -->
                     <div class="hidden 2xl:flex flex-col items-start gap-1">
-                        <span class="text-xs uppercase text-brand-red">Сподели с нас...</span>
+                        <span class="text-xs uppercase text-brand-red"><?php echo get_the_title(SHARE_WITH_US_PAGE_ID); ?></span>
 
                         <div class="flex gap-8 flex-row">
                             <?php
