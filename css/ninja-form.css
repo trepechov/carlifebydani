@@ -1,0 +1,88 @@
+@layer base {
+    .form-layout {
+        @apply w-full lg:w-1/2;
+    }
+}
+
+@layer utilities {
+    .post-content .nf-form-cont {
+        @apply w-full lg:rounded-br-8xl lg:border-b-20 lg:border-r-20 lg:border-white/10 lg:pb-5 lg:pr-5;
+    }
+
+    .post-content .nf-form-title h3 {
+        @apply mb-0 bg-black p-10 pb-0;
+    }
+    .post-content .nf-form-wrap {
+        @apply bg-black bg-right-bottom bg-no-repeat p-10 lg:rounded-br-6xl lg:bg-newsletter lg:bg-size-1/2;
+    }
+
+    .post-content .nf-form-wrap .nf-form-fields-required {
+        @apply hidden;
+    }
+
+    .post-content .nf-form-wrap .nf-field-label {
+        @apply text-xl text-white;
+    }
+
+    .post-content .nf-form-wrap input,
+    .post-content .nf-form-wrap textarea {
+        @apply form-layout block border-b-2 border-b-brand-button bg-transparent pb-2.5 text-lg text-white placeholder:text-brand-grey focus:border-b-brand-lightgrey focus:outline-none;
+    }
+
+    .post-content .nf-form-wrap textarea {
+        @apply h-32;
+    }
+
+    .post-content .nf-form-wrap .submit-container input {
+        @apply button form-layout border-b-0;
+    }
+
+    .post-content .nf-form-wrap .checkbox-wrap {
+        @apply form-layout;
+    }
+    .post-content .nf-form-wrap .checkbox-wrap .nf-field-label {
+        @apply pl-1 text-sm lg:pl-2;
+    }
+    .post-content .nf-form-wrap .checkbox-wrap .nf-field-label label {
+        @apply font-normal;
+    }
+    .post-content .nf-form-wrap .checkbox-wrap .nf-field-element {
+        @apply pt-1;
+    }
+
+    .post-content .nf-form-wrap .nf-error input,
+    .post-content .nf-form-wrap .nf-error textarea,
+    .post-content .nf-form-wrap .nf-error label {
+        @apply border-l-0 border-r-0 border-t-0 border-b-brand-red text-brand-red;
+    }
+
+    /* Error message */
+    .post-content .nf-error-msg,
+    .post-content .ninja-forms-req-symbol {
+        @apply mt-2.5 text-sm text-brand-red;
+    }
+    .post-content .nf-error-field-errors {
+        @apply form-layout relative bg-[#7F1B29] px-4 py-2 text-lg text-white;
+    }
+    .post-content .nf-error-field-errors:after {
+        font-family: 'Material Symbols Outlined';
+        content: '\e645';
+        @apply absolute right-4 text-xl text-white;
+    }
+
+    /* Success message */
+    .post-content .nf-response-msg {
+        @apply form-layout relative mb-4 bg-[#446420] px-4 py-2 text-lg text-white;
+    }
+    .post-content .nf-response-msg:after {
+        font-family: 'Material Symbols Outlined';
+        content: '\e5ca';
+        @apply absolute right-4 top-2 text-xl text-white;
+    }
+    .post-content .nf-response-msg p {
+        @apply mb-0;
+    }
+    .post-content .nf-response-msg p:nth-child(2) {
+        @apply hidden;
+    }
+}

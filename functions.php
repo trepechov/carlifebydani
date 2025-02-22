@@ -104,3 +104,16 @@ function add_blank_to_links($content)
     return $content;
 }
 add_filter('the_content', 'add_blank_to_links');
+
+//Ninja Forms Custom Background Image
+function custom_header_code()
+{
+    $current_post = get_post();
+    $cover_image = get_post_meta($current_post->ID, 'form-image', true);
+    if ($cover_image) {
+        echo "<style id='ninja_forms_custom_bg'>.post-content .nf-form-wrap {
+            @media (width >= 64rem) { background-image: url('$cover_image');} }
+        </style>";
+    }
+}
+add_action('wp_head', 'custom_header_code');

@@ -1,12 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,1,200');
 
+@import 'ninja-form.css';
+
 @tailwind base;
 
 @layer base {
     body {
         @apply bg-brand-grey
-            font-body
+            font-body 
             text-white;
     }
 
@@ -36,6 +38,12 @@
 
     h6 {
         @apply text-lg/5 font-bold;
+    }
+
+    /* Autocomplete background fix */
+    input:-webkit-autofill {
+        -webkit-text-fill-color: white;
+        -webkit-background-clip: text;
     }
 }
 
@@ -155,7 +163,7 @@
     }
 
     .post-content table {
-        @apply w-full  border-collapse bg-brand-darkgrey;
+        @apply w-full border-collapse bg-brand-darkgrey;
     }
 
     .post-content td {
