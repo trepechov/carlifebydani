@@ -10,8 +10,11 @@ get_template_part('template-parts/header');
 
 
 $current_post = get_post();
-
-
+$redirect = get_post_meta($current_post->ID, 'redirect', true);
+if ($redirect) {
+    wp_redirect($redirect);
+    exit;
+}
 ?>
 
 <div class="relative">
