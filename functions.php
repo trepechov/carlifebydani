@@ -96,7 +96,8 @@ function add_blank_to_links($content)
 
     if (is_single() || is_page()) {
         $content = preg_replace(
-            '/<a\s+href\s*=\s*["\'](https?:\/\/(?!' . preg_quote($_SERVER['SERVER_NAME'], '/') . ')[^"\']+)["\'](?![^>]*\srel=)([^>]*)>/iu', '<a href="$1" target="_blank" rel="nofollow"$3>',
+            '/<a\s+href\s*=\s*["\'](https?:\/\/(?!' . preg_quote($_SERVER['SERVER_NAME'], '/') . ')[^"\']+)["\'](?![^>]*\srel=)([^>]*)>/iu',
+            '<a href="$1" target="_blank" rel="nofollow"$3>',
             $content
         );
     }
@@ -109,6 +110,10 @@ add_filter('the_content', 'add_blank_to_links');
 function custom_header_code()
 {
     $current_post = get_post();
+
+    if ($current_post->post_type !== 'page' && $current_post->post_type !== 'post') {
+        return;
+    }
     $cover_image = get_post_meta($current_post->ID, 'form-image', true);
     if ($cover_image) {
         echo "<style id='ninja_forms_custom_bg'>.post-content .nf-form-wrap {
