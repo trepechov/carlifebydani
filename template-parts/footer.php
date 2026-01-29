@@ -13,7 +13,7 @@
                 <nav>
                     <ul class="flex gap-4 text-md sm:gap-8 sm:text-xl font-bold ">
                         <?php
-                        
+
                         $locations = get_nav_menu_locations();
                         $footer_menu = wp_get_nav_menu_object($locations['footer-menu']);
                         $footerMenuItems = wp_get_nav_menu_items($footer_menu->term_id);
@@ -69,7 +69,7 @@
                     <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/mail.svg" alt="mail" class="h-14 hidden xl:block" />
                     <div class="flex flex-col gap-1">
                         <span class="text-xs text-brand-red">Контакти</span>
-                        <a class="text-3xl" href="mailto:info@carlifebydani.com">info@carlifebydani.com</a>
+                        <a class="text-3xl" href="mailto:media@carlifebydani.com">media@carlifebydani.com</a>
                         <span class="text-xs text-brand-lightgrey">Имате нужда от повече информация или връзка с нас.</span>
                     </div>
                 </div>
