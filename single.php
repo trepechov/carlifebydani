@@ -42,7 +42,7 @@ $bread_crumbs = [
 <div class="relative">
 
     <?php if (!empty($cover_image)) { ?>
-        <div class="absolute h-192 w-full bg-size-7/8 bg-top sm:bg-size-5/4 lg:bg-cover lg:bg-center bg-no-repeat" style="background-image: url(<?php echo $cover_image; ?>);">
+        <div class="absolute h-192 w-full bg-size-7/8 bg-top sm:bg-size-5/4 lg:bg-cover lg:bg-center bg-no-repeat" style="background-image: url(<?php echo esc_url($cover_image); ?>);">
             <div class="h-2/5 bg-from-black-80-gradient opacity-75"></div>
             <div class="h-3/5 bg-to-black-gradient-mobile md:bg-to-black-gradient"></div>
         </div>

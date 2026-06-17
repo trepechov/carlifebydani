@@ -154,7 +154,7 @@ function custom_header_code()
     $cover_image = get_post_meta($current_post->ID, 'form-image', true);
     if ($cover_image) {
         echo "<style id='ninja_forms_custom_bg'>.post-content .nf-form-wrap {
-            @media (width >= 64rem) { background-image: url('$cover_image');} }
+            @media (width >= 64rem) { background-image: url('" . esc_url($cover_image) . "');} }
         </style>";
     }
 }
