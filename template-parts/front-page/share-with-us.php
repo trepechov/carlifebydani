@@ -11,7 +11,7 @@ $shareMenu = wp_get_nav_menu_items($share_menu->term_id);
 			</div>
 
 			<div class="text-base text-brand-lightgrey">
-				<?php echo get_post_meta(SHARE_WITH_US_PAGE_ID, 'post-subtitle', true); ?></p>
+				<?php echo esc_html(get_post_meta(SHARE_WITH_US_PAGE_ID, 'post-subtitle', true)); ?></p>
 			</div>
 
 			<div class="hidden lg:block absolute top-[50px] -right-8 w-12 h-5/6 bg-carbon-stripe-white"></div>
@@ -27,7 +27,7 @@ $shareMenu = wp_get_nav_menu_items($share_menu->term_id);
 					<div class="z-10 w-2/3 py-16 px-8 lg:w-full lg:py-10 lg:text-center">
 						<h4 class="mb-3"><?php echo $menuItem->title ?></h4>
 						<p class="text-lg italic text-brand-lightgrey group-hover:text-white">
-							<?php echo get_post_meta($menuItem->object_id, 'post-subtitle', true); ?></p>
+							<?php echo esc_html(get_post_meta($menuItem->object_id, 'post-subtitle', true)); ?></p>
 					</div>
 				</div>
 			</a>

@@ -34,7 +34,7 @@
 
           <a href="<?php echo $menuItem->url ?>" class="flex flex-col">
               <span class="text-xl font-bold link-transition hover:text-brand-red"><?php echo $menuItem->title; ?></span>
-              <span class="text-xs italic text-brand-lightgrey"><?php echo get_post_meta($menuItem->object_id, 'post-subtitle', true); ?></span>
+              <span class="text-xs italic text-brand-lightgrey"><?php echo esc_html(get_post_meta($menuItem->object_id, 'post-subtitle', true)); ?></span>
           </a>
       <?php
         }
