@@ -106,6 +106,43 @@ function add_blank_to_links($content)
 }
 add_filter('the_content', 'add_blank_to_links');
 
+add_action('wp_ajax_nopriv_fetch_og_image', 'fetch_og_image_proxy');
+add_action('wp_ajax_fetch_og_image',         'fetch_og_image_proxy');
+
+function fetch_og_image_proxy() {
+    $url    = isset($_GET['url']) ? esc_url_raw(wp_unslash($_GET['url'])) : '';
+    $scheme = wp_parse_url($url, PHP_URL_SCHEME);
+    $host   = wp_parse_url($url, PHP_URL_HOST);
+
+    // Only HTTPS — blocks file://, php://, gopher://, dict://, http:// etc.
+    if ($scheme !== 'https' || !$host) {
+        wp_send_json_error('Only HTTPS URLs allowed', 400);
+    }
+
+    // Block private/internal IP ranges and cloud metadata endpoints.
+    $ip = gethostbyname($host);
+    if (
+        $ip === $host ||
+        filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false
+    ) {
+        wp_send_json_error('Disallowed target', 403);
+    }
+
+    // Fetch with wp_remote_get — no cookies, no auth headers, capped redirects.
+    $response = wp_remote_get($url, [
+        'timeout'     => 5,
+        'redirection' => 3,
+        'user-agent'  => 'Mozilla/5.0 (compatible; carlifebydani-og-bot/1.0)',
+        'cookies'     => [],
+    ]);
+
+    if (is_wp_error($response)) {
+        wp_send_json_error('Fetch failed', 502);
+    }
+
+    wp_send_json(['contents' => wp_remote_retrieve_body($response)]);
+}
+
 //Ninja Forms Custom Background Image
 function custom_header_code()
 {

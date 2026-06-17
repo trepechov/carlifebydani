@@ -1,7 +1,7 @@
 function fetchOgImage(url) {
     return new Promise((resolve, reject) => {
         jQuery.ajax({
-            url: '/wp-content/themes/carlifebydani/corsproxy.php?url=' + encodeURIComponent(url),
+            url: '/wp-admin/admin-ajax.php?action=fetch_og_image&url=' + encodeURIComponent(url),
             type: 'GET',
             dataType: 'json',
             success: function (data) {
