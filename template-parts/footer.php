@@ -22,8 +22,8 @@
                             $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
                         ?>
                             <li>
-                                <a class="hover:text-brand-red <?php echo $current ?>" href="<?php echo  $menuItem->url ?>">
-                                    <?php echo $menuItem->title ?>
+                                <a class="hover:text-brand-red <?php echo $current ?>" href="<?php echo esc_url($menuItem->url) ?>">
+                                    <?php echo esc_html($menuItem->title) ?>
                                 </a>
                             </li>
                         <?php
@@ -39,7 +39,7 @@
 
                         for ($i = 0; $i < count($bottomMenuItems) - 1; $i++) { ?>
                             <li>
-                                <a class="hover:text-brand-red" href='<?php echo $bottomMenuItems[$i]->url ?>'><?php echo $bottomMenuItems[$i]->title ?></a>
+                                <a class="hover:text-brand-red" href='<?php echo esc_url($bottomMenuItems[$i]->url) ?>'><?php echo esc_html($bottomMenuItems[$i]->title) ?></a>
                             </li>
                         <?php
                         }
@@ -54,8 +54,8 @@
 
                         foreach ($shareMenu as $key => $menuItem) { ?>
                             <li>
-                                <a class="hover:text-brand-red" href="<?php echo  $menuItem->url ?>">
-                                    <?php echo $menuItem->title ?>
+                                <a class="hover:text-brand-red" href="<?php echo esc_url($menuItem->url) ?>">
+                                    <?php echo esc_html($menuItem->title) ?>
                                 </a>
                             </li>
                         <?php

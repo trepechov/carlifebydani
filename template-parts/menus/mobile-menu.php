@@ -9,9 +9,9 @@
             $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
         ?>
           <li class="text-xl font-bold hover:text-brand-red <?php echo $current ?>">
-              <a href="<?php echo $menuItem->url ?>">
+              <a href="<?php echo esc_url($menuItem->url) ?>">
                   <span class="block text-sm leading-4 text-brand-red font-normal"><?php echo str_pad($key + 1, 2, '0', STR_PAD_LEFT) ?></span>
-                  <?php echo $menuItem->title ?>
+                  <?php echo esc_html($menuItem->title) ?>
               </a>
           </li>
       <?php
@@ -32,8 +32,8 @@
             $current = ($menuItem->object_id == get_queried_object_id()) ? 'text-brand-red' : '';
         ?>
 
-          <a href="<?php echo $menuItem->url ?>" class="flex flex-col">
-              <span class="text-xl font-bold link-transition hover:text-brand-red"><?php echo $menuItem->title; ?></span>
+          <a href="<?php echo esc_url($menuItem->url) ?>" class="flex flex-col">
+              <span class="text-xl font-bold link-transition hover:text-brand-red"><?php echo esc_html($menuItem->title); ?></span>
               <span class="text-xs italic text-brand-lightgrey"><?php echo esc_html(get_post_meta($menuItem->object_id, 'post-subtitle', true)); ?></span>
           </a>
       <?php
@@ -50,15 +50,15 @@
 
         for ($i = 0; $i < count($topMenuItems) - 1; $i++) { ?>
           <li class=" hover:text-brand-red">
-              <a href='<?php echo $topMenuItems[$i]->url ?>'><?php echo $topMenuItems[$i]->title ?></a>
+              <a href='<?php echo esc_url($topMenuItems[$i]->url) ?>'><?php echo esc_html($topMenuItems[$i]->title) ?></a>
           </li>
       <?php
         }
         ?>
       <li>
-          <a href='<?php echo $topMenuItems[$i]->url ?>' class="button" target="_blank">
+          <a href='<?php echo esc_url($topMenuItems[$i]->url) ?>' class="button" target="_blank">
               <span class="material-symbols-outlined -ml-1">favorite</span>
-              <?php echo $topMenuItems[$i]->title ?>
+              <?php echo esc_html($topMenuItems[$i]->title) ?>
           </a>
       </li>
   </ul>
