@@ -12,6 +12,8 @@ get_template_part('template-parts/header');
 $current_post = get_post();
 $redirect = get_post_meta($current_post->ID, 'redirect', true);
 if ($redirect) {
+    // wp_safe_redirect restricts to same-host by default. To allow specific external hosts,
+    // add them via the 'allowed_redirect_hosts' filter in a site-specific plugin.
     wp_safe_redirect($redirect);
     exit;
 }

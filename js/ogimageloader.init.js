@@ -1,7 +1,7 @@
 function fetchOgImage(url) {
     return new Promise((resolve, reject) => {
         jQuery.ajax({
-            url: '/wp-admin/admin-ajax.php?action=fetch_og_image&url=' + encodeURIComponent(url),
+            url: ogProxy.ajaxUrl + '?action=fetch_og_image&nonce=' + ogProxy.nonce + '&url=' + encodeURIComponent(url),
             type: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -11,13 +11,17 @@ function fetchOgImage(url) {
                 const ogImage = jQuery(html).find('meta[property="og:image"]').attr('content');
 
                 if (ogImage) {
+                    if (!/^https:\/\//i.test(ogImage)) {
+                        reject('Invalid og:image URL scheme');
+                        return;
+                    }
                     resolve(ogImage);
                 } else {
                     reject('No og:image meta tag found');
                 }
             },
             error: function (err) {
-                reject('Failed to fetch the page');
+                reject(err);
             }
         });
     });
