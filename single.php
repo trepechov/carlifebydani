@@ -106,10 +106,16 @@ $bread_crumbs = [
                 </div>
                 <?php
                 $news = get_post_meta($current_post->ID, 'news_csv', true);
-                if ($news) { ?>
+                if ($news && wp_parse_url($news, PHP_URL_SCHEME) === 'https') {
+                    $news_response = wp_remote_get($news, ['timeout' => 5]);
+                    $csv_raw = is_wp_error($news_response) ? '' : wp_remote_retrieve_body($news_response);
+                } else {
+                    $csv_raw = '';
+                }
+                if ($csv_raw) { ?>
                     <div class="flex flex-col gap-3">
                         <?php
-                        $csv = file_get_contents($news);
+                        $csv = $csv_raw;
                         $array = array_map("str_getcsv", explode("\n", $csv));
 
                         // pop first element, csv headers
