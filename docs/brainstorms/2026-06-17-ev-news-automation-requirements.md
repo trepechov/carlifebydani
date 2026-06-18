@@ -156,6 +156,29 @@ The live news page displays the current article list to visitors:
 
 ---
 
+## Click Tracking & Engagement Data (Planned)
+
+### Phase 1 — GA4 event tracking (implement now)
+
+Track clicks on external news source links in `card-article-external.php` using a `dataLayer` push (GTM is already installed). Event: `ev_news_click` with parameters:
+
+| Parameter | Source | Example |
+|---|---|---|
+| `article_title` | article title | `"Tesla откри завод в..."` |
+| `article_url` | article link | `https://electrek.co/...` |
+| `article_source` | extracted hostname | `"electrek.co"` |
+| `article_position` | DOM order | `3` |
+
+Implementation: `data-` attributes on both `<a>` links in the card template + a small JS listener in `ev-news-tracking.js` + one GA4 event tag configured in GTM.
+
+This fires on both existing weekly episode posts (CSV-sourced) and the future live EV news page — data collection starts before the live page is built.
+
+### Phase 2 — Retrieve click data into Google Sheet (deferred, post-plugin)
+
+Once the EV News Automator plugin exists, a WP-Cron job calls the GA4 Data API daily, fetches click counts per `article_url`, and writes them into a `Click Count` column in the Google Sheet. The sync step already reads the Sheet — the live page can then sort or badge articles by popularity with no architectural changes.
+
+---
+
 ## Out of Scope
 
 - X / Twitter integration (deferred, pending API access decision)
