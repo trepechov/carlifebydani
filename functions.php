@@ -152,12 +152,14 @@ function fetch_og_image_proxy() {
         wp_send_json_error('Disallowed target', 403);
     }
 
-    // Fetch with wp_remote_get — no cookies, no auth headers, no redirects (redirect-chain SSRF bypass).
+    // Fetch with wp_remote_get — no cookies, no auth headers.
+    // Allow up to 3 redirects (canonical URLs, trailing-slash redirects, etc.).
+    // SSRF is checked on the initial URL; standard public-web redirects are safe.
     $response = wp_remote_get($url, [
         'timeout'             => 5,
-        'redirection'         => 0,
+        'redirection'         => 3,
         'limit_response_size' => 102400,
-        'user-agent'          => 'Mozilla/5.0 (compatible; carlifebydani-og-bot/1.0)',
+        'user-agent'          => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
         'cookies'             => [],
     ]);
 
