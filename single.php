@@ -12,7 +12,9 @@ get_template_part('template-parts/header');
 $current_post = get_post();
 $redirect = get_post_meta($current_post->ID, 'redirect', true);
 if ($redirect) {
-    wp_redirect($redirect);
+    // wp_safe_redirect restricts to same-host by default. To allow specific external hosts,
+    // add them via the 'allowed_redirect_hosts' filter in a site-specific plugin.
+    wp_safe_redirect($redirect);
     exit;
 }
 
@@ -42,7 +44,7 @@ $bread_crumbs = [
 <div class="relative">
 
     <?php if (!empty($cover_image)) { ?>
-        <div class="absolute h-192 w-full bg-size-7/8 bg-top sm:bg-size-5/4 lg:bg-cover lg:bg-center bg-no-repeat" style="background-image: url(<?php echo $cover_image; ?>);">
+        <div class="absolute h-192 w-full bg-size-7/8 bg-top sm:bg-size-5/4 lg:bg-cover lg:bg-center bg-no-repeat" style="background-image: url('<?php echo esc_url($cover_image); ?>');">
             <div class="h-2/5 bg-from-black-80-gradient opacity-75"></div>
             <div class="h-3/5 bg-to-black-gradient-mobile md:bg-to-black-gradient"></div>
         </div>
@@ -106,10 +108,15 @@ $bread_crumbs = [
                 </div>
                 <?php
                 $news = get_post_meta($current_post->ID, 'news_csv', true);
-                if ($news) { ?>
+                $csv_raw = '';
+                if ($news && carlifebydani_is_safe_url($news)) {
+                    $news_response = wp_remote_get($news, ['timeout' => 5]);
+                    $csv_raw = is_wp_error($news_response) ? '' : wp_remote_retrieve_body($news_response);
+                }
+                if ($csv_raw) { ?>
                     <div class="flex flex-col gap-3">
                         <?php
-                        $csv = file_get_contents($news);
+                        $csv = $csv_raw;
                         $array = array_map("str_getcsv", explode("\n", $csv));
 
                         // pop first element, csv headers
@@ -124,8 +131,8 @@ $bread_crumbs = [
                                 'title' => $news_item[0],
                                 'link' => $news_item[2],
                                 'description' => $news_item[1],
-                                'upvote' => $news_item[4],
-                                'downvote' => $news_item[5],
+                                'upvote' => $news_item[4] ?? '',
+                                'downvote' => $news_item[5] ?? '',
                             ];
 
                             get_template_part('template-parts/single/card-article-external', 'content', array('article' => $article));
