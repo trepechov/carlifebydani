@@ -1,46 +1,80 @@
-# CarLife by Dani WordPress Theme
+# CarLife by Dani — Monorepo
 
-This is a custom WordPress theme developed by Dani. It's designed for car enthusiasts and uses Tailwind CSS for styling.
+This repository contains all code for the carlifebydani.com WordPress site.
 
-## Features
+## Repository Structure
 
--   Responsive design
--   Custom post types
--   Tailwind CSS for rapid UI development
+```
+carlifebydani/
+  theme/                  WordPress theme (carlifebydani)
+  plugins/
+    ev-news-automator/    Automated EV news collection plugin (in development)
+  docs/
+    brainstorms/          Requirements and feature planning documents
+```
 
-## Installation
+## Local Development Setup (WP Local)
 
-1. To run a local instance of WordPress. Follow the steps below:
+The repo root is no longer the theme directory — `theme/` holds the theme files. To keep WP Local working, replace the theme directory symlink:
 
--   Download and install [Local WP](https://localwp.com/). Ask someone for backup file.
--   Or use your favorite tool that supports PHP and MySQL.
+```bash
+# From the WP Local themes directory:
+cd "/path/to/WP Local/app/public/wp-content/themes"
 
-2. Navigate to the `/wp-content/themes` folder in your WordPress installation and clone this repository using `git clone` this repo.
+# Remove or rename the old checkout
+mv carlifebydani carlifebydani-old
 
-3. Navigate to the cloned repository by running `cd carlifebydani` and install the necessary dependencies by running `npm install`.
+# Clone the repo one level up (outside themes/)
+cd ..
+git clone <repo-url> carlifebydani-repo
 
-4. Log in to your WordPress admin panel, go to Appearance > Themes and activate the 'CarlifebyDani' theme.
+# Symlink the theme subdirectory into the themes folder
+ln -s "$(pwd)/carlifebydani-repo/theme" "themes/carlifebydani"
+```
 
-## Required Extensions
+WordPress sees `themes/carlifebydani` and finds `style.css` there as expected.
 
-This project uses Prettier & PHP Intelephense for code formattin. To install Prettier in Visual Studio Code:
+## Theme Development
 
-1. Open Visual Studio Code.
-2. Click on the Extensions view icon on the Sidebar or press `Ctrl+Shift+X`.
-3. Search and install the flowing:
+The theme uses Tailwind CSS. All theme work happens inside `theme/`.
 
--   `Prettier - Code formatter`
--   `PHP Intelephense`
+**Install dependencies:**
+```bash
+cd theme
+npm install
+```
 
-4. Optional you can also install `Tailwind CSS IntelliSense`
+**Compile CSS (watch mode):**
+```bash
+npm run dev
+```
 
-## User Settings
+**Build for production:**
+```bash
+npm run build
+```
 
-After installing the `Prettier - Code formatter` & `PHP Intelephense` plugins for your code editor.
+**Package for manual upload:**
+```bash
+npm run pack
+# Produces a zip in theme/ ready for wp-admin upload
+```
 
-1. Open the command palette in your code editor by pressing `Ctrl + Shift + P`, type `Open User Settings JSON`, and select the command. This will open your `settings.json` file.
+## Plugin Development
 
-2. Add the following code to your `settings.json` file:
+Plugin code lives in `plugins/ev-news-automator/`. See [docs/brainstorms/2026-06-17-ev-news-automation-requirements.md](docs/brainstorms/2026-06-17-ev-news-automation-requirements.md) for the feature spec.
+
+When deploying, copy `plugins/ev-news-automator/` to `wp-content/plugins/` on the server alongside the theme.
+
+## Editor Setup
+
+Install these VS Code extensions:
+
+- `Prettier - Code formatter`
+- `PHP Intelephense`
+- `Tailwind CSS IntelliSense` (optional)
+
+Add to your `settings.json`:
 
 ```json
 {
@@ -55,33 +89,10 @@ After installing the `Prettier - Code formatter` & `PHP Intelephense` plugins fo
 }
 ```
 
-## Development
+## Constants
 
-This theme uses Tailwind CSS. To compile your CSS, run:
+Site-wide WordPress constants are defined in `theme/constants.php`.
 
-```bash
-npm run dev
-```
+## References
 
-## Create template zip package
-
-1.  Update template version the package.json file (optional)
-2.  Use command:
-
-```
-npm run pack
-```
-
-You will have the zip package in project root folder
-
-# Confic and Constants
-
-Constants used throughout the application.
-
-This file contains various constants that are used in different parts of the application.
-It is located under the `/constants.php` file.
-
-
-# References
-
-https://bonnick.dev/posts/tailwind-css-with-wordpress
+- https://bonnick.dev/posts/tailwind-css-with-wordpress

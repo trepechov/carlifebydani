@@ -1,35 +1,21 @@
-# Ignore theme build files
-/dist
+# Theme build output
+/theme/dist
 
-# Ignore node_modules directory
-/node_modules
+# Theme dependencies
+/theme/node_modules
 
-# Ignore compiled CSS files
-# /style.css
+# Plugin dependencies (future)
+/plugins/*/node_modules
+/plugins/*/vendor
 
-# Ignore compiled JavaScript files
-# /script.js
-
-# Ignore compiled assets
-# /assets
-
-# Ignore development files
-# /.env
-# /.env.example
-# /.env.local
-# /.env.development
-# /.env.test
-# /.env.production
-
-# Ignore zip files
+# Zip archives
 *.zip
 
-
-# Ignore editor configuration files
+# Editor configuration
 /.vscode
 /.idea
 /.history
 
-# Ignore OS-generated files
+# OS-generated files
 .DS_Store
 Thumbs.db
