@@ -131,8 +131,8 @@ $bread_crumbs = [
                                 'title' => $news_item[0],
                                 'link' => $news_item[2],
                                 'description' => $news_item[1],
-                                'upvote' => $news_item[4],
-                                'downvote' => $news_item[5],
+                                'upvote' => $news_item[4] ?? '',
+                                'downvote' => $news_item[5] ?? '',
                             ];
 
                             get_template_part('template-parts/single/card-article-external', 'content', array('article' => $article));
