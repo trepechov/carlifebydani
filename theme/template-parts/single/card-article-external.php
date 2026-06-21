@@ -2,7 +2,7 @@
 
     <div class="hidden sm:block w-36 h-20 bg-cover" style="background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/noimage-gray.png">
         <a href="<?php echo esc_url($args['article']->link) ?>" target="_blank" rel="nofollow"
-           data-ev-news-article
+           data-ev-news
            data-title="<?php echo esc_attr($args['article']->title) ?>"
            data-url="<?php echo esc_attr($args['article']->link) ?>">
             <div class="aspect-[36/20] overflow-hidden relative">
@@ -37,7 +37,7 @@
 
     <div class="flex gap-3 items-center h-20">
         <div class="rounded-full border-2 w-12 h-12 flex justify-center items-center bg-brand-solidgrey border-brand-green border-opacity-40 relative">
-            <span class="text-lg font-bold"><?php echo esc_html(!empty($args['article']->upvote) ? $args['article']->upvote : '0') ?></span>
+            <span class="text-lg font-bold"><?php echo esc_html(!empty($args['article']->clicked) ? $args['article']->clicked : '0') ?></span>
             <div class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs font-bold rounded-full bg-brand-green material-symbols-outlined">Check</div>
         </div>
         <div class="rounded-full border-2 w-12 h-12 flex justify-center items-center bg-brand-solidgrey border-brand-red border-opacity-40 relative">

@@ -25,3 +25,5 @@ Thumbs.db
 
 # Local Claude Code settings (personal MCP servers, permissions)
 /.claude/settings.local.json
+# Test output (generated files, never commit)
+/plugins/*/tests/output/

@@ -1,0 +1,461 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+// STORAGE ADAPTER for Google Sheets v4 REST API.
+//
+// Spreadsheet structure (actual):
+//   One Google Spreadsheet with multiple sheets (tabs), one per podcast session.
+//   Tab names use DD.MM.YYYY format (e.g. "16.06.2026").
+//   Columns per tab: title | description | link | author | upvote | downvote | clicks | added_date | summary
+//   upvote/downvote are deprecated fields kept for backward compatibility; always empty.
+//   clicks (col G) — GA4 click count; written as 0 on append, updated daily by ENA_Analytics.
+//   added_date (col H) — Y-m-d date the row was appended; written by the adapter, never changed.
+//   summary (col I) — AI-generated 3-5 sentence podcast summary; written by ENA_Podcast before script generation.
+//   The session date lives in the tab name, not a column.
+//   "Active sheet" = the tab whose name is the most recent valid DD.MM.YYYY date.
+//
+// Backward compat: tabs created before clicks/added_date columns (A:F only) are handled by
+// read_data_rows() — missing G treated as clicks=0, missing H treated as added_date=session_date,
+// missing I treated as summary=''.
+//
+// Interface contract (all callers use these):
+//   read_data_rows(), append_rows(), delete_rows(), update_clicks(), update_summaries(), existing_urls(), row_count()
+//
+// Additional session management:
+//   list_sheets(), active_sheet_name(), create_session_sheet()
+class ENA_Sheets {
+
+    private const BASE                 = 'https://sheets.googleapis.com/v4/spreadsheets';
+    private const SCOPES               = [ 'https://www.googleapis.com/auth/spreadsheets' ];
+    private const COLUMNS              = [ 'title', 'description', 'link', 'author', 'upvote', 'downvote', 'clicks', 'added_date', 'summary' ];
+    private const SESSION_DATE_PATTERN = '/^\d{2}\.\d{2}\.\d{4}$/';
+
+    private ENA_Google_Auth $auth;
+    private ENA_Settings    $settings;
+
+    public function __construct( ENA_Google_Auth $auth, ENA_Settings $settings ) {
+        $this->auth     = $auth;
+        $this->settings = $settings;
+    }
+
+    // ── Public interface contract ────────────────────────────────────────────
+
+    /**
+     * Read data rows from the active session sheet.
+     * Returns assoc arrays with keys: title, description, link, author, upvote, downvote,
+     * clicks, added_date, session_date.
+     * session_date is parsed from the tab name (DD.MM.YYYY → Y-m-d), not a real column.
+     * Backward compat: missing col G → clicks=0; missing col H → added_date=session_date.
+     */
+    public function read_data_rows(): array|WP_Error {
+        $sheet = $this->active_sheet_name();
+        if ( is_wp_error( $sheet ) ) return $sheet;
+
+        $all = $this->read_sheet_rows( $sheet );
+        if ( is_wp_error( $all ) ) return $all;
+
+        $date = $this->parse_session_date( $sheet );
+        $rows = array_slice( $all, 1 ); // skip header row
+
+        return array_map( function ( $row ) use ( $date ) {
+            $padded = array_pad( $row, 9, '' );
+            $assoc  = array_combine( self::COLUMNS, array_slice( $padded, 0, 9 ) );
+            // Backward compat defaults for old tabs (A:F only)
+            if ( (string) $assoc['clicks'] === '' ) $assoc['clicks'] = 0;
+            if ( (string) $assoc['added_date'] === '' ) $assoc['added_date'] = $date;
+            $assoc['clicks']       = (int) $assoc['clicks'];
+            $assoc['session_date'] = $date;
+            return $assoc;
+        }, $rows );
+    }
+
+    /**
+     * Returns [link => true] for deduplication within the active session sheet.
+     */
+    public function existing_urls(): array {
+        $sheet = $this->active_sheet_name();
+        if ( is_wp_error( $sheet ) ) return [];
+
+        $token = $this->auth->get_access_token( self::SCOPES );
+        if ( is_wp_error( $token ) ) return [];
+
+        $id    = $this->settings->get( 'spreadsheet_id' );
+        $range = rawurlencode( "{$sheet}!C:C" ); // column C = link
+        $url   = self::BASE . "/{$id}/values/{$range}";
+
+        $response = ENA_HTTP::get( $url, [ 'headers' => [ 'Authorization' => "Bearer {$token}" ] ] );
+        $data     = ENA_HTTP::retrieve_json( $response );
+        if ( is_wp_error( $data ) ) return [];
+
+        $map = [];
+        foreach ( $data['values'] ?? [] as $i => $cell ) {
+            if ( $i === 0 ) continue; // skip header
+            $link = $cell[0] ?? '';
+            if ( ! empty( $link ) ) $map[ $link ] = true;
+        }
+        return $map;
+    }
+
+    /**
+     * Append rows to the active session sheet.
+     * Each row must be an assoc array with keys matching COLUMNS (except session_date and added_date).
+     * The adapter writes today's date into added_date automatically; clicks defaults to 0.
+     */
+    public function append_rows( array $rows ): bool|WP_Error {
+        if ( empty( $rows ) ) return true;
+
+        $sheet = $this->active_sheet_name();
+        if ( is_wp_error( $sheet ) ) return $sheet;
+
+        $token = $this->auth->get_access_token( self::SCOPES );
+        if ( is_wp_error( $token ) ) return $token;
+
+        $id    = $this->settings->get( 'spreadsheet_id' );
+        $range = rawurlencode( "{$sheet}!A:I" );
+        $url   = self::BASE . "/{$id}/values/{$range}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
+
+        $today  = gmdate( 'Y-m-d' );
+        $values = array_map(
+            function ( $row ) use ( $today ) {
+                return array_map( function ( $k ) use ( $row, $today ) {
+                    if ( $k === 'added_date' ) return $row['added_date'] ?? $today;
+                    if ( $k === 'clicks' )     return $row['clicks'] ?? 0;
+                    if ( $k === 'summary' )    return $row['summary'] ?? '';
+                    return $row[ $k ] ?? '';
+                }, self::COLUMNS );
+            },
+            $rows
+        );
+
+        $response = ENA_HTTP::post_json( $url, [ 'values' => $values ], [
+            'Authorization' => "Bearer {$token}",
+        ] );
+        $data = ENA_HTTP::retrieve_json( $response );
+        if ( is_wp_error( $data ) ) return $data;
+
+        return true;
+    }
+
+    /**
+     * Delete rows by 0-based data-row index from the active session sheet.
+     * Sorted descending internally to avoid index shifting.
+     */
+    public function delete_rows( array $row_indices ): bool|WP_Error {
+        if ( empty( $row_indices ) ) return true;
+
+        $token = $this->auth->get_access_token( self::SCOPES );
+        if ( is_wp_error( $token ) ) return $token;
+
+        $sheet_id = $this->active_sheet_id_numeric();
+        if ( is_wp_error( $sheet_id ) ) return $sheet_id;
+
+        rsort( $row_indices );
+
+        $requests = array_map( function ( $idx ) use ( $sheet_id ) {
+            $sheet_row = $idx + 1; // +1 for header offset
+            return [
+                'deleteDimension' => [
+                    'range' => [
+                        'sheetId'    => $sheet_id,
+                        'dimension'  => 'ROWS',
+                        'startIndex' => $sheet_row,
+                        'endIndex'   => $sheet_row + 1,
+                    ],
+                ],
+            ];
+        }, $row_indices );
+
+        $id  = $this->settings->get( 'spreadsheet_id' );
+        $url = self::BASE . "/{$id}:batchUpdate";
+
+        $response = ENA_HTTP::post_json( $url, [ 'requests' => $requests ], [
+            'Authorization' => "Bearer {$token}",
+        ] );
+        $data = ENA_HTTP::retrieve_json( $response );
+        if ( is_wp_error( $data ) ) return $data;
+
+        return true;
+    }
+
+    /**
+     * Update column G (clicks) for every row whose link URL matches the given map.
+     * Rows whose URL is not in $url_to_clicks are left unchanged.
+     */
+    public function update_clicks( array $url_to_clicks ): bool|WP_Error {
+        if ( empty( $url_to_clicks ) ) return true;
+
+        $sheet = $this->active_sheet_name();
+        if ( is_wp_error( $sheet ) ) return $sheet;
+
+        $token = $this->auth->get_access_token( self::SCOPES );
+        if ( is_wp_error( $token ) ) return $token;
+
+        $id = $this->settings->get( 'spreadsheet_id' );
+
+        // Read link column to find which sheet rows need updating
+        $range    = rawurlencode( "{$sheet}!C:C" );
+        $url      = self::BASE . "/{$id}/values/{$range}";
+        $response = ENA_HTTP::get( $url, [ 'headers' => [ 'Authorization' => "Bearer {$token}" ] ] );
+        $data     = ENA_HTTP::retrieve_json( $response );
+        if ( is_wp_error( $data ) ) return $data;
+
+        $update_data = [];
+        foreach ( $data['values'] ?? [] as $row_index => $cell ) {
+            if ( $row_index === 0 ) continue; // skip header (sheet row 1)
+            $link = $cell[0] ?? '';
+            if ( ! empty( $link ) && array_key_exists( $link, $url_to_clicks ) ) {
+                $sheet_row     = $row_index + 1; // 1-based sheet row
+                $update_data[] = [
+                    'range'  => "{$sheet}!G{$sheet_row}",
+                    'values' => [ [ (int) $url_to_clicks[ $link ] ] ],
+                ];
+            }
+        }
+
+        if ( empty( $update_data ) ) return true;
+
+        $batch_url = self::BASE . "/{$id}/values:batchUpdate";
+        $response  = ENA_HTTP::post_json( $batch_url, [
+            'valueInputOption' => 'RAW',
+            'data'             => $update_data,
+        ], [ 'Authorization' => "Bearer {$token}" ] );
+
+        $result = ENA_HTTP::retrieve_json( $response );
+        if ( is_wp_error( $result ) ) return $result;
+
+        return true;
+    }
+
+    /**
+     * Write AI-generated summaries to column I for rows whose link URL matches the given map.
+     * Rows whose URL is not in $link_to_summary are left unchanged.
+     */
+    public function update_summaries( array $link_to_summary ): bool|WP_Error {
+        if ( empty( $link_to_summary ) ) return true;
+
+        $sheet = $this->active_sheet_name();
+        if ( is_wp_error( $sheet ) ) return $sheet;
+
+        $token = $this->auth->get_access_token( self::SCOPES );
+        if ( is_wp_error( $token ) ) return $token;
+
+        $id = $this->settings->get( 'spreadsheet_id' );
+
+        $range    = rawurlencode( "{$sheet}!C:C" );
+        $url      = self::BASE . "/{$id}/values/{$range}";
+        $response = ENA_HTTP::get( $url, [ 'headers' => [ 'Authorization' => "Bearer {$token}" ] ] );
+        $data     = ENA_HTTP::retrieve_json( $response );
+        if ( is_wp_error( $data ) ) return $data;
+
+        $update_data = [];
+        foreach ( $data['values'] ?? [] as $row_index => $cell ) {
+            if ( $row_index === 0 ) continue; // skip header
+            $link = $cell[0] ?? '';
+            if ( ! empty( $link ) && array_key_exists( $link, $link_to_summary ) ) {
+                $sheet_row     = $row_index + 1;
+                $update_data[] = [
+                    'range'  => "{$sheet}!I{$sheet_row}",
+                    'values' => [ [ $link_to_summary[ $link ] ] ],
+                ];
+            }
+        }
+
+        if ( empty( $update_data ) ) return true;
+
+        $batch_url = self::BASE . "/{$id}/values:batchUpdate";
+        $response  = ENA_HTTP::post_json( $batch_url, [
+            'valueInputOption' => 'RAW',
+            'data'             => $update_data,
+        ], [ 'Authorization' => "Bearer {$token}" ] );
+
+        $result = ENA_HTTP::retrieve_json( $response );
+        if ( is_wp_error( $result ) ) return $result;
+
+        return true;
+    }
+
+    /**
+     * Reorder all data rows in the active session sheet by clicks (column G) descending.
+     * The header row (row 1) is preserved — sort starts at row index 1.
+     * Called after update_clicks() so the public CSV export reflects engagement order immediately.
+     */
+    public function sort_by_clicks(): bool|WP_Error {
+        $sheet_id = $this->active_sheet_id_numeric();
+        if ( is_wp_error( $sheet_id ) ) return $sheet_id;
+
+        $token = $this->auth->get_access_token( self::SCOPES );
+        if ( is_wp_error( $token ) ) return $token;
+
+        $id  = $this->settings->get( 'spreadsheet_id' );
+        $url = self::BASE . "/{$id}:batchUpdate";
+
+        $response = ENA_HTTP::post_json( $url, [
+            'requests' => [
+                [
+                    'sortRange' => [
+                        'range'     => [
+                            'sheetId'          => $sheet_id,
+                            'startRowIndex'    => 1, // skip header row
+                            'startColumnIndex' => 0,
+                            'endColumnIndex'   => 9, // columns A–I
+                        ],
+                        'sortSpecs' => [
+                            [
+                                'dimensionIndex' => 6, // column G = clicks
+                                'sortOrder'      => 'DESCENDING',
+                            ],
+                            [
+                                'dimensionIndex' => 7, // column H = added_date
+                                'sortOrder'      => 'DESCENDING',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], [ 'Authorization' => "Bearer {$token}" ] );
+
+        $result = ENA_HTTP::retrieve_json( $response );
+        if ( is_wp_error( $result ) ) return $result;
+
+        return true;
+    }
+
+    public function row_count(): int {
+        $rows = $this->read_data_rows();
+        if ( is_wp_error( $rows ) ) return 0;
+        return count( $rows );
+    }
+
+    // ── Session management ───────────────────────────────────────────────────
+
+    /**
+     * List all sheet tabs in the spreadsheet.
+     * Returns [['title' => 'DD.MM.YYYY', 'id' => 12345], ...]
+     * Result cached in a transient for 5 minutes.
+     */
+    public function list_sheets(): array|WP_Error {
+        $id        = $this->settings->get( 'spreadsheet_id' );
+        $cache_key = 'ena_sheets_list_' . md5( (string) $id );
+        $cached    = get_transient( $cache_key );
+        if ( is_array( $cached ) ) return $cached;
+
+        $token = $this->auth->get_access_token( self::SCOPES );
+        if ( is_wp_error( $token ) ) return $token;
+
+        $url      = self::BASE . "/{$id}?fields=sheets.properties(sheetId,title)";
+        $response = ENA_HTTP::get( $url, [ 'headers' => [ 'Authorization' => "Bearer {$token}" ] ] );
+        $data     = ENA_HTTP::retrieve_json( $response );
+        if ( is_wp_error( $data ) ) return $data;
+
+        $sheets = array_map(
+            fn ( $s ) => [
+                'title' => $s['properties']['title'],
+                'id'    => (int) $s['properties']['sheetId'],
+            ],
+            $data['sheets'] ?? []
+        );
+
+        set_transient( $cache_key, $sheets, 5 * MINUTE_IN_SECONDS );
+        return $sheets;
+    }
+
+    /**
+     * Return the tab title of the most recently dated session sheet (DD.MM.YYYY format).
+     */
+    public function active_sheet_name(): string|WP_Error {
+        $sheets = $this->list_sheets();
+        if ( is_wp_error( $sheets ) ) return $sheets;
+
+        $dated = array_filter(
+            $sheets,
+            fn ( $s ) => preg_match( self::SESSION_DATE_PATTERN, $s['title'] )
+        );
+
+        if ( empty( $dated ) ) {
+            return new WP_Error(
+                'no_session_sheet',
+                'No session sheet found. Expected tabs named DD.MM.YYYY (e.g. "16.06.2026").'
+            );
+        }
+
+        usort( $dated, fn ( $a, $b ) =>
+            $this->parse_session_timestamp( $b['title'] ) <=> $this->parse_session_timestamp( $a['title'] )
+        );
+
+        return $dated[0]['title'];
+    }
+
+    /**
+     * Returns the direct URL to the active session tab including the #gid anchor.
+     * Mirrors active_sheet_name() logic — filters, sorts, then reads 'id' from the
+     * same array element to avoid a secondary title-match lookup that can fail silently.
+     */
+    public function active_sheet_url(): string|WP_Error {
+        $sheets = $this->list_sheets();
+        if ( is_wp_error( $sheets ) ) return $sheets;
+
+        $dated = array_values( array_filter(
+            $sheets,
+            fn ( $s ) => preg_match( self::SESSION_DATE_PATTERN, $s['title'] )
+        ) );
+
+        if ( empty( $dated ) ) {
+            return new WP_Error( 'no_session_sheet', 'No session sheet found — cannot build sheet URL.' );
+        }
+
+        usort( $dated, fn ( $a, $b ) =>
+            $this->parse_session_timestamp( $b['title'] ) <=> $this->parse_session_timestamp( $a['title'] )
+        );
+
+        $active = $dated[0];
+        $id     = $this->settings->get( 'spreadsheet_id' );
+        return "https://docs.google.com/spreadsheets/d/{$id}/edit#gid={$active['id']}";
+    }
+
+    // ── Private helpers ──────────────────────────────────────────────────────
+
+    private function read_sheet_rows( string $sheet_name ): array|WP_Error {
+        $token = $this->auth->get_access_token( self::SCOPES );
+        if ( is_wp_error( $token ) ) return $token;
+
+        $id    = $this->settings->get( 'spreadsheet_id' );
+        $range = rawurlencode( "{$sheet_name}!A:I" );
+        $url   = self::BASE . "/{$id}/values/{$range}";
+
+        $response = ENA_HTTP::get( $url, [ 'headers' => [ 'Authorization' => "Bearer {$token}" ] ] );
+        $data     = ENA_HTTP::retrieve_json( $response );
+        if ( is_wp_error( $data ) ) return $data;
+
+        return $data['values'] ?? [];
+    }
+
+    private function active_sheet_id_numeric(): int|WP_Error {
+        $sheet_name = $this->active_sheet_name();
+        if ( is_wp_error( $sheet_name ) ) return $sheet_name;
+
+        $sheets = $this->list_sheets();
+        if ( is_wp_error( $sheets ) ) return $sheets;
+
+        foreach ( $sheets as $sheet ) {
+            if ( $sheet['title'] === $sheet_name ) {
+                return $sheet['id'];
+            }
+        }
+
+        return new WP_Error( 'sheet_id_missing', "Could not find numeric ID for sheet: {$sheet_name}" );
+    }
+
+    /** DD.MM.YYYY → Y-m-d (falls back to the raw name on parse failure). */
+    private function parse_session_date( string $tab_name ): string {
+        if ( preg_match( '/^(\d{2})\.(\d{2})\.(\d{4})$/', $tab_name, $m ) ) {
+            return "{$m[3]}-{$m[2]}-{$m[1]}";
+        }
+        return $tab_name;
+    }
+
+    /** DD.MM.YYYY → Unix timestamp for sorting (returns 0 on parse failure). */
+    private function parse_session_timestamp( string $tab_name ): int {
+        $dt = DateTime::createFromFormat( 'd.m.Y', $tab_name, new DateTimeZone( 'UTC' ) );
+        return $dt ? $dt->getTimestamp() : 0;
+    }
+}

@@ -5,7 +5,7 @@ document.addEventListener('click', function (e) {
     var allLinks = document.querySelectorAll('[data-ev-news-article]');
     var position = Array.prototype.indexOf.call(allLinks, link) + 1;
 
-    var url = link.dataset.url;
+    var url = (link.dataset.url || '').slice(0, 100);
     var source = '';
     try { source = new URL(url).hostname; } catch (err) {}
 
