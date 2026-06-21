@@ -97,11 +97,11 @@ InsideEVs (20 items) and The Driven (10 items) don't expose enough history for a
 **2. Electrek's Saturday anomaly.**
 Saturday June 20 shows 0 in the feed. Likely cause: Electrek timestamps some articles as Friday night or Sunday morning, or the feed was fetched mid-Saturday. Sunday June 14 shows 5, consistent with a lighter weekend pattern. Realistic Sat/Sun range: **3–7 articles**.
 
-**3. Electrek is not 100% EV.**
-Electrek covers all green transport (solar, ebikes, energy storage). Approximately 60–70% of articles are EV-relevant. Effective EV output after relevance filtering: **~7–8/day**, not 11.3.
+**3. Electrek is not 100% EV — handled by engagement sort.**
+Electrek covers all green transport (solar, ebikes, energy storage). Approximately 60–70% of articles are EV-relevant. No manual keyword filter is needed: the plugin's engagement sort already acts as a secondary relevance filter. Off-topic articles receive no clicks from an EV audience, sink to Group 3 (zero-click older), and de-prioritise themselves from the podcast script automatically.
 
-**4. Effective plugin input (post-filter estimate).**
-After EV-relevance filtering and cross-source deduplication (~5–10% URL overlap):
+**4. Effective plugin input (post-deduplication estimate).**
+After cross-source deduplication (~5–10% URL overlap):
 - Conservative: **~12–15 new articles/day**
 - Realistic: **~15–20 new articles/day**
 - Weekly: **~85–140 articles**
@@ -117,5 +117,5 @@ With `max_articles=50` and ~15–20 new articles arriving daily, the plugin will
 |---------|---------------|
 | InsideEVs/The Driven feed windows are too small | Check if they offer paginated RSS (`?paged=2`) or a full-feed option |
 | ev-database.org adds no daily news value | Consider removing or replacing with an active RSS news source |
-| Electrek dominates at 74% of volume | Add 1–2 more sources to diversify (e.g. `electrive.com` publishes ~7–8/day, EU-focused) |
+| Electrek dominates at 74% of volume | Not a problem — engagement sort demotes off-topic articles naturally. Adding `electrive.com` (~7–8/day, EU-focused) would still improve source diversity. |
 | 50-article cap trims content within 3–4 days | Consider raising `max_articles` to 100–150 for a fuller week of content on the episode page |

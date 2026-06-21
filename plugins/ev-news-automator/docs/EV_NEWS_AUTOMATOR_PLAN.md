@@ -41,7 +41,7 @@ The team plans to migrate away from Google Sheets as the article database in a f
   - `append_rows(array $rows): bool|WP_Error` — each row is an assoc array with the same keys (except `session_date` and `added_date`). The adapter writes today's date into column H automatically. `clicks` defaults to `0`.
   - `delete_rows(array $row_indices): bool|WP_Error` — delete by storage-internal indices (adapter translates to whatever the backend needs).
   - `update_clicks(array $url_to_clicks): bool|WP_Error` — given a map of `[url => int]`, update column G for every matching row in the active sheet. Rows whose URL is not in the map are left unchanged.
-  - `sort_by_clicks(): bool|WP_Error` — reorder all data rows in the active sheet by column G (clicks) descending using the Sheets v4 `sortRange` batchUpdate. Header row is preserved. Called immediately after `update_clicks()` so the public CSV export reflects engagement order before new articles are appended.
+  - `sort_by_clicks(): bool|WP_Error` — reorder all data rows in the active sheet by column G (clicks) descending using the Sheets v4 `sortRange` batchUpdate, with column H (`added_date`) descending as a tiebreaker for equal click counts. Header row is preserved. Called immediately after `update_clicks()` so the public CSV export reflects engagement order before new articles are appended.
   - `existing_urls(): array` — returns `[link => true]` for dedupe.
   - `row_count(): int`
 - Keep `class-ena-sheets.php` self-contained (no business logic) so it can be deleted cleanly.
@@ -90,7 +90,7 @@ plugins/ev-news-automator/
 │   ├── class-ena-google-auth.php      # Service Account JWT (RS256, openssl_sign) → access token cached in wp_options
 │   ├── class-ena-sheets.php           # STORAGE ADAPTER — Google Sheets v4: read, append, delete, update_clicks, existing_urls
 │   ├── class-ena-analytics.php        # GA4 Data API v1: fetch ev_news_click event counts keyed by article_url
-│   ├── class-ena-docs.php             # Google Docs v1 + Drive v3: create doc, move to folder, append sections
+│   ├── class-ena-docs.php             # Google Docs v1 + Drive v3: append sections to a user-supplied doc ID
 │   ├── class-ena-openrouter.php       # OpenRouter chat completions: summarize (→ bg_title, bg_summary), podcast_script
 │   ├── class-ena-scraper.php          # fetch_source (RSS / HTML fallback), extract_body (for podcast), clean_text
 │   ├── class-ena-collector.php        # Phase 1 orchestrator: scrape → dedupe → summarize → store → trim
@@ -155,15 +155,12 @@ get( string $key, $default = null )
 all(): array
 update( array $values ): void
 defaults(): array
-// defaults: openrouter_model='anthropic/claude-opus-4-8', max_articles=50,
+// defaults: openrouter_model='anthropic/claude-opus-4-8', max_articles=50, max_script_articles=10,
 //           collection_interval='daily', collection_time='09:00',
-//           ga4_property_id='', placeholder_page_id='', sources='',
-//           placeholder_page_id=0
+//           ga4_property_id='', google_doc_id='', sources=''
 sources(): array    // parses the sources textarea into [['url'=>..., 'method'=>'rss'|'html'], ...]
 service_account_path(): string
 ga4_property_id(): string   // GA4 numeric property ID (e.g. '123456789'); empty string disables click sync
-placeholder_page_id(): int  // WP page ID of the current upcoming-session placeholder page;
-                            // ENA_Sync updates its news_csv meta to the active tab CSV URL
 ```
 
 **Sources field format** — a plain `<textarea>` in the settings page, one source per line:
@@ -204,6 +201,7 @@ clear_transcript(): void
 
 set_status( string $key, array $data ): void  // named status options for dashboard quick-stats
 get_status( string $key ): array
+log_error( string $phase, string $message, array $context = [] ): void  // convenience: writes to both ring buffer (level='error') and transcript in one call
 ```
 
 Example transcript for a collection run:
@@ -277,12 +275,13 @@ existing_urls(): array              // [link => true] for O(1) dedupe within the
 append_rows( array $rows ): bool|WP_Error
 delete_rows( array $row_indices ): bool|WP_Error   // batch deleteDimension; indices are 0-based data rows (adapter adds 1 for header offset)
 update_clicks( array $url_to_clicks ): bool|WP_Error  // given [url => int], update column G for each matching row; uses batchUpdate valueInputOption=RAW
-sort_by_clicks(): bool|WP_Error                       // reorder data rows by column G DESC; uses sortRange batchUpdate; header row preserved
+sort_by_clicks(): bool|WP_Error                       // reorder data rows by column G DESC, then column H (added_date) DESC as tiebreaker; uses sortRange batchUpdate; header row preserved
 row_count(): int
 
 // Session management — read-only; tab creation is a manual team step:
 list_sheets(): array|WP_Error           // all tabs: [['title'=>'DD.MM.YYYY', 'id'=>int], ...]  cached 5 min
 active_sheet_name(): string|WP_Error    // title of the most recently dated DD.MM.YYYY tab
+active_sheet_url(): string|WP_Error     // full edit URL of the active tab (https://docs.google.com/spreadsheets/d/{id}/edit#gid={sheetId}); used by ENA_Sync to store the sheet link in sync status
 ```
 
 **Spreadsheet structure (actual):**
@@ -308,7 +307,7 @@ Sheets v4 endpoints used:
 - Update clicks: `POST /v4/spreadsheets/{id}/values:batchUpdate` with `valueInputOption=RAW` and one `ValueRange` per updated row targeting `G{row}`
 - List sheets / resolve sheetId: `GET /v4/spreadsheets/{id}?fields=sheets.properties(sheetId,title)`
 
-**Existing sheets migration:** tabs created before the clicks/added_date columns (A:F only) are handled by `read_data_rows()` — missing G treated as `clicks=0`, missing H as `added_date=session_date` (best-effort fallback). New tabs must be created manually by the team with the full 9-column header row.
+**Existing sheets migration:** tabs created before the clicks/added_date columns (A:F only) are handled by `read_data_rows()` — missing G treated as `clicks=0`, missing H as `added_date=session_date` (best-effort fallback). New tabs must be created manually by the team with the 8-column header row.
 
 ---
 
@@ -356,25 +355,51 @@ private run_report( array $body ): array|WP_Error
 ### `includes/class-ena-docs.php`
 
 ```php
-// Google Docs v1 + Drive v3. Creates the Tuesday podcast script document.
+// Google Docs v1 + Drive v3. Appends podcast script sections to a user-supplied Google Doc.
+// The team creates the doc manually and pastes its ID into plugin settings (google_doc_id).
 // Not part of the storage adapter contract — Docs are output, not the article database.
-create_doc( string $title ): string|WP_Error     // returns documentId
-move_to_folder( string $doc_id, string $folder_id ): bool|WP_Error
 append_sections( string $doc_id, array $sections ): bool|WP_Error
 doc_url( string $doc_id ): string
+
+// Also implemented; not called by the current podcast flow:
+// create_doc( string $title ): string|WP_Error
+// move_to_folder( string $doc_id, string $folder_id ): bool|WP_Error
 ```
 
-Each section in `append_sections` is `['bg_title'=>, 'url'=>, 'script'=>]`. Appended via `insertText` with `endOfSegmentLocation: {}` (appends to end of body). Format: `"{bg_title}\n{url}\n\n{script}\n\n———\n\n"`.
+Each section passed to `append_sections` is `['bg_title'=>, 'url'=>, 'description'=>, 'summary'=>]`.
+
+The method fetches the document first to determine the current end position, then builds a single `batchUpdate` request with absolute cursor indices. Content is inserted in this order per call:
+
+```
+Episode header  — "EV News Roundup — Month Day, Year"   → HEADING_1
+                — blank line
+
+Per article (numbered):
+  "{n}. {bg_title}"                                      → HEADING_2
+  "Read the original article"                            → italic, blue hyperlink to {url}
+  blank line
+  {summary}                                              → body text (AI-generated podcast summary)
+  {description}                                          → italic, gray (original short description)
+  "────────────────────────────────────────────────"     → gray Unicode separator
+```
+
+Private helpers used internally: `utf16_len()` (Google Docs counts characters in UTF-16 code units), `req_insert()`, `req_para_style()`, `req_text_style()`.
 
 ---
 
 ### `includes/class-ena-openrouter.php`
 
 ```php
-// Calls OpenRouter chat completions for two tasks: article summarization and podcast scripting.
+// Calls OpenRouter chat completions for summarization and podcast scripting.
 // Model is configurable in settings (default: anthropic/claude-opus-4-8).
+// Token usage is persisted in the ena_openrouter_usage wp_option.
 summarize( string $original_title, string $excerpt_or_body ): array|WP_Error  // returns ['bg_title'=>, 'bg_summary'=>]
-podcast_script( string $bg_title, string $body_text ): string|WP_Error
+podcast_summary( string $bg_title, string $bg_summary ): string|WP_Error       // used by podcast run; uses Sheet title + description, no scraping
+podcast_script( string $bg_title, string $body_text ): string|WP_Error         // exists; not called by current podcast flow
+get_key_info(): array|WP_Error    // fetches live key/credit info from OpenRouter API
+get_local_stats(): array          // returns locally tracked token usage from wp_options
+reset_local_stats(): void         // resets ena_openrouter_usage in wp_options
+private record_usage( array $usage ): void
 private chat( string $system, string $user, array $opts = [] ): string|WP_Error
 ```
 
@@ -417,7 +442,9 @@ private trim_to_max( int $max ): int
 
 **Daily cron invocation** calls `ENA_Analytics::fetch_clicks()` first (before `run()`), then `$this->storage->update_clicks()`, then `$this->storage->sort_by_clicks()` to reorder the sheet rows by engagement, then `run()`. This is orchestrated in `ENA_Cron::run_daily_collection()` (and mirrored in `ENA_Ajax::handle_run_collection()`) rather than inside `run()` so that `run()` remains reusable standalone.
 
-Pipeline: load sources → for each: `ENA_Scraper::fetch_source` → flatten → dedupe via `$this->storage->existing_urls()` (also dedupes within batch) → for each new: `ENA_OpenRouter::summarize` → build row `[title=bg_title, description=bg_summary, link=url, author=source, upvote='', downvote='', clicks=0]` → `$this->storage->append_rows($rows)` → `trim_to_max($max)` → `ENA_Logger::set_status`.
+Pipeline: load sources → for each: `ENA_Scraper::fetch_source` → flatten → **age filter** (drop articles where `published_at < time() - DAY_IN_SECONDS`; articles with `published_at === 0` always pass) → dedupe via `$this->storage->existing_urls()` (also dedupes within batch) → **sort by `published_at` DESC** (newest first within the batch) → for each new: `ENA_OpenRouter::summarize` → build row `[title=bg_title, description=bg_summary, link=url, author=source, upvote='', downvote='', clicks=0]` → `$this->storage->append_rows($rows)` → `trim_to_max($max)` → `ENA_Logger::set_status`.
+
+The 24-hour age filter exists because the cron runs every 24 hours — articles older than that were either already collected in a previous run or are too stale to be relevant. Articles with no publish date (`published_at === 0`) are always accepted to avoid silently dropping valid content from feeds that omit dates.
 
 Note: the session date is embedded in the active sheet tab name; it is not written as a column value.
 
@@ -426,10 +453,10 @@ Note: the session date is embedded in the active sheet tab name; it is not writt
 ### `includes/class-ena-sync.php`
 
 ```php
-// Optional orchestrator: reads the active sheet, engagement-sorts articles, and writes a
+// Orchestrator: reads the active sheet, engagement-sorts articles, and writes a
 // JSON snapshot to ev_news_live_articles in wp_options.
-// Not part of the automatic daily cron — the episode page reads the Sheet CSV directly.
-// Can be triggered manually from the admin dashboard if a live news page is built in future.
+// Runs automatically after every collection — both the daily cron (run_daily_collection)
+// and the manual "Run collection now" AJAX trigger (handle_run_collection).
 // Depends on the storage adapter only (no ENA_Settings needed).
 
 run(): array   // returns ['count' => int]
@@ -447,11 +474,20 @@ $zero_clicks = array_filter($rows, fn($r) => $r['added_date'] < $today && (int)$
 usort($with_clicks, fn($a,$b) => (int)$b['clicks'] <=> (int)$a['clicks'])
 $sorted = array_merge(array_values($new_today), array_values($with_clicks), array_values($zero_clicks))
 
-// — Write live articles cache (future use) —
-$articles = array_map(fn($r) => [...], $sorted)
+// — Write live articles cache —
+// Each article in the JSON array has these keys:
+//   id          → md5($row['link'])  — stable unique identifier derived from the URL
+//   title       → $row['title']      — Bulgarian headline
+//   link        → $row['link']       — original article URL
+//   description → $row['description'] — Bulgarian 2–3 sentence summary
+//   source      → $row['author']     — source outlet name
+//   date        → $row['session_date'] — Y-m-d session date from the active sheet tab name
+//   clicks      → (int) $row['clicks'] — GA4 click count
+//   added_date  → $row['added_date'] — Y-m-d date the row was first appended
+$articles = array_map(fn($r) => ['id'=>md5($r['link']), 'title'=>, 'link'=>, 'description'=>, 'source'=>, 'date'=>, 'clicks'=>, 'added_date'=>], $sorted)
 update_option(ENA_OPT_LIVE_ARTICLES, wp_json_encode($articles))
 
-log + set_status(ENA_OPT_STATUS_SYNC, ['timestamp', 'count', 'new_today', 'with_clicks', 'zero_clicks'])
+log + set_status(ENA_OPT_STATUS_SYNC, ['timestamp', 'count', 'new_today', 'with_clicks', 'zero_clicks', 'sheet_url'])
 ```
 
 ---
@@ -459,12 +495,18 @@ log + set_status(ENA_OPT_STATUS_SYNC, ['timestamp', 'count', 'new_today', 'with_
 ### `includes/class-ena-podcast.php`
 
 ```php
-// Phase 4 orchestrator. Generates the Tuesday podcast script Google Doc.
-// Depends on the storage adapter via $this->storage (injected in ENA_Plugin).
+// Phase 4 orchestrator. Appends podcast summaries to a user-supplied Google Doc.
+// Constructor: (ENA_Sheets, ENA_Analytics, ENA_OpenRouter, ENA_Docs, ENA_Logger, ENA_Settings)
 run(): array   // returns ['doc_url'=>string, 'count'=>int]
 ```
 
-Pipeline: `$this->storage->read_data_rows()` → for each: `ENA_Scraper::extract_body($row['link'])` → `ENA_OpenRouter::podcast_script($row['title'], $body)` → accumulate sections → `ENA_Docs::create_doc('EV News Podcast Script – '.date('Y-m-d'))` → `move_to_folder` → `append_sections` → `ENA_Logger::set_status(ENA_OPT_STATUS_PODCAST, ...)`.
+Pipeline: read `google_doc_id` from settings → `$this->storage->read_data_rows()` → **GA4 refresh**: `ENA_Analytics::fetch_clicks($urls)` → `$this->storage->update_clicks($clicks)` → overlay fresh counts onto in-memory rows → sort rows by `clicks` DESC → `array_slice` to top `max_script_articles` → for each: `ENA_OpenRouter::podcast_summary($row['title'], $row['description'])` → accumulate sections → `ENA_Docs::append_sections($doc_id, $sections)` → `ENA_Logger::set_status(ENA_OPT_STATUS_PODCAST, ...)`.
+
+GA4 errors on the refresh step are non-fatal (logged as `skip`) — the run continues using whatever click counts are already in the Sheet.
+
+No body scraping — uses the Bulgarian title and description already stored in the Sheet. `podcast_script()` (which would scrape the full article body) exists in `ENA_OpenRouter` but is not called.
+
+**Note:** The team creates the Google Doc manually before clicking "Generate Podcast Script", then pastes the doc ID into plugin settings. The plugin does not create or move docs.
 
 ---
 
@@ -525,12 +567,14 @@ Timestamps on scheduling use `wp_timezone()` so configured times are in the site
 ### `includes/class-ena-ajax.php`
 
 ```php
-// Registers admin-ajax handlers for the three manual trigger buttons.
+// Registers admin-ajax handlers for manual trigger buttons and OpenRouter usage.
 // All handlers: check_ajax_referer('ena_admin','nonce') + current_user_can('manage_options').
 static register(): void
-static handle_run_collection(): void   // action: ena_run_collection (includes GA4 click sync before collecting)
-static handle_run_sync(): void         // action: ena_run_sync (re-sorts and re-writes ev_news_live_articles)
-static handle_run_podcast(): void      // action: ena_run_podcast
+static handle_run_collection(): void    // action: ena_run_collection (includes GA4 click sync before collecting)
+static handle_run_sync(): void          // action: ena_run_sync (re-sorts and re-writes ev_news_live_articles)
+static handle_run_podcast(): void       // action: ena_run_podcast
+static handle_openrouter_usage(): void  // action: ena_openrouter_usage — returns get_key_info() + get_local_stats()
+static handle_reset_usage_stats(): void // action: ena_reset_usage_stats — calls reset_local_stats()
 ```
 
 Each returns `wp_send_json_success($result)` or `wp_send_json_error($message, 403/500)`.
@@ -540,13 +584,15 @@ Each returns `wp_send_json_success($result)` or `wp_send_json_error($message, 40
 ### `admin/class-ena-admin.php`
 
 ```php
+// Constructor: ( ENA_Settings $settings, ENA_Logger $logger )
 // Registers the admin menu, enqueues assets on plugin pages only, and handles the settings form POST.
-add_menu(): void           // add_menu_page + two add_submenu_page (Dashboard, Settings)
+add_menu(): void           // add_menu_page + three add_submenu_page (Dashboard, Settings, Работен процес)
 enqueue( string $hook ): void  // load admin.css + admin.js only on plugin pages
                                // wp_localize_script('ena-admin', 'enaAjax', ['url'=>..., 'nonce'=>...])
 handle_settings_save(): void  // action: admin_post_ena_save_settings
 render_settings(): void       // include views/settings-page.php
 render_dashboard(): void      // include views/dashboard-page.php
+render_how_it_works(): void   // include views/how-it-works-page.php (slug: ev-news-automator-plan)
 ```
 
 Settings save: `check_admin_referer('ena_save_settings','ena_settings_nonce')` + `current_user_can('manage_options')` → sanitize all fields → `ENA_Settings::update()` → `ENA_Cron::reschedule()` → `wp_safe_redirect(add_query_arg('updated','1', wp_get_referer()))`.
@@ -590,8 +636,9 @@ Not needed. The existing `theme/template-parts/single/card-article-external.php`
 | `ENA_OPT_RUN_LOG` | `ena_run_log` | Last 20 summary events (ring buffer) |
 | `ENA_OPT_CRON_TRANSCRIPT` | `ena_cron_transcript` | Full step-by-step log of the most recent cron run |
 | `ENA_OPT_STATUS_COLLECTION` | `ena_status_last_collection` | `{timestamp, added, removed}` |
-| `ENA_OPT_STATUS_SYNC` | `ena_status_last_sync` | `{timestamp, count, new_today, with_clicks, zero_clicks}` |
+| `ENA_OPT_STATUS_SYNC` | `ena_status_last_sync` | `{timestamp, count, new_today, with_clicks, zero_clicks, sheet_url}` |
 | `ENA_OPT_STATUS_PODCAST` | `ena_status_last_podcast` | `{timestamp, doc_url, count}` |
+| `ENA_OPT_LIVE_ARTICLES` | `ev_news_live_articles` | JSON-encoded array of all articles from the active sheet, engagement-sorted (new today → clicked DESC → zero-click older); each item has keys: `id` (md5 of link), `title`, `link`, `description`, `source`, `date`, `clicks`, `added_date`; written by `ENA_Sync` after every collection run; read by the live news page template at request time |
 
 ---
 
@@ -615,7 +662,7 @@ Not needed. The existing `theme/template-parts/single/card-article-external.php`
 4. OpenRouter account with a funded balance and API key.
 5. GA4 **numeric property ID** (found in Analytics → Admin → Property Settings, e.g. `123456789`). Enter in plugin settings as `ga4_property_id`. Leave empty to disable click sync (filter will still run but won't drop zero-click articles).
 6. Google Spreadsheet with at least one tab named `DD.MM.YYYY` (e.g. `16.06.2026`) and columns `title | description | link | author | upvote | downvote | clicks` in that order. Spreadsheet ID noted for plugin settings. Use "New Session" (future admin button) or create tabs manually. For existing tabs without column G, see migration note in the Sheets adapter spec above. The spreadsheet must be shared as **"Anyone with the link can view"** so the CSV export URL is accessible by `single.php` without authentication.
-7. A WordPress page created to serve as the upcoming-session placeholder. Set its `news_csv` post meta to the active tab's CSV export URL (ENA_Sync does this automatically once `placeholder_page_id` is configured in plugin settings). No special page template is needed — the page uses the default `single.php` flow.
+7. A WordPress page created to serve as the upcoming-session placeholder. Set its `news_csv` post meta to the active tab's CSV export URL manually. No special page template is needed — the page uses the default `single.php` flow.
 
 ---
 
@@ -628,8 +675,7 @@ Not needed. The existing `theme/template-parts/single/card-article-external.php`
 | GA4 click sync | After at least one day of article clicks on the live site, "Run collection now" → open the active sheet tab → column G shows non-zero integers for clicked articles; dashboard transcript shows `analytics_fetch ok "N URLs, M with clicks"` |
 | Phase 1 — Collection | "Run collection now" → new rows appear with columns title/description/link/author/clicks=0/added_date=today; run twice → no duplicates; set max=5 → oldest rows removed; dashboard shows counts |
 | Phase 2 — Sync + Engagement Sort | After a day has passed: manually set G column values to simulate clicks; "Sync now" → visit the live news page → today's new articles appear first, then previous-day articles sorted by clicks descending, then zero-click older articles at the bottom; page TTFB fast (no external calls on render) |
-| Placeholder page sync | Configure `placeholder_page_id` in settings → "Sync now" → inspect the page's `news_csv` post meta (`wp post meta get {id} news_csv`) → value is the CSV export URL for the active tab; visit the page → article cards render via the existing single.php flow |
-| Phase 3 — Podcast | "Generate podcast script now" → Google Doc created in Drive folder, one section per article; dashboard shows working Doc link |
+| Phase 3 — Podcast | Team creates Google Doc manually → pastes doc ID into settings → "Generate podcast script now" → sections appended to that doc; dashboard shows working Doc link |
 | GA4 not configured | Leave ga4_property_id empty → "Run collection now" logs `analytics_fetch skip "ga4_property_id not set"`, sync still runs (sort treats all clicks as 0, so only new-today vs older grouping applies) |
 | Backward compat | Open existing episode post with `news_csv` meta → `card-article-external.php` still renders with vote circles, unchanged |
 | Security | Invalid nonce → 403; non-admin AJAX → 403; SA JSON path under webroot → plugin rejects at load time |

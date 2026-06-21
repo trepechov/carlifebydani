@@ -65,21 +65,6 @@
                            value="<?php echo esc_attr( $settings->get( 'spreadsheet_id' ) ); ?>" class="regular-text">
                 </td>
             </tr>
-            <?php /*
-            <tr>
-                <th scope="row"><label for="drive_folder_id">Drive Folder ID (for podcast docs)</label></th>
-                <td>
-                    <?php
-                    // Not used in the current workflow. Originally added under the assumption that podcast script docs
-                    // would be created automatically in this folder. Google's API prevents service accounts from creating
-                    // Drive files on personal accounts without Workspace domain-wide delegation, so script docs must be
-                    // created manually — see Podcast Script Document ID below.
-                    ?>
-                    <input type="text" name="drive_folder_id" id="drive_folder_id"
-                           value="<?php echo esc_attr( $settings->get( 'drive_folder_id' ) ); ?>" class="regular-text">
-                </td>
-            </tr>
-            */ ?>
             <tr>
                 <th scope="row"><label for="podcast_doc_id">Podcast Script Document ID</label></th>
                 <td>

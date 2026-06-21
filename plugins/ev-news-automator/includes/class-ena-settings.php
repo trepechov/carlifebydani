@@ -23,7 +23,6 @@ class ENA_Settings {
             'openrouter_api_key'    => '',
             'openrouter_model'      => 'anthropic/claude-opus-4-8',
             'spreadsheet_id'        => '',
-            'drive_folder_id'       => '',
             'service_account_path'  => '',
             'ga4_property_id'       => '',
             'podcast_doc_id'        => '',
@@ -63,9 +62,5 @@ class ENA_Settings {
 
     public function ga4_property_id(): string {
         return (string) $this->get( 'ga4_property_id', '' );
-    }
-
-    public function placeholder_page_id(): int {
-        return (int) $this->get( 'placeholder_page_id', 0 );
     }
 }

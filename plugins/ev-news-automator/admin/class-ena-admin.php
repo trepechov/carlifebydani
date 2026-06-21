@@ -92,7 +92,6 @@ class ENA_Admin {
 
         $values['openrouter_model']     = sanitize_text_field( $_POST['openrouter_model'] ?? 'anthropic/claude-opus-4-8' );
         $values['spreadsheet_id']       = sanitize_text_field( $_POST['spreadsheet_id'] ?? '' );
-        $values['drive_folder_id']      = sanitize_text_field( $_POST['drive_folder_id'] ?? '' );
         $values['service_account_path'] = sanitize_text_field( $_POST['service_account_path'] ?? '' );
         $values['ga4_property_id']      = sanitize_text_field( $_POST['ga4_property_id'] ?? '' );
         $values['podcast_doc_id']       = sanitize_text_field( $_POST['podcast_doc_id'] ?? '' );

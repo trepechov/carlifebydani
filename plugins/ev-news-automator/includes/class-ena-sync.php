@@ -1,9 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Optional orchestrator. Not part of the automatic daily cron — the episode page reads
-// the Sheet CSV directly via news_csv post meta (set once manually per session).
-// Can be triggered manually from the admin dashboard if a live news page is built in future.
+// Runs after every collection — both the daily cron and the manual "Run collection now" trigger.
 // Reads all rows, engagement-sorts them, and writes a JSON snapshot to ev_news_live_articles.
 class ENA_Sync {
 
@@ -25,6 +23,9 @@ class ENA_Sync {
 
         $today = gmdate( 'Y-m-d' );
 
+        // Group 1 — added today: shown first, Sheet insertion order preserved.
+        // Group 2 — older, clicks > 0: sorted by clicks DESC; ties keep Sheet insertion order (PHP 8 stable sort).
+        // Group 3 — older, clicks = 0: shown last, Sheet insertion order preserved.
         $new_today   = array_values( array_filter( $rows, fn ( $r ) => $r['added_date'] === $today ) );
         $with_clicks = array_values( array_filter( $rows, fn ( $r ) => $r['added_date'] < $today && (int) $r['clicks'] > 0 ) );
         $zero_clicks = array_values( array_filter( $rows, fn ( $r ) => $r['added_date'] < $today && (int) $r['clicks'] === 0 ) );

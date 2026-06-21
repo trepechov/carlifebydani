@@ -57,23 +57,17 @@ class ENA_Podcast {
         usort( $rows, fn ( $a, $b ) => $b['clicks'] <=> $a['clicks'] );
         $top = array_slice( $rows, 0, $top_n );
 
-        // Step 3: generate summaries using existing title + description — no scraping needed.
-        $link_to_summary = [];
-        $sections        = [];
+        // Step 3: generate summaries from existing title + description — no scraping needed.
+        $sections = [];
 
         foreach ( $top as $row ) {
-            $summary = $row['summary'] ?? '';
-
-            // Only generate a new summary if the sheet doesn't already have one.
-            if ( empty( $summary ) ) {
-                $generated = $this->openrouter->podcast_summary( $row['title'], $row['description'] );
-                if ( is_wp_error( $generated ) ) {
-                    $this->logger->step( 'podcast_summary', 'error', $generated->get_error_message() );
-                    $summary = $row['description']; // fall back to existing description
-                } else {
-                    $summary = $generated;
-                    $link_to_summary[ $row['link'] ] = $summary;
-                }
+            $generated = $this->openrouter->podcast_summary( $row['title'], $row['description'] );
+            if ( is_wp_error( $generated ) ) {
+                $this->logger->step( 'podcast_summary', 'error', $generated->get_error_message() );
+                $summary = $row['description']; // fall back to existing description
+            } else {
+                $summary = $generated;
+                $this->logger->step( 'podcast_summary', 'ok', "generated for: {$row['title']}" );
             }
 
             $sections[] = [
@@ -84,17 +78,7 @@ class ENA_Podcast {
             ];
         }
 
-        // Step 4: persist generated summaries back to the sheet.
-        if ( ! empty( $link_to_summary ) ) {
-            $result = $this->storage->update_summaries( $link_to_summary );
-            if ( is_wp_error( $result ) ) {
-                $this->logger->step( 'podcast_summary_write', 'error', $result->get_error_message() );
-            } else {
-                $this->logger->step( 'podcast_summary_write', 'ok', count( $link_to_summary ) . ' summaries saved' );
-            }
-        }
-
-        // Step 5: write the script document.
+        // Step 4: write the script document.
         // WHY MANUAL DOC ID: Google service accounts have no Drive storage quota of their own.
         // Calling ENA_Docs::create_doc() via the Docs API returns PERMISSION_DENIED, and
         // calling Drive Files.create returns storageQuotaExceeded — even for zero-byte

@@ -155,15 +155,12 @@ get( string $key, $default = null )
 all(): array
 update( array $values ): void
 defaults(): array
-// defaults: openrouter_model='anthropic/claude-opus-4-8', max_articles=50,
+// defaults: openrouter_model='anthropic/claude-opus-4-8', max_articles=50, max_script_articles=10,
 //           collection_interval='daily', collection_time='09:00',
-//           ga4_property_id='', placeholder_page_id='', sources='',
-//           placeholder_page_id=0
+//           ga4_property_id='', podcast_doc_id='', sources=''
 sources(): array    // parses the sources textarea into [['url'=>..., 'method'=>'rss'|'html'], ...]
 service_account_path(): string
 ga4_property_id(): string   // GA4 numeric property ID (e.g. '123456789'); empty string disables click sync
-placeholder_page_id(): int  // WP page ID of the current upcoming-session placeholder page;
-                            // ENA_Sync updates its news_csv meta to the active tab CSV URL
 ```
 
 **Sources field format** — a plain `<textarea>` in the settings page, one source per line:
@@ -277,7 +274,7 @@ existing_urls(): array              // [link => true] for O(1) dedupe within the
 append_rows( array $rows ): bool|WP_Error
 delete_rows( array $row_indices ): bool|WP_Error   // batch deleteDimension; indices are 0-based data rows (adapter adds 1 for header offset)
 update_clicks( array $url_to_clicks ): bool|WP_Error  // given [url => int], update column G for each matching row; uses batchUpdate valueInputOption=RAW
-sort_by_clicks(): bool|WP_Error                       // reorder data rows by column G DESC; uses sortRange batchUpdate; header row preserved
+sort_by_clicks(): bool|WP_Error                       // reorder data rows by column G DESC, then column H (added_date) DESC as tiebreaker; uses sortRange batchUpdate; header row preserved
 row_count(): int
 
 // Session management — read-only; tab creation is a manual team step:
@@ -308,7 +305,7 @@ Sheets v4 endpoints used:
 - Update clicks: `POST /v4/spreadsheets/{id}/values:batchUpdate` with `valueInputOption=RAW` and one `ValueRange` per updated row targeting `G{row}`
 - List sheets / resolve sheetId: `GET /v4/spreadsheets/{id}?fields=sheets.properties(sheetId,title)`
 
-**Existing sheets migration:** tabs created before the clicks/added_date columns (A:F only) are handled by `read_data_rows()` — missing G treated as `clicks=0`, missing H as `added_date=session_date` (best-effort fallback). New tabs must be created manually by the team with the full 9-column header row.
+**Existing sheets migration:** tabs created before the clicks/added_date columns (A:F only) are handled by `read_data_rows()` — missing G treated as `clicks=0`, missing H as `added_date=session_date` (best-effort fallback). New tabs must be created manually by the team with the 8-column header row.
 
 ---
 
@@ -417,7 +414,7 @@ private trim_to_max( int $max ): int
 
 **Daily cron invocation** calls `ENA_Analytics::fetch_clicks()` first (before `run()`), then `$this->storage->update_clicks()`, then `$this->storage->sort_by_clicks()` to reorder the sheet rows by engagement, then `run()`. This is orchestrated in `ENA_Cron::run_daily_collection()` (and mirrored in `ENA_Ajax::handle_run_collection()`) rather than inside `run()` so that `run()` remains reusable standalone.
 
-Pipeline: load sources → for each: `ENA_Scraper::fetch_source` → flatten → dedupe via `$this->storage->existing_urls()` (also dedupes within batch) → for each new: `ENA_OpenRouter::summarize` → build row `[title=bg_title, description=bg_summary, link=url, author=source, upvote='', downvote='', clicks=0]` → `$this->storage->append_rows($rows)` → `trim_to_max($max)` → `ENA_Logger::set_status`.
+Pipeline: load sources → for each: `ENA_Scraper::fetch_source` → flatten → **age filter** (drop articles where `published_at < time() - DAY_IN_SECONDS`; articles with `published_at === 0` always pass) → dedupe via `$this->storage->existing_urls()` (also dedupes within batch) → **sort by `published_at` DESC** (newest first within the batch) → for each new: `ENA_OpenRouter::summarize` → build row `[title=bg_title, description=bg_summary, link=url, author=source, upvote='', downvote='', clicks=0]` → `$this->storage->append_rows($rows)` → `trim_to_max($max)` → `ENA_Logger::set_status`.
 
 Note: the session date is embedded in the active sheet tab name; it is not written as a column value.
 
@@ -615,7 +612,7 @@ Not needed. The existing `theme/template-parts/single/card-article-external.php`
 4. OpenRouter account with a funded balance and API key.
 5. GA4 **numeric property ID** (found in Analytics → Admin → Property Settings, e.g. `123456789`). Enter in plugin settings as `ga4_property_id`. Leave empty to disable click sync (filter will still run but won't drop zero-click articles).
 6. Google Spreadsheet with at least one tab named `DD.MM.YYYY` (e.g. `16.06.2026`) and columns `title | description | link | author | upvote | downvote | clicks` in that order. Spreadsheet ID noted for plugin settings. Use "New Session" (future admin button) or create tabs manually. For existing tabs without column G, see migration note in the Sheets adapter spec above. The spreadsheet must be shared as **"Anyone with the link can view"** so the CSV export URL is accessible by `single.php` without authentication.
-7. A WordPress page created to serve as the upcoming-session placeholder. Set its `news_csv` post meta to the active tab's CSV export URL (ENA_Sync does this automatically once `placeholder_page_id` is configured in plugin settings). No special page template is needed — the page uses the default `single.php` flow.
+7. A WordPress page created to serve as the upcoming-session placeholder. Set its `news_csv` post meta to the active tab's CSV export URL manually. No special page template is needed — the page uses the default `single.php` flow.
 
 ---
 
@@ -628,7 +625,6 @@ Not needed. The existing `theme/template-parts/single/card-article-external.php`
 | GA4 click sync | After at least one day of article clicks on the live site, "Run collection now" → open the active sheet tab → column G shows non-zero integers for clicked articles; dashboard transcript shows `analytics_fetch ok "N URLs, M with clicks"` |
 | Phase 1 — Collection | "Run collection now" → new rows appear with columns title/description/link/author/clicks=0/added_date=today; run twice → no duplicates; set max=5 → oldest rows removed; dashboard shows counts |
 | Phase 2 — Sync + Engagement Sort | After a day has passed: manually set G column values to simulate clicks; "Sync now" → visit the live news page → today's new articles appear first, then previous-day articles sorted by clicks descending, then zero-click older articles at the bottom; page TTFB fast (no external calls on render) |
-| Placeholder page sync | Configure `placeholder_page_id` in settings → "Sync now" → inspect the page's `news_csv` post meta (`wp post meta get {id} news_csv`) → value is the CSV export URL for the active tab; visit the page → article cards render via the existing single.php flow |
 | Phase 3 — Podcast | "Generate podcast script now" → Google Doc created in Drive folder, one section per article; dashboard shows working Doc link |
 | GA4 not configured | Leave ga4_property_id empty → "Run collection now" logs `analytics_fetch skip "ga4_property_id not set"`, sync still runs (sort treats all clicks as 0, so only new-today vs older grouping applies) |
 | Backward compat | Open existing episode post with `news_csv` meta → `card-article-external.php` still renders with vote circles, unchanged |

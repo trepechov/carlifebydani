@@ -6,28 +6,26 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // Spreadsheet structure (actual):
 //   One Google Spreadsheet with multiple sheets (tabs), one per podcast session.
 //   Tab names use DD.MM.YYYY format (e.g. "16.06.2026").
-//   Columns per tab: title | description | link | author | upvote | downvote | clicks | added_date | summary
+//   Columns per tab: title | description | link | author | upvote | downvote | clicks | added_date
 //   upvote/downvote are deprecated fields kept for backward compatibility; always empty.
 //   clicks (col G) — GA4 click count; written as 0 on append, updated daily by ENA_Analytics.
 //   added_date (col H) — Y-m-d date the row was appended; written by the adapter, never changed.
-//   summary (col I) — AI-generated 3-5 sentence podcast summary; written by ENA_Podcast before script generation.
 //   The session date lives in the tab name, not a column.
 //   "Active sheet" = the tab whose name is the most recent valid DD.MM.YYYY date.
 //
 // Backward compat: tabs created before clicks/added_date columns (A:F only) are handled by
-// read_data_rows() — missing G treated as clicks=0, missing H treated as added_date=session_date,
-// missing I treated as summary=''.
+// read_data_rows() — missing G treated as clicks=0, missing H treated as added_date=session_date.
 //
 // Interface contract (all callers use these):
-//   read_data_rows(), append_rows(), delete_rows(), update_clicks(), update_summaries(), existing_urls(), row_count()
+//   read_data_rows(), append_rows(), delete_rows(), update_clicks(), existing_urls(), row_count()
 //
 // Additional session management:
-//   list_sheets(), active_sheet_name(), create_session_sheet()
+//   list_sheets(), active_sheet_name(), active_sheet_url()
 class ENA_Sheets {
 
     private const BASE                 = 'https://sheets.googleapis.com/v4/spreadsheets';
     private const SCOPES               = [ 'https://www.googleapis.com/auth/spreadsheets' ];
-    private const COLUMNS              = [ 'title', 'description', 'link', 'author', 'upvote', 'downvote', 'clicks', 'added_date', 'summary' ];
+    private const COLUMNS              = [ 'title', 'description', 'link', 'author', 'upvote', 'downvote', 'clicks', 'added_date' ];
     private const SESSION_DATE_PATTERN = '/^\d{2}\.\d{2}\.\d{4}$/';
 
     private ENA_Google_Auth $auth;
@@ -58,8 +56,8 @@ class ENA_Sheets {
         $rows = array_slice( $all, 1 ); // skip header row
 
         return array_map( function ( $row ) use ( $date ) {
-            $padded = array_pad( $row, 9, '' );
-            $assoc  = array_combine( self::COLUMNS, array_slice( $padded, 0, 9 ) );
+            $padded = array_pad( $row, 8, '' );
+            $assoc  = array_combine( self::COLUMNS, array_slice( $padded, 0, 8 ) );
             // Backward compat defaults for old tabs (A:F only)
             if ( (string) $assoc['clicks'] === '' ) $assoc['clicks'] = 0;
             if ( (string) $assoc['added_date'] === '' ) $assoc['added_date'] = $date;
@@ -111,7 +109,7 @@ class ENA_Sheets {
         if ( is_wp_error( $token ) ) return $token;
 
         $id    = $this->settings->get( 'spreadsheet_id' );
-        $range = rawurlencode( "{$sheet}!A:I" );
+        $range = rawurlencode( "{$sheet}!A:H" );
         $url   = self::BASE . "/{$id}/values/{$range}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
 
         $today  = gmdate( 'Y-m-d' );
@@ -120,7 +118,6 @@ class ENA_Sheets {
                 return array_map( function ( $k ) use ( $row, $today ) {
                     if ( $k === 'added_date' ) return $row['added_date'] ?? $today;
                     if ( $k === 'clicks' )     return $row['clicks'] ?? 0;
-                    if ( $k === 'summary' )    return $row['summary'] ?? '';
                     return $row[ $k ] ?? '';
                 }, self::COLUMNS );
             },
@@ -227,54 +224,6 @@ class ENA_Sheets {
     }
 
     /**
-     * Write AI-generated summaries to column I for rows whose link URL matches the given map.
-     * Rows whose URL is not in $link_to_summary are left unchanged.
-     */
-    public function update_summaries( array $link_to_summary ): bool|WP_Error {
-        if ( empty( $link_to_summary ) ) return true;
-
-        $sheet = $this->active_sheet_name();
-        if ( is_wp_error( $sheet ) ) return $sheet;
-
-        $token = $this->auth->get_access_token( self::SCOPES );
-        if ( is_wp_error( $token ) ) return $token;
-
-        $id = $this->settings->get( 'spreadsheet_id' );
-
-        $range    = rawurlencode( "{$sheet}!C:C" );
-        $url      = self::BASE . "/{$id}/values/{$range}";
-        $response = ENA_HTTP::get( $url, [ 'headers' => [ 'Authorization' => "Bearer {$token}" ] ] );
-        $data     = ENA_HTTP::retrieve_json( $response );
-        if ( is_wp_error( $data ) ) return $data;
-
-        $update_data = [];
-        foreach ( $data['values'] ?? [] as $row_index => $cell ) {
-            if ( $row_index === 0 ) continue; // skip header
-            $link = $cell[0] ?? '';
-            if ( ! empty( $link ) && array_key_exists( $link, $link_to_summary ) ) {
-                $sheet_row     = $row_index + 1;
-                $update_data[] = [
-                    'range'  => "{$sheet}!I{$sheet_row}",
-                    'values' => [ [ $link_to_summary[ $link ] ] ],
-                ];
-            }
-        }
-
-        if ( empty( $update_data ) ) return true;
-
-        $batch_url = self::BASE . "/{$id}/values:batchUpdate";
-        $response  = ENA_HTTP::post_json( $batch_url, [
-            'valueInputOption' => 'RAW',
-            'data'             => $update_data,
-        ], [ 'Authorization' => "Bearer {$token}" ] );
-
-        $result = ENA_HTTP::retrieve_json( $response );
-        if ( is_wp_error( $result ) ) return $result;
-
-        return true;
-    }
-
-    /**
      * Reorder all data rows in the active session sheet by clicks (column G) descending.
      * The header row (row 1) is preserved — sort starts at row index 1.
      * Called after update_clicks() so the public CSV export reflects engagement order immediately.
@@ -297,7 +246,7 @@ class ENA_Sheets {
                             'sheetId'          => $sheet_id,
                             'startRowIndex'    => 1, // skip header row
                             'startColumnIndex' => 0,
-                            'endColumnIndex'   => 9, // columns A–I
+                            'endColumnIndex'   => 8, // columns A–H
                         ],
                         'sortSpecs' => [
                             [
@@ -419,7 +368,7 @@ class ENA_Sheets {
         if ( is_wp_error( $token ) ) return $token;
 
         $id    = $this->settings->get( 'spreadsheet_id' );
-        $range = rawurlencode( "{$sheet_name}!A:I" );
+        $range = rawurlencode( "{$sheet_name}!A:H" );
         $url   = self::BASE . "/{$id}/values/{$range}";
 
         $response = ENA_HTTP::get( $url, [ 'headers' => [ 'Authorization' => "Bearer {$token}" ] ] );
