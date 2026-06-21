@@ -599,9 +599,9 @@ Not needed. The existing `theme/template-parts/single/card-article-external.php`
 
 | File | Why |
 |---|---|
-| [theme/functions.php:117–134](../theme/functions.php) | Copy `carlifebydani_is_safe_url()` into `class-ena-http.php` — plugin must not depend on the theme |
-| [theme/template-parts/single/card-article-external.php](../theme/template-parts/single/card-article-external.php) | Renders article cards for the placeholder page — used as-is, no fork needed |
-| [theme/single.php:108–142](../theme/single.php) | Must remain untouched — both past episodes and the upcoming-session placeholder use this CSV path |
+| [theme/functions.php:117–134](../../../theme/functions.php) | Copy `carlifebydani_is_safe_url()` into `class-ena-http.php` — plugin must not depend on the theme |
+| [theme/template-parts/single/card-article-external.php](../../../theme/template-parts/single/card-article-external.php) | Renders article cards for the placeholder page — used as-is, no fork needed |
+| [theme/single.php:108–142](../../../theme/single.php) | Must remain untouched — both past episodes and the upcoming-session placeholder use this CSV path |
 
 ---
 
