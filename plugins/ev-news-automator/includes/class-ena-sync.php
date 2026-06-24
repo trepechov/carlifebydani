@@ -47,7 +47,8 @@ class ENA_Sync {
         $count = count( $articles );
 
         $this->logger->step( 'sync', 'ok', "{$count} articles written to ev_news_live_articles" );
-        $sheet_url = $this->storage->active_sheet_url();
+        $sheet_name = $this->storage->active_sheet_name();
+        $sheet_url  = $this->storage->active_sheet_url();
 
         $this->logger->set_status( ENA_OPT_STATUS_SYNC, [
             'timestamp'   => ( new DateTimeImmutable() )->format( 'c' ),
@@ -55,6 +56,7 @@ class ENA_Sync {
             'new_today'   => count( $new_today ),
             'with_clicks' => count( $with_clicks ),
             'zero_clicks' => count( $zero_clicks ),
+            'sheet_name'  => is_wp_error( $sheet_name ) ? '' : $sheet_name,
             'sheet_url'   => is_wp_error( $sheet_url ) ? '' : $sheet_url,
         ] );
 
