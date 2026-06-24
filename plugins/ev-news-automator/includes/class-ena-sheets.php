@@ -25,7 +25,7 @@ class ENA_Sheets {
 
     private const BASE                 = 'https://sheets.googleapis.com/v4/spreadsheets';
     private const SCOPES               = [ 'https://www.googleapis.com/auth/spreadsheets' ];
-    private const COLUMNS              = [ 'title', 'description', 'link', 'author', 'upvote', 'downvote', 'clicks', 'added_date' ];
+    private const COLUMNS              = [ 'title', 'description', 'link', 'author', 'upvote', 'downvote', 'clicks', 'added_date', 'pub_date' ];
     private const SESSION_DATE_PATTERN = '/^\d{2}\.\d{2}\.\d{4}$/';
 
     private ENA_Google_Auth $auth;
@@ -56,8 +56,8 @@ class ENA_Sheets {
         $rows = array_slice( $all, 1 ); // skip header row
 
         return array_map( function ( $row ) use ( $date ) {
-            $padded = array_pad( $row, 8, '' );
-            $assoc  = array_combine( self::COLUMNS, array_slice( $padded, 0, 8 ) );
+            $padded = array_pad( $row, 9, '' );
+            $assoc  = array_combine( self::COLUMNS, array_slice( $padded, 0, 9 ) );
             // Backward compat defaults for old tabs (A:F only)
             if ( (string) $assoc['clicks'] === '' ) $assoc['clicks'] = 0;
             if ( (string) $assoc['added_date'] === '' ) $assoc['added_date'] = $date;
@@ -109,7 +109,7 @@ class ENA_Sheets {
         if ( is_wp_error( $token ) ) return $token;
 
         $id    = $this->settings->get( 'spreadsheet_id' );
-        $range = rawurlencode( "{$sheet}!A:H" );
+        $range = rawurlencode( "{$sheet}!A:I" );
         $url   = self::BASE . "/{$id}/values/{$range}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
 
         $today  = gmdate( 'Y-m-d' );
@@ -246,7 +246,7 @@ class ENA_Sheets {
                             'sheetId'          => $sheet_id,
                             'startRowIndex'    => 1, // skip header row
                             'startColumnIndex' => 0,
-                            'endColumnIndex'   => 8, // columns A–H
+                            'endColumnIndex'   => 9, // columns A–I
                         ],
                         'sortSpecs' => [
                             [
@@ -368,7 +368,7 @@ class ENA_Sheets {
         if ( is_wp_error( $token ) ) return $token;
 
         $id    = $this->settings->get( 'spreadsheet_id' );
-        $range = rawurlencode( "{$sheet_name}!A:H" );
+        $range = rawurlencode( "{$sheet_name}!A:I" );
         $url   = self::BASE . "/{$id}/values/{$range}";
 
         $response = ENA_HTTP::get( $url, [ 'headers' => [ 'Authorization' => "Bearer {$token}" ] ] );

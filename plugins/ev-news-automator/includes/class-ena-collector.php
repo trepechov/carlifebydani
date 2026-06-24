@@ -90,6 +90,7 @@ class ENA_Collector {
                 'upvote'      => '',
                 'downvote'    => '',
                 'clicks'      => 0,
+                'pub_date'    => $article['published_at'] > 0 ? gmdate( 'Y-m-d', $article['published_at'] ) : '',
             ];
         }
 

@@ -42,8 +42,8 @@ class ENA_Admin {
 
         add_submenu_page(
             'ev-news-automator',
-            'Работен процес',
-            'Работен процес',
+            'Work Process',
+            'Work Process',
             'manage_options',
             'ev-news-automator-plan',
             [ $this, 'render_how_it_works' ]

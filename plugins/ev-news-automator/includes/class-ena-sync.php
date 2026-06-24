@@ -38,6 +38,7 @@ class ENA_Sync {
             'link'        => $r['link'],
             'description' => $r['description'],
             'source'      => $r['author'],
+            'pub_date'    => $r['pub_date'] ?? '',
             'date'        => $r['session_date'],
             'clicks'      => (int) $r['clicks'],
             'added_date'  => $r['added_date'],

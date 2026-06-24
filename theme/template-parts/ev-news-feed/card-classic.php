@@ -13,7 +13,7 @@
  * number in a low-contrast dark block anchored bottom-right of the card.
  *
  * $args:
- *   article  array  { title, link, description, source, date, clicks }
+ *   article  array  { title, link, description, source, pub_date, date, clicks }
  *   index    int    1-based position in the feed
  */
 
@@ -24,6 +24,8 @@ $title       = esc_html( $article['title']       ?? '' );
 $link        = esc_url(  $article['link']        ?? '' );
 $source      = esc_html( $article['source']      ?? '' );
 $description = esc_html( $article['description'] ?? '' );
+$pub_date_raw = $article['pub_date'] ?? '';
+$pub_date    = $pub_date_raw ? esc_html( date_i18n( 'j M Y', strtotime( $pub_date_raw ) ) ) : '';
 $date        = esc_html( $article['date']        ?? '' );
 $clicks      = (int) ( $article['clicks'] ?? 0 );
 $data_title  = esc_attr( $article['title'] ?? '' );
@@ -53,6 +55,10 @@ $data_url    = esc_attr( $article['link']  ?? '' );
         <?php /* Eyebrow: source · date · clicks badge */ ?>
         <div class="mt-5 mb-3 flex items-center gap-2 flex-wrap">
             <span class="text-xs font-bold uppercase tracking-widest text-brand-red"><?php echo $source; ?></span>
+            <?php if ( $pub_date ) : ?>
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-red flex-shrink-0"></span>
+            <span class="text-xs text-brand-lightgrey"><?php echo $pub_date; ?></span>
+            <?php endif; ?>
             <?php if ( $date ) : ?>
             <span class="w-1.5 h-1.5 rounded-full bg-brand-red flex-shrink-0"></span>
             <span class="text-xs text-brand-lightgrey"><?php echo $date; ?></span>

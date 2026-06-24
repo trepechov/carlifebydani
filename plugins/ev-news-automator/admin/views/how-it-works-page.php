@@ -250,7 +250,7 @@ $content_html = ena_md_to_html( $md );
 
 ?>
 <div class="wrap" id="ena-how-it-works">
-    <h1 class="wp-heading-inline">Работен процес на епизода</h1>
+    <h1 class="wp-heading-inline">Work Process</h1>
     <span class="title-count theme-count">EV News Automator</span>
 
     <!-- ── Phase overview bar ───────────────────────────────────────────── -->
@@ -259,14 +259,14 @@ $content_html = ena_md_to_html( $md );
         <div class="ena-phase ena-phase--auto">
             <div class="ena-phase__icon">🤖</div>
             <div class="ena-phase__body">
-                <strong>Ср → Вт 09:00</strong>
-                <span>Автоматично · всеки ден</span>
+                <strong>Wed → Tue 09:00</strong>
+                <span>Automatic · every day</span>
                 <ul>
-                    <li>GA4 синхрон</li>
-                    <li>Сортиране по ангажираност</li>
-                    <li>Обхождане RSS/HTML</li>
-                    <li>AI резюме на БГ</li>
-                    <li>Добавяне в Sheet</li>
+                    <li>GA4 sync</li>
+                    <li>Sort by engagement</li>
+                    <li>Crawl RSS/HTML</li>
+                    <li>AI summary in BG</li>
+                    <li>Add to Sheet</li>
                 </ul>
             </div>
         </div>
@@ -276,12 +276,12 @@ $content_html = ena_md_to_html( $md );
         <div class="ena-phase ena-phase--manual">
             <div class="ena-phase__icon">📝</div>
             <div class="ena-phase__body">
-                <strong>Вторник — преди запис</strong>
-                <span>Ръчно · ~15 мин</span>
+                <strong>Tuesday — before recording</strong>
+                <span>Manual · ~15 min</span>
                 <ul>
-                    <li>Нов Google Doc</li>
-                    <li>ID на Doc в Настройки</li>
-                    <li>Генерирай подкаст скрипт</li>
+                    <li>New Google Doc</li>
+                    <li>Doc ID in Settings</li>
+                    <li>Generate podcast script</li>
                 </ul>
             </div>
         </div>
@@ -291,11 +291,11 @@ $content_html = ena_md_to_html( $md );
         <div class="ena-phase ena-phase--record">
             <div class="ena-phase__icon">🎙️</div>
             <div class="ena-phase__body">
-                <strong>Вторник вечер</strong>
-                <span>Запис</span>
+                <strong>Tuesday evening</strong>
+                <span>Recording</span>
                 <ul>
-                    <li>Водещите четат Google Doc</li>
-                    <li>Записване на подкаст</li>
+                    <li>Hosts read Google Doc</li>
+                    <li>Record podcast</li>
                 </ul>
             </div>
         </div>
@@ -305,14 +305,14 @@ $content_html = ena_md_to_html( $md );
         <div class="ena-phase ena-phase--after">
             <div class="ena-phase__icon">🚀</div>
             <div class="ena-phase__body">
-                <strong>Вторник — след запис</strong>
-                <span>Ръчно · ~10 мин</span>
+                <strong>Tuesday — after recording</strong>
+                <span>Manual · ~10 min</span>
                 <ul>
-                    <li>Публикувай епизода</li>
-                    <li>Нов таб ДД.ММ.ГГГГ</li>
-                    <li>Нова WP страница</li>
-                    <li>news_csv мета</li>
-                    <li>Стартирай колекция</li>
+                    <li>Publish episode</li>
+                    <li>New tab DD.MM.YYYY</li>
+                    <li>New WP page</li>
+                    <li>news_csv meta</li>
+                    <li>Start collection</li>
                 </ul>
             </div>
         </div>
