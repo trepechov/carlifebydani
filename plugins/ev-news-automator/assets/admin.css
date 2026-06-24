@@ -1,0 +1,427 @@
+#ena-dashboard .ena-status-grid .postbox h3 {
+    font-size: 14px;
+}
+
+#ena-result.success {
+    color: #46b450;
+}
+
+#ena-result.error {
+    color: #dc3232;
+}
+
+/* Usage stats */
+.ena-usage-box {
+    border: 1px solid #c3c4c7;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.ena-stat-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.ena-stat-table td:first-child {
+    color: #555;
+    padding-right: 12px;
+    white-space: nowrap;
+}
+
+.ena-stat-table td:last-child {
+    font-weight: 500;
+}
+
+/* ── How It Works page ────────────────────────────────────────────────────── */
+
+#ena-how-it-works .title-count {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    background: #2271b1;
+    color: #fff;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+
+.ena-doc-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+
+/* ── Sidebar TOC ────────────────────────────────────────────────────────── */
+
+.ena-doc-nav {
+    flex: 0 0 210px;
+    position: sticky;
+    top: 32px;
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 14px 16px;
+    box-sizing: border-box;
+}
+
+.ena-toc-heading {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #3c434a;
+}
+
+.ena-doc-nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ena-doc-nav li {
+    margin: 0;
+}
+
+.ena-toc-top a {
+    display: block;
+    padding: 5px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1d2327;
+    text-decoration: none;
+    line-height: 1.4;
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.ena-toc-top:last-of-type a {
+    border-bottom: none;
+}
+
+.ena-toc-sub a {
+    display: block;
+    padding: 3px 0 3px 12px;
+    font-size: 11px;
+    color: #646970;
+    text-decoration: none;
+    line-height: 1.4;
+}
+
+.ena-doc-nav a:hover {
+    color: #2271b1;
+}
+
+/* ── Main content area ──────────────────────────────────────────────────── */
+
+.ena-doc-content {
+    flex: 1;
+    min-width: 0;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 28px 36px;
+    box-sizing: border-box;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #1d2327;
+}
+
+.ena-doc-content h1 {
+    font-size: 22px;
+    font-weight: 700;
+    border-bottom: 2px solid #2271b1;
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #1d2327;
+}
+
+.ena-doc-content h2 {
+    font-size: 17px;
+    font-weight: 700;
+    border-bottom: 1px solid #dcdcde;
+    padding-bottom: 6px;
+    margin-top: 36px;
+    margin-bottom: 14px;
+    color: #1d2327;
+}
+
+.ena-doc-content h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-top: 26px;
+    margin-bottom: 8px;
+    color: #1d2327;
+}
+
+.ena-doc-content h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 18px;
+    margin-bottom: 6px;
+    color: #3c434a;
+}
+
+.ena-doc-content p {
+    margin: 10px 0;
+}
+
+.ena-doc-content .ena-hr {
+    border: 0;
+    border-top: 1px solid #dcdcde;
+    margin: 28px 0;
+}
+
+/* Lists */
+.ena-doc-content .ena-list {
+    padding-left: 24px;
+    margin: 10px 0;
+}
+
+.ena-doc-content .ena-list li {
+    margin: 5px 0;
+    line-height: 1.6;
+}
+
+/* Inline code */
+.ena-doc-content .ena-ic {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 12px;
+    background: #f0f0f1;
+    color: #c7254e;
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Code blocks */
+.ena-doc-content .ena-pre {
+    background: #1d2327;
+    color: #e8e8e8;
+    border-radius: 6px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 14px 0;
+    font-size: 12px;
+    line-height: 1.65;
+}
+
+.ena-doc-content .ena-pre code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    background: none;
+    color: inherit;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    font-size: inherit;
+}
+
+/* Blockquotes */
+.ena-doc-content .ena-bq {
+    border-left: 4px solid #2271b1;
+    background: #f0f6fc;
+    color: #3c434a;
+    margin: 14px 0;
+    padding: 10px 16px;
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+}
+
+/* Non-HTTP references (file paths shown as inline text) */
+.ena-doc-content .ena-ref {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 12px;
+    color: #3c434a;
+}
+
+/* Tables */
+.ena-table-wrap {
+    overflow-x: auto;
+    margin: 14px 0;
+}
+
+.ena-doc-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+}
+
+.ena-doc-table th {
+    background: #f6f7f7;
+    font-weight: 600;
+    text-align: left;
+    padding: 9px 14px;
+    border: 1px solid #c3c4c7;
+    white-space: nowrap;
+}
+
+.ena-doc-table td {
+    padding: 8px 14px;
+    border: 1px solid #dcdcde;
+    vertical-align: top;
+    line-height: 1.5;
+}
+
+.ena-doc-table tr:nth-child(even) td {
+    background: #f9f9f9;
+}
+
+/* ── Phase overview bar ─────────────────────────────────────────────────── */
+
+.ena-phase-bar {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 20px 0 24px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.ena-phase {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px 14px;
+    gap: 6px;
+    border-right: 1px solid #dcdcde;
+}
+
+.ena-phase--auto   { background: #f0faf1; }
+.ena-phase--manual { background: #f0f6ff; }
+.ena-phase--record { background: #fff4f4; }
+.ena-phase--after  { background: #fffbf0; }
+
+.ena-phase__icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.ena-phase__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.ena-phase__body strong {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1d2327;
+    display: block;
+    line-height: 1.3;
+}
+
+.ena-phase__body > span {
+    font-size: 10px;
+    color: #787c82;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 6px;
+}
+
+.ena-phase__body ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+
+.ena-phase__body ul li {
+    font-size: 11px;
+    color: #3c434a;
+    line-height: 1.6;
+    padding-left: 10px;
+    position: relative;
+}
+
+.ena-phase__body ul li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: #9ea3a8;
+}
+
+.ena-phase__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #c3c4c7;
+    padding: 0 2px;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.ena-phase__loop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #2271b1;
+    padding: 0 12px;
+    flex-shrink: 0;
+    align-self: center;
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+    .ena-phase-bar {
+        flex-direction: column;
+    }
+    .ena-phase {
+        border-right: none;
+        border-bottom: 1px solid #dcdcde;
+        flex-direction: row;
+        text-align: left;
+        align-items: flex-start;
+    }
+    .ena-phase__body {
+        align-items: flex-start;
+    }
+    .ena-phase__arrow,
+    .ena-phase__loop {
+        transform: rotate(90deg);
+        align-self: center;
+    }
+}
+
+/* Mermaid diagrams */
+.ena-mermaid {
+    margin: 20px 0;
+    text-align: center;
+    overflow-x: auto;
+}
+
+.ena-mermaid svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 900px) {
+    .ena-doc-layout {
+        flex-direction: column;
+    }
+
+    .ena-doc-nav {
+        position: static;
+        flex: none;
+        width: 100%;
+        max-height: none;
+    }
+
+    .ena-doc-content {
+        padding: 20px;
+    }
+}

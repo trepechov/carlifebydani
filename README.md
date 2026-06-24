@@ -1,46 +1,100 @@
-# CarLife by Dani WordPress Theme
+# CarLife by Dani — Monorepo
 
-This is a custom WordPress theme developed by Dani. It's designed for car enthusiasts and uses Tailwind CSS for styling.
+This repository contains all code for the carlifebydani.com WordPress site.
 
-## Features
+## Repository Structure
 
--   Responsive design
--   Custom post types
--   Tailwind CSS for rapid UI development
+```
+carlifebydani/
+  theme/                  WordPress theme (carlifebydani)
+  plugins/
+    ev-news-automator/    Automated EV news collection plugin (in development)
+  docs/
+    brainstorms/          Requirements and feature planning documents
+```
 
-## Installation
+## Local Development Setup (WP Local)
 
-1. To run a local instance of WordPress. Follow the steps below:
+The repo lives at `~/Projects/carlifebydani/` — **outside** WP Local. Both the theme
+and the plugin are wired into WP Local via symlinks.
 
--   Download and install [Local WP](https://localwp.com/). Ask someone for backup file.
--   Or use your favorite tool that supports PHP and MySQL.
+### First-time setup
 
-2. Navigate to the `/wp-content/themes` folder in your WordPress installation and clone this repository using `git clone` this repo.
+> **WP Local site path:** Local by Flywheel stores sites at
+> `~/Local Sites/<site-name>/app/public/`. Find the exact path in the Local app
+> under **Site → Open Site Folder**.
 
-3. Navigate to the cloned repository by running `cd carlifebydani` and install the necessary dependencies by running `npm install`.
+1. Clone the repo:
+   ```bash
+   git clone <repo-url> ~/Projects/carlifebydani
+   ```
 
-4. Log in to your WordPress admin panel, go to Appearance > Themes and activate the 'CarlifebyDani' theme.
+2. Create the theme symlink:
+   ```bash
+   ln -s ~/Projects/carlifebydani/theme \
+     "/Users/<you>/Local Sites/carlifebydani/app/public/wp-content/themes/carlifebydani"
+   ```
 
-## Required Extensions
+3. Create the plugin symlink:
+   ```bash
+   ln -s ~/Projects/carlifebydani/plugins/ev-news-automator \
+     "/Users/<you>/Local Sites/carlifebydani/app/public/wp-content/plugins/ev-news-automator"
+   ```
 
-This project uses Prettier & PHP Intelephense for code formattin. To install Prettier in Visual Studio Code:
+WordPress resolves `themes/carlifebydani` → `theme/style.css` through the symlink.
+All edits to `~/Projects/carlifebydani/theme/` are live in WP Local immediately — no
+copy step needed.
 
-1. Open Visual Studio Code.
-2. Click on the Extensions view icon on the Sidebar or press `Ctrl+Shift+X`.
-3. Search and install the flowing:
+## Theme Development
 
--   `Prettier - Code formatter`
--   `PHP Intelephense`
+The theme uses Tailwind CSS. All theme work happens inside `theme/`.
 
-4. Optional you can also install `Tailwind CSS IntelliSense`
+**Install dependencies:**
+```bash
+cd theme
+npm install
+```
 
-## User Settings
+**Compile CSS (watch mode):**
+```bash
+npm run dev
+```
 
-After installing the `Prettier - Code formatter` & `PHP Intelephense` plugins for your code editor.
+**Build for production:**
+```bash
+npm run build
+```
 
-1. Open the command palette in your code editor by pressing `Ctrl + Shift + P`, type `Open User Settings JSON`, and select the command. This will open your `settings.json` file.
+**Package for manual upload:**
+```bash
+npm run pack
+# Produces a zip in theme/ ready for wp-admin upload
+```
+Upload the zip via **wp-admin → Appearance → Themes → Add New → Upload Theme**.
 
-2. Add the following code to your `settings.json` file:
+## Plugin Development
+
+Plugin code lives in `plugins/ev-news-automator/`. See [docs/brainstorms/2026-06-17-ev-news-automation-requirements.md](docs/brainstorms/2026-06-17-ev-news-automation-requirements.md) for the feature spec.
+
+**Local development:** the symlink created in setup above means edits to
+`plugins/ev-news-automator/` are live in WP Local immediately — no copy step needed.
+
+**Server deployment:** copy the plugin directory to `wp-content/plugins/` on the
+production server:
+```bash
+rsync -av plugins/ev-news-automator/ user@server:/path/to/wp-content/plugins/ev-news-automator/
+```
+(or upload via SFTP / wp-admin if rsync is not available)
+
+## Editor Setup
+
+Install these VS Code extensions:
+
+- `Prettier - Code formatter`
+- `PHP Intelephense`
+- `Tailwind CSS IntelliSense` (optional)
+
+Add to your `settings.json`:
 
 ```json
 {
@@ -55,33 +109,10 @@ After installing the `Prettier - Code formatter` & `PHP Intelephense` plugins fo
 }
 ```
 
-## Development
+## Constants
 
-This theme uses Tailwind CSS. To compile your CSS, run:
+Site-wide WordPress constants are defined in `theme/constants.php`.
 
-```bash
-npm run dev
-```
+## References
 
-## Create template zip package
-
-1.  Update template version the package.json file (optional)
-2.  Use command:
-
-```
-npm run pack
-```
-
-You will have the zip package in project root folder
-
-# Confic and Constants
-
-Constants used throughout the application.
-
-This file contains various constants that are used in different parts of the application.
-It is located under the `/constants.php` file.
-
-
-# References
-
-https://bonnick.dev/posts/tailwind-css-with-wordpress
+- https://bonnick.dev/posts/tailwind-css-with-wordpress
