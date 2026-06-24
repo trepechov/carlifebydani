@@ -81,6 +81,7 @@ class ENA_Admin {
         }
 
         $allowed_intervals = [ '15min', '30min', '1hour', '6hours', '12hours', 'daily' ];
+        $allowed_ages      = [ '1d', '2d', '3d', '4d', '5d', '6d', '1w' ];
 
         $values = [];
 
@@ -97,6 +98,9 @@ class ENA_Admin {
         $values['podcast_doc_id']       = sanitize_text_field( $_POST['podcast_doc_id'] ?? '' );
         $values['max_articles']         = absint( $_POST['max_articles'] ?? 50 );
         $values['max_script_articles']  = absint( $_POST['max_script_articles'] ?? 10 );
+
+        $age = sanitize_text_field( $_POST['article_age_limit'] ?? '1d' );
+        $values['article_age_limit'] = in_array( $age, $allowed_ages, true ) ? $age : '1d';
 
         $interval = sanitize_text_field( $_POST['collection_interval'] ?? 'daily' );
         $values['collection_interval'] = in_array( $interval, $allowed_intervals, true ) ? $interval : 'daily';

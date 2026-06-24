@@ -106,6 +106,29 @@
                 </td>
             </tr>
             <tr>
+                <th scope="row"><label for="article_age_limit">Article Age Limit</label></th>
+                <td>
+                    <select name="article_age_limit" id="article_age_limit">
+                        <?php
+                        $age_options = [
+                            '1d' => 'Last 24 hours',
+                            '2d' => 'Last 2 days',
+                            '3d' => 'Last 3 days',
+                            '4d' => 'Last 4 days',
+                            '5d' => 'Last 5 days',
+                            '6d' => 'Last 6 days',
+                            '1w' => 'Last 7 days (1 week)',
+                        ];
+                        $cur_age = $settings->get( 'article_age_limit' );
+                        foreach ( $age_options as $val => $label ) :
+                        ?>
+                            <option value="<?php echo esc_attr( $val ); ?>"<?php selected( $cur_age, $val ); ?>><?php echo esc_html( $label ); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <p class="description">Only RSS articles published within this window are collected. HTML sources (no pub date) are always capped to the 5 most recent items regardless of this setting.</p>
+                </td>
+            </tr>
+            <tr>
                 <th scope="row"><label for="collection_interval">Collection Interval</label></th>
                 <td>
                     <select name="collection_interval" id="collection_interval">

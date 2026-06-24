@@ -29,23 +29,28 @@ class ENA_Collector {
         $new_articles  = [];
         $batch_seen    = [];
 
-        // TEMPORARY: 24-hour age filter applied per source.
-        // Only articles published within the last 24 hours are accepted.
-        // Remove or make configurable when the session window or cron frequency changes.
-        $cutoff = time() - DAY_IN_SECONDS;
+        $cutoff   = $this->settings->article_age_cutoff();
+        $html_cap = 5; // HTML pages carry no dates; top N items are assumed most recent.
 
         foreach ( $sources as $source ) {
             $items = $this->scraper->fetch_source( $source );
             $count = count( $items );
 
-            $items = array_values( array_filter(
-                $items,
-                fn ( $i ) => $i['published_at'] === 0 || $i['published_at'] >= $cutoff
-            ) );
-            $filtered = $count - count( $items );
+            if ( $source['method'] === 'html' ) {
+                $items    = array_slice( $items, 0, $html_cap );
+                $filtered = $count - count( $items );
+                $msg      = "{$source['url']} — {$count} articles found";
+                if ( $filtered > 0 ) $msg .= ", capped to {$html_cap} (HTML source, no pub dates)";
+            } else {
+                $items    = array_values( array_filter(
+                    $items,
+                    fn ( $i ) => $i['published_at'] > 0 && $i['published_at'] >= $cutoff
+                ) );
+                $filtered = $count - count( $items );
+                $msg      = "{$source['url']} — {$count} articles found";
+                if ( $filtered > 0 ) $msg .= ", {$filtered} older than 24h or undated skipped";
+            }
 
-            $msg = "{$source['url']} — {$count} articles found";
-            if ( $filtered > 0 ) $msg .= ", {$filtered} older than 24h skipped";
             $this->logger->step( 'scrape_source', 'ok', $msg );
 
             foreach ( $items as $item ) {

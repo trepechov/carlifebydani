@@ -30,6 +30,7 @@ class ENA_Settings {
             'max_script_articles'   => 10,
             'collection_interval'   => 'daily',
             'collection_time'       => '09:00',
+            'article_age_limit'     => '1d',
             'sources'               => '',
         ];
     }
@@ -50,6 +51,20 @@ class ENA_Settings {
             }
         }
         return $result;
+    }
+
+    public function article_age_cutoff(): int {
+        $map = [
+            '1d' => DAY_IN_SECONDS,
+            '2d' => 2 * DAY_IN_SECONDS,
+            '3d' => 3 * DAY_IN_SECONDS,
+            '4d' => 4 * DAY_IN_SECONDS,
+            '5d' => 5 * DAY_IN_SECONDS,
+            '6d' => 6 * DAY_IN_SECONDS,
+            '1w' => WEEK_IN_SECONDS,
+        ];
+        $val = $this->get( 'article_age_limit', '1d' );
+        return time() - ( $map[ $val ] ?? DAY_IN_SECONDS );
     }
 
     public function service_account_path(): string {
