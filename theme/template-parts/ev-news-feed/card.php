@@ -21,14 +21,7 @@ $clicks      = (int) ( $article['clicks'] ?? 0 );
 $data_title  = esc_attr( $article['title'] ?? '' );
 $data_url    = esc_attr( $article['link']  ?? '' );
 ?>
-<article class="js-external-article group relative h-[70vh] rounded-br-4xl overflow-hidden bg-brand-solidgrey shadow-card lg:h-auto lg:flex lg:flex-row lg:items-stretch lg:bg-black lg:hover:bg-brand-solidgrey lg:transition-colors lg:duration-200">
-
-    <?php /* ── DESKTOP NUMBER (left column, hidden on mobile) ── */ ?>
-    <?php if ( $num ) : ?>
-    <div class="hidden lg:flex lg:items-center lg:pl-5 lg:pr-2 lg:flex-shrink-0">
-        <span class="text-5xl font-bold text-brand-grey leading-none"><?php echo $num; ?></span>
-    </div>
-    <?php endif; ?>
+<article class="js-external-article group relative h-[70vh] rounded-br-4xl overflow-hidden bg-brand-solidgrey shadow-card lg:h-auto lg:flex lg:flex-row lg:items-stretch lg:bg-brand-grey lg:hover:bg-brand-solidgrey lg:transition-colors lg:duration-200">
 
     <?php /* ── IMAGE ── */ ?>
     <div class="absolute inset-0 lg:relative lg:w-44 lg:h-32 lg:flex-shrink-0 lg:overflow-hidden">
