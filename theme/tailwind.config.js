@@ -68,6 +68,7 @@ module.exports = {
                 // 'to-black-gradient-post': 'linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 40%);',
                 'to-black-gradient': 'linear-gradient(0deg, rgba(0,0,0,1) 50%, rgba(0, 0, 0, 0) 100%);',
                 'to-black-gradient-mobile': 'linear-gradient(0deg, rgba(0,0,0,1) 70%, rgba(0, 0, 0, 0) 100%);',
+                'to-black-gradient-feed': 'linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.75) 25%, rgba(0,0,0,0) 55%);',
                 'to-solidgray-gradient-post': 'linear-gradient(0deg, rgba(28,28,28,1) 0%, rgba(28,28,28,0) 40%);',
                 'from-red-gradient': 'linear-gradient(180deg, #FE3652 0%, rgba(254, 54, 82, 0) 100%);'
             }),

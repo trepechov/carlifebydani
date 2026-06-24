@@ -60,8 +60,8 @@ get_template_part( 'template-parts/header' );
 
     <?php /* ══ MOBILE FEED (< lg) ════════════════════════════════════════ */ ?>
     <div class="lg:hidden px-3 pb-6 flex flex-col gap-3">
-        <?php foreach ( $articles as $article ) :
-            get_template_part( 'template-parts/ev-news-feed/card', null, [ 'article' => $article ] );
+        <?php foreach ( $articles as $index => $article ) :
+            get_template_part( 'template-parts/ev-news-feed/card', null, [ 'article' => $article, 'index' => $index + 1 ] );
         endforeach; ?>
     </div>
 
@@ -72,8 +72,8 @@ get_template_part( 'template-parts/header' );
 
                 <?php /* Main articles (2/3) */ ?>
                 <div class="col-span-2 flex flex-col gap-6">
-                    <?php foreach ( $articles as $article ) :
-                        get_template_part( 'template-parts/ev-news-feed/card', null, [ 'article' => $article ] );
+                    <?php foreach ( $articles as $index => $article ) :
+                        get_template_part( 'template-parts/ev-news-feed/card', null, [ 'article' => $article, 'index' => $index + 1 ] );
                     endforeach; ?>
                 </div>
 

@@ -10,6 +10,8 @@
  */
 
 $article     = $args['article'] ?? [];
+$index       = (int) ( $args['index'] ?? 0 );
+$num         = $index ? str_pad( $index, 2, '0', STR_PAD_LEFT ) : '';
 $title       = esc_html( $article['title']       ?? '' );
 $link        = esc_url(  $article['link']        ?? '' );
 $source      = esc_html( $article['source']      ?? '' );
@@ -20,6 +22,13 @@ $data_title  = esc_attr( $article['title'] ?? '' );
 $data_url    = esc_attr( $article['link']  ?? '' );
 ?>
 <article class="js-external-article group relative h-[70vh] rounded-br-4xl overflow-hidden bg-brand-solidgrey shadow-card lg:h-auto lg:flex lg:flex-row lg:items-stretch lg:bg-black lg:hover:bg-brand-solidgrey lg:transition-colors lg:duration-200">
+
+    <?php /* ── DESKTOP NUMBER (left column, hidden on mobile) ── */ ?>
+    <?php if ( $num ) : ?>
+    <div class="hidden lg:flex lg:items-center lg:pl-5 lg:pr-2 lg:flex-shrink-0">
+        <span class="text-5xl font-bold text-brand-grey leading-none"><?php echo $num; ?></span>
+    </div>
+    <?php endif; ?>
 
     <?php /* ── IMAGE ── */ ?>
     <div class="absolute inset-0 lg:relative lg:w-44 lg:h-32 lg:flex-shrink-0 lg:overflow-hidden">
@@ -32,7 +41,14 @@ $data_url    = esc_attr( $article['link']  ?? '' );
     </div>
 
     <?php /* ── GRADIENT OVERLAY (mobile only) ── */ ?>
-    <div class="absolute inset-0 bg-to-black-gradient-mobile pointer-events-none lg:hidden"></div>
+    <div class="absolute inset-0 bg-to-black-gradient-feed pointer-events-none lg:hidden"></div>
+
+    <?php /* ── MOBILE NUMBER (top-left overlay, hidden on desktop) ── */ ?>
+    <?php if ( $num ) : ?>
+    <div class="absolute top-4 left-5 pointer-events-none lg:hidden">
+        <span class="text-8xl font-bold text-white/20 leading-none"><?php echo $num; ?></span>
+    </div>
+    <?php endif; ?>
 
     <?php /* ── MOBILE TEXT (bottom overlay, hidden on desktop) ── */ ?>
     <div class="absolute bottom-0 left-0 right-0 p-5 lg:hidden">
