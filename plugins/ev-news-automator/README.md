@@ -10,7 +10,7 @@ WordPress plugin for **Car Life by Dani**. Collects English-language EV news fro
 2. **Summarises** each new article — sends the title and excerpt to an OpenRouter AI model, receives a Bulgarian headline and 2–3 sentence summary.
 3. **Stores** results in a Google Sheet (one tab per recording session). Deduplicates against existing URLs. Trims the sheet to a configurable maximum.
 4. **Tracks clicks** — syncs `ev_news_click` GA4 event counts back into the sheet's clicks column on every collection run.
-5. **Syncs to live** — pushes the current sheet tab's articles into a WordPress option (`ev_news_live_articles`) that the theme reads to render the live news feed.
+5. **Syncs to live** — pushes the current sheet tab's articles into a WordPress option (`ev_news_live_articles`), sorted by engagement (new-today first, then by click count). The theme reads this option to render the **EV News Feed** page (`/ev-news-feed/`) — a standalone public page with an Instagram-style mobile feed and a desktop grid layout.
 6. **Generates a podcast script** on recording day — scrapes the full body of each article, passes them through the AI model, and appends the resulting Bulgarian script to a configured Google Doc.
 
 ---
@@ -149,6 +149,39 @@ Run the suite after every new deployment or configuration change:
 [ ] test-03 passes  — Google Docs append and Drive folder working
 [ ] test-04 passes  — GA4 property access granted, custom dimension registered
 ```
+
+---
+
+## Theme integration: EV News Feed page
+
+The plugin writes `ev_news_live_articles` (a JSON-encoded array) to `wp_options` after every collection and sync run. The theme reads this option to power the **EV News Feed** page.
+
+**Theme files:**
+
+| File | Role |
+|---|---|
+| `page-ev-news-feed.php` | WordPress page template (`Template Name: EV News Feed`). Reads `ev_news_live_articles`, renders mobile feed + desktop grid. |
+| `template-parts/ev-news-feed/card.php` | Single article card. Mobile: 70 vh full-bleed image with gradient overlay and title at bottom. Desktop: horizontal flex with thumbnail left, content right. |
+
+**Article fields rendered** (from `ev_news_live_articles`):
+
+| Field | Used for |
+|---|---|
+| `title` | Card headline |
+| `link` | External link (opens in new tab with `rel="nofollow"`) |
+| `source` | Source domain label (red, uppercase) |
+| `description` | 2-line summary clamp (desktop only) |
+| `clicks` | Green engagement badge |
+| `date` | Session date label (desktop only) |
+
+**GA4 click tracking** is wired via `data-ev-news-article` attributes on all article links, which `ev-news-tracking.js` picks up and pushes an `ev_news_click` event to `dataLayer`. OG images are loaded asynchronously by `ogimageloader.init.js` via the server-side proxy (`admin-ajax.php?action=fetch_og_image`).
+
+**To create or replace the page in WordPress:**
+
+1. Create a new Page, set the title to `EV News Feed`.
+2. Under Page → Template, choose **EV News Feed**.
+3. Publish. The page is available at `/ev-news-feed/` (or whichever slug WordPress assigns).
+4. Add the page to the desired navigation menu in **Appearance → Menus**.
 
 ---
 

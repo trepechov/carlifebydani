@@ -12,7 +12,9 @@ The carlifebydani team currently curates EV news manually — editing a CSV file
 
 1. **Daily collection** — before scraping, fetch GA4 click counts for existing articles and update the Sheet; then scrape EV news sources, translate + summarize to Bulgarian via OpenRouter, store in Google Sheets.
 2. **Team curation** — team edits/deletes rows directly in Google Sheets (no separate UI).
-3. **Website display** — the upcoming-session episode page carries a `news_csv` post meta pointing to the active Sheet tab's public CSV export URL, set once manually by the team when the page is created. `single.php` fetches that URL at request time and renders fresh article data — identically to past episode pages. The plugin does not update `news_csv` meta; the Sheet is always fresh because the plugin continuously appends new articles to it.
+3. **Website display** — two surfaces:
+   - **Episode page** (`single.php`): the upcoming-session episode page carries a `news_csv` post meta pointing to the active Sheet tab's public CSV export URL. The plugin does not touch this meta; the Sheet stays fresh because collection runs continuously.
+   - **EV News Feed page** (`/ev-news-feed/`): a standalone public page powered by the `ev_news_live_articles` wp_option that `ENA_Sync` writes after every collection. Template `page-ev-news-feed.php` renders an Instagram-style mobile feed (70 vh snap cards) and a desktop grid with sidebar. GA4 click tracking and OG image loading reuse the existing `ev-news-tracking.js` / `ogimageloader.init.js` scripts.
 4. **Podcast script generation** — Tuesday night, generate a Google Doc with extended Bulgarian scripts per article.
 
 The plugin must not touch the existing `news_csv` post meta path used by all existing episode posts.
