@@ -29,7 +29,7 @@ $clicks      = (int) ( $article['clicks'] ?? 0 );
 $data_title  = esc_attr( $article['title'] ?? '' );
 $data_url    = esc_attr( $article['link']  ?? '' );
 ?>
-<article class="js-external-article group grid grid-cols-1 bg-brand-solidgrey rounded-br-4xl overflow-hidden shadow-card hover:bg-brand-grey transition-colors duration-200 sm:grid-cols-2 sm:rounded-br-5xl">
+<article class="js-external-article group grid grid-cols-1 bg-black rounded-br-4xl overflow-hidden shadow-card hover:bg-brand-solidgrey transition-colors duration-200 sm:grid-cols-2 sm:rounded-br-5xl">
 
     <?php /* ── IMAGE ──
            aspect-video sets 16:9 on mobile; on sm+ the grid row stretches
@@ -40,6 +40,9 @@ $data_url    = esc_attr( $article['link']  ?? '' );
         <div class="overlay bg-to-solidgray-gradient-post opacity-0 group-hover:opacity-100 sm:hidden"></div>
         <img src="" alt="<?php echo $title; ?>"
              class="js-thumbnail absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity delay-500 duration-1000">
+        <?php if ( $num ) : ?>
+        <span class="absolute bottom-3 left-6 z-10 text-6xl font-bold leading-none select-none pointer-events-none sm:bottom-auto sm:left-auto sm:top-3 sm:right-3" style="color:rgba(255,255,255,0.25);text-shadow:1px 1px rgba(0,0,0,0.25)"><?php echo $num; ?></span>
+        <?php endif; ?>
     </a>
 
     <?php /* ── CONTENT ── */ ?>
@@ -70,13 +73,6 @@ $data_url    = esc_attr( $article['link']  ?? '' );
         <?php /* Description */ ?>
         <?php if ( $description ) : ?>
         <p class="text-brand-lightgrey text-sm line-clamp-3 mt-0 mb-0"><?php echo $description; ?></p>
-        <?php endif; ?>
-
-        <?php /* Position number — low-contrast dark block, bottom-right corner */ ?>
-        <?php if ( $num ) : ?>
-        <div class="absolute bottom-0 right-0 px-4 py-3 select-none pointer-events-none">
-            <span class="text-5xl font-bold leading-none" style="color:rgba(255,255,255,.09)"><?php echo $num; ?></span>
-        </div>
         <?php endif; ?>
 
     </div>

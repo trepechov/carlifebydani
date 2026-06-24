@@ -556,11 +556,17 @@ input:-webkit-autofill {
 .bottom-0{
   bottom: 0px;
 }
+.bottom-3{
+  bottom: 0.75rem;
+}
 .left-0{
   left: 0px;
 }
 .left-5{
   left: 1.25rem;
+}
+.left-6{
+  left: 1.5rem;
 }
 .right-0{
   right: 0px;
@@ -1176,10 +1182,6 @@ input:-webkit-autofill {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
 }
-.px-4{
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
 .px-8{
   padding-left: 2rem;
   padding-right: 2rem;
@@ -1207,10 +1209,6 @@ input:-webkit-autofill {
 .py-20{
   padding-top: 5rem;
   padding-bottom: 5rem;
-}
-.py-3{
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
 }
 .py-4{
   padding-top: 1rem;
@@ -1284,6 +1282,10 @@ input:-webkit-autofill {
 }
 .text-5xl{
   font-size: 3rem;
+  line-height: 1;
+}
+.text-6xl{
+  font-size: 3.75rem;
   line-height: 1;
 }
 .text-7xl{
@@ -1853,10 +1855,6 @@ input:-webkit-autofill {
   --tw-text-opacity: 1;
   color: rgb(38 38 38 / var(--tw-text-opacity));
 }
-.hover\:bg-brand-grey:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(38 38 38 / var(--tw-bg-opacity));
-}
 .hover\:bg-brand-solidgrey:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(28 28 28 / var(--tw-bg-opacity));
@@ -1931,6 +1929,18 @@ input:-webkit-autofill {
 @media (min-width: 640px){
   .sm\:static{
     position: static;
+  }
+  .sm\:bottom-auto{
+    bottom: auto;
+  }
+  .sm\:left-auto{
+    left: auto;
+  }
+  .sm\:right-3{
+    right: 0.75rem;
+  }
+  .sm\:top-3{
+    top: 0.75rem;
   }
   .sm\:mx-0{
     margin-left: 0px;
