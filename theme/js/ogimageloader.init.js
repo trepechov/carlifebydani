@@ -30,13 +30,11 @@ function fetchOgImage(url) {
 document.addEventListener('DOMContentLoaded', function () {
     var cards = Array.from(document.querySelectorAll('.js-external-article'));
     var loaded = new Set();
-    var PRELOAD_AHEAD = 3;
 
-    function loadCard(index) {
-        if (loaded.has(index) || index >= cards.length) return;
+    function loadCard(card, index) {
+        if (loaded.has(index)) return;
         loaded.add(index);
 
-        var card = cards[index];
         var anchor = card.querySelector('a');
         var url = anchor ? anchor.getAttribute('href') : null;
         if (!url) return;
@@ -53,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (!('IntersectionObserver' in window)) {
-        cards.forEach(function (_, i) { loadCard(i); });
+        cards.forEach(function (card, i) { loadCard(card, i); });
         return;
     }
 
@@ -61,10 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
         entries.forEach(function (entry) {
             if (!entry.isIntersecting) return;
             var index = cards.indexOf(entry.target);
-            var end = Math.min(index + PRELOAD_AHEAD, cards.length - 1);
-            for (var i = index; i <= end; i++) {
-                loadCard(i);
-            }
+            loadCard(entry.target, index);
         });
     }, {
         rootMargin: '0px 0px 400px 0px'
