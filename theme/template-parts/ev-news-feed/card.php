@@ -2,11 +2,12 @@
 /**
  * EV News Feed — single article card.
  *
- * $args:
- *   article  array  { id, title, link, description, source, pub_date, clicks }
+ * Mobile  : vertical — 16:9 image on top, content below. rounded-br-4xl.
+ * sm+     : horizontal 2-col — image left, content right. rounded-br-5xl.
  *
- * Mobile  : full-height (70 vh) card, image fills background, text overlaid at bottom.
- * Desktop : horizontal flex row, thumbnail left, content right.
+ * $args:
+ *   article  array  { title, link, description, source, pub_date, clicks }
+ *   index    int    1-based position in the feed
  */
 
 $article     = $args['article'] ?? [];
@@ -17,71 +18,59 @@ $link        = esc_url(  $article['link']        ?? '' );
 $source      = esc_html( $article['source']      ?? '' );
 $description = esc_html( $article['description'] ?? '' );
 $pub_date_raw = $article['pub_date'] ?? '';
-$date        = $pub_date_raw ? esc_html( date_i18n( 'j M Y', strtotime( $pub_date_raw ) ) ) : '';
+$pub_date    = $pub_date_raw ? esc_html( date_i18n( 'j M Y', strtotime( $pub_date_raw ) ) ) : '';
 $clicks      = (int) ( $article['clicks'] ?? 0 );
 $data_title  = esc_attr( $article['title'] ?? '' );
 $data_url    = esc_attr( $article['link']  ?? '' );
 ?>
-<article class="js-external-article group relative h-[70vh] rounded-br-4xl overflow-hidden bg-brand-solidgrey shadow-card lg:h-auto lg:flex lg:flex-row lg:items-stretch lg:bg-brand-grey lg:hover:bg-brand-solidgrey lg:transition-colors lg:duration-200">
+<article class="js-external-article group grid grid-cols-1 bg-black rounded-br-4xl overflow-hidden shadow-card hover:bg-brand-solidgrey transition-colors duration-200 sm:grid-cols-2 sm:rounded-br-5xl">
 
-    <?php /* ── IMAGE ── */ ?>
-    <div class="absolute inset-0 lg:relative lg:w-44 lg:h-32 lg:flex-shrink-0 lg:overflow-hidden">
-        <a href="<?php echo $link; ?>" target="_blank" rel="nofollow" class="block w-full h-full" data-ev-news data-title="<?php echo $data_title; ?>" data-url="<?php echo $data_url; ?>">
-            <div class="relative w-full h-full overflow-hidden">
-                <div class="absolute inset-0 bg-brand-grey"></div>
-                <img src="" alt="<?php echo $title; ?>" class="js-thumbnail absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity delay-500 duration-1000">
-            </div>
-        </a>
-    </div>
-
-    <?php /* ── GRADIENT OVERLAY (mobile only) ── */ ?>
-    <div class="absolute inset-0 bg-to-black-gradient-feed pointer-events-none lg:hidden"></div>
-
-    <?php /* ── MOBILE NUMBER (top-left overlay, hidden on desktop) ── */ ?>
-    <?php if ( $num ) : ?>
-    <div class="absolute top-4 left-5 pointer-events-none lg:hidden">
-        <span class="text-8xl font-bold text-white/20 leading-none"><?php echo $num; ?></span>
-    </div>
-    <?php endif; ?>
-
-    <?php /* ── MOBILE TEXT (bottom overlay, hidden on desktop) ── */ ?>
-    <div class="absolute bottom-0 left-0 right-0 p-5 lg:hidden">
-        <?php if ( $clicks > 0 ) : ?>
-        <div class="absolute top-0 right-5 -translate-y-1/2 flex items-center gap-1">
-            <div class="relative rounded-full border-2 w-9 h-9 flex items-center justify-center bg-black/70 border-brand-green text-sm font-bold backdrop-blur-sm">
-                <span><?php echo $clicks; ?></span>
-                <div class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs font-bold rounded-full bg-brand-green material-symbols-outlined">Check</div>
-            </div>
-        </div>
+    <?php /* ── IMAGE ──
+           aspect-video sets 16:9 on mobile; on sm+ the grid row stretches
+           the cell to match the content column height (object-cover fills it). */ ?>
+    <a href="<?php echo $link; ?>" target="_blank" rel="nofollow"
+       class="relative block aspect-video overflow-hidden bg-black sm:aspect-auto"
+       data-ev-news data-title="<?php echo $data_title; ?>" data-url="<?php echo $data_url; ?>">
+        <div class="overlay bg-to-solidgray-gradient-post opacity-0 group-hover:opacity-100 sm:hidden"></div>
+        <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/noimage-640x360.jpg" alt=""
+             class="absolute inset-0 w-full h-full object-cover">
+        <img src="" alt="<?php echo $title; ?>"
+             class="js-thumbnail absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity delay-500 duration-1000">
+        <?php if ( $num ) : ?>
+        <span class="absolute bottom-3 left-6 z-10 text-6xl font-bold leading-none select-none pointer-events-none sm:bottom-auto sm:left-auto sm:top-3 sm:right-3" style="color:rgba(255,255,255,0.25);text-shadow:1px 1px rgba(0,0,0,0.25)"><?php echo $num; ?></span>
         <?php endif; ?>
-        <span class="text-brand-red text-xs font-bold uppercase tracking-widest block mb-2"><?php echo $source; ?></span>
-        <h3 class="mt-0 mb-2 text-xl font-bold leading-tight line-clamp-2">
-            <a href="<?php echo $link; ?>" target="_blank" rel="nofollow" class="text-white hover:text-brand-red link-transition" data-ev-news-article data-title="<?php echo $data_title; ?>" data-url="<?php echo $data_url; ?>"><?php echo $title; ?></a>
+    </a>
+
+    <?php /* ── CONTENT ── */ ?>
+    <div class="relative px-[7%] pb-[12%] min-h-[13rem]">
+
+        <?php /* Eyebrow: source · date · clicks badge */ ?>
+        <div class="mt-5 mb-3 flex items-center gap-2 flex-wrap">
+            <span class="text-xs font-bold uppercase tracking-widest text-brand-red"><?php echo $source; ?></span>
+            <?php if ( $pub_date ) : ?>
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-red flex-shrink-0"></span>
+            <span class="text-xs text-brand-lightgrey"><?php echo $pub_date; ?></span>
+            <?php endif; ?>
+            <?php if ( $clicks > 0 ) : ?>
+            <div class="relative ml-auto rounded-full border w-7 h-7 flex items-center justify-center bg-brand-solidgrey border-brand-green flex-shrink-0">
+                <span class="text-xs font-bold"><?php echo $clicks; ?></span>
+                <div class="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center rounded-full bg-brand-green material-symbols-outlined" style="font-size:9px">Check</div>
+            </div>
+            <?php endif; ?>
+        </div>
+
+        <?php /* Title — smaller than category cards to leave room for description */ ?>
+        <h3 class="mt-0 mb-2">
+            <a href="<?php echo $link; ?>" target="_blank" rel="nofollow"
+               class="text-base/6 font-bold line-clamp-2 group-hover:text-brand-red link-transition sm:text-lg/6"
+               data-ev-news-article data-title="<?php echo $data_title; ?>" data-url="<?php echo $data_url; ?>"><?php echo $title; ?></a>
         </h3>
+
+        <?php /* Description */ ?>
         <?php if ( $description ) : ?>
-        <p class="text-brand-lightgrey text-sm line-clamp-3 mt-0"><?php echo $description; ?></p>
+        <p class="text-brand-lightgrey text-sm line-clamp-3 mt-0 mb-0"><?php echo $description; ?></p>
         <?php endif; ?>
+
     </div>
 
-    <?php /* ── DESKTOP CONTENT (right column, hidden on mobile) ── */ ?>
-    <div class="hidden lg:flex lg:flex-col lg:justify-between lg:flex-1 lg:p-5">
-        <div>
-            <span class="text-brand-red text-xs font-bold uppercase tracking-widest block mb-2"><?php echo $source; ?></span>
-            <h3 class="mt-0 mb-2 text-lg font-bold leading-snug line-clamp-2 group-hover:text-brand-red transition-colors duration-200">
-                <a href="<?php echo $link; ?>" target="_blank" rel="nofollow" class="link-transition" data-ev-news-article data-title="<?php echo $data_title; ?>" data-url="<?php echo $data_url; ?>"><?php echo $title; ?></a>
-            </h3>
-            <?php if ( $description ) : ?>
-            <p class="text-brand-lightgrey text-sm line-clamp-2 mt-0"><?php echo $description; ?></p>
-            <?php endif; ?>
-        </div>
-        <div class="flex items-center gap-3 mt-3">
-            <div class="relative rounded-full border-2 w-10 h-10 flex items-center justify-center bg-brand-solidgrey border-brand-green border-opacity-40 flex-shrink-0">
-                <span class="text-sm font-bold"><?php echo $clicks; ?></span>
-                <div class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs font-bold rounded-full bg-brand-green material-symbols-outlined">Check</div>
-            </div>
-            <?php if ( $date ) : ?>
-            <span class="text-brand-lightgrey text-xs"><?php echo $date; ?></span>
-            <?php endif; ?>
-        </div>
-    </div>
 </article>

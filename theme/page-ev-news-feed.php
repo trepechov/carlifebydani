@@ -52,7 +52,7 @@ get_template_part( 'template-parts/header' );
             <div class="pb-8 col-span-2 border-b-2 border-brand-button">
                 <div class="flex flex-col gap-8">
                     <?php foreach ( $articles as $i => $article ) :
-                        get_template_part( 'template-parts/ev-news-feed/card-classic', null, [
+                        get_template_part( 'template-parts/ev-news-feed/card', null, [
                             'article' => $article,
                             'index'   => $i + 1,
                         ] );
