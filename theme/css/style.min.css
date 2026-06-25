@@ -801,17 +801,11 @@ input:-webkit-autofill {
 .max-h-0{
   max-height: 0px;
 }
-.min-h-\[10rem\]{
-  min-height: 10rem;
+.min-h-\[13rem\]{
+  min-height: 13rem;
 }
 .min-h-\[80px\]{
   min-height: 80px;
-}
-.min-h-\[14rem\]{
-  min-height: 14rem;
-}
-.min-h-\[13rem\]{
-  min-height: 13rem;
 }
 .w-1\.5{
   width: 0.375rem;
@@ -1916,9 +1910,6 @@ input:-webkit-autofill {
   .sm\:h-20{
     height: 5rem;
   }
-  .sm\:min-h-\[16rem\]{
-    min-height: 16rem;
-  }
   .sm\:w-1\/2{
     width: 50%;
   }
@@ -1984,12 +1975,6 @@ input:-webkit-autofill {
   }
 }
 @media (min-width: 768px){
-  .md\:min-h-\[16rem\]{
-    min-height: 16rem;
-  }
-  .md\:min-h-\[13rem\]{
-    min-height: 13rem;
-  }
   .md\:grid-cols-4{
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
