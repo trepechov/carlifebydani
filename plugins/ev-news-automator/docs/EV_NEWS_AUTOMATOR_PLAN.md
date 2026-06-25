@@ -19,14 +19,14 @@ The carlifebydani team currently curates EV news manually — editing a CSV file
 
 The plugin must not touch the existing `news_csv` post meta path used by all existing episode posts.
 
-**Upcoming-session episode page flow:**
-1. After each recording, the team creates a new WP page (e.g. "EV News #156").
-2. The team creates a new Sheet tab named `DD.MM.YYYY` for the upcoming session (e.g. `19.06.2026`).
-3. The team sets `news_csv` post meta on the new page to the active tab's CSV export URL:
-   `https://docs.google.com/spreadsheets/d/{id}/gviz/tq?tqx=out:csv&sheet={tab_name}`
-4. From that point, the plugin's daily collection keeps the Sheet populated with fresh articles.
-5. Visitors see continuously-updated content because `single.php` fetches the CSV live at request time.
-6. The plugin never modifies WP page meta — the CSV URL stays valid for the entire session.
+**Session turnover flow (Tuesday after recording):**
+1. The team publishes the recorded episode as a WP post (e.g. "EV News #155").
+2. The team creates a new Sheet tab named `DD.MM.YYYY` for the upcoming session (e.g. `02.07.2026`) with the 8-column header row.
+3. The team triggers "Run collection now" from the plugin dashboard.
+
+The plugin auto-detects the newest `DD.MM.YYYY` tab as the active session. After the collection run, `ENA_Sync` writes the fresh articles to `ev_news_live_articles` in `wp_options`, and the static `/ev-news-feed/` page (WP ID 8851) immediately reflects the new session's content.
+
+**No new WP page is created per session.** The static `/ev-news-feed/` page serves all sessions — what it shows is determined entirely by which Sheet tab is active (the most recently dated `DD.MM.YYYY` tab).
 
 ---
 
@@ -664,7 +664,7 @@ Not needed. The existing `theme/template-parts/single/card-article-external.php`
 4. OpenRouter account with a funded balance and API key.
 5. GA4 **numeric property ID** (found in Analytics → Admin → Property Settings, e.g. `123456789`). Enter in plugin settings as `ga4_property_id`. Leave empty to disable click sync (filter will still run but won't drop zero-click articles).
 6. Google Spreadsheet with at least one tab named `DD.MM.YYYY` (e.g. `16.06.2026`) and columns `title | description | link | author | upvote | downvote | clicks` in that order. Spreadsheet ID noted for plugin settings. Use "New Session" (future admin button) or create tabs manually. For existing tabs without column G, see migration note in the Sheets adapter spec above. The spreadsheet must be shared as **"Anyone with the link can view"** so the CSV export URL is accessible by `single.php` without authentication.
-7. A WordPress page created to serve as the upcoming-session placeholder. Set its `news_csv` post meta to the active tab's CSV export URL manually. No special page template is needed — the page uses the default `single.php` flow.
+7. The static **EV News Feed** page at `/ev-news-feed/` (WP ID 8851) must exist in WordPress with the **EV News Feed** page template (`page-ev-news-feed.php`). This page is created once and never replaced — it serves all future sessions automatically.
 
 ---
 

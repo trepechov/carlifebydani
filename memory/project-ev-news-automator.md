@@ -7,6 +7,10 @@ metadata:
 
 Plugin implemented and ready for activation. RSS scraping verified (Electrek: 100 articles). Awaiting Google SA key + OpenRouter key to go live.
 
+**Session turnover (Tuesday after recording) — deprecated old flow:**
+- ~~Create a new WP page per session~~ — this is no longer done.
+- **New flow:** publish the episode post → create a new `DD.MM.YYYY` Sheet tab → trigger "Run collection now". The static `/ev-news-feed/` page (WP ID 8851) auto-updates. No new WP page is created per session.
+
 **Architecture decisions made:**
 - Google Sheets is the storage adapter (swappable via ENA_Plugin::__construct binding)
 - One tab per session, named DD.MM.YYYY; active tab = most recently dated

@@ -176,12 +176,14 @@ The plugin writes `ev_news_live_articles` (a JSON-encoded array) to `wp_options`
 
 **GA4 click tracking** is wired via `data-ev-news-article` attributes on all article links, which `ev-news-tracking.js` picks up and pushes an `ev_news_click` event to `dataLayer`. OG images are loaded asynchronously by `ogimageloader.init.js` via the server-side proxy (`admin-ajax.php?action=fetch_og_image`).
 
-**To create or replace the page in WordPress:**
+**The EV News Feed page** lives at `/ev-news-feed/` (WP ID 8851). It is a **static, permanent page** — created once, never replaced. Its content changes automatically each session as `ENA_Sync` writes the active Sheet tab's articles to `ev_news_live_articles` after every collection run.
 
+No new WP page is created per recording session. To start a new session after a Tuesday recording, create a new Sheet tab named `DD.MM.YYYY` and trigger "Run collection now" from the plugin dashboard — the page updates immediately.
+
+**If the page ever needs to be recreated:**
 1. Create a new Page, set the title to `EV News Feed`.
 2. Under Page → Template, choose **EV News Feed**.
-3. Publish. The page is available at `/ev-news-feed/` (or whichever slug WordPress assigns).
-4. Add the page to the desired navigation menu in **Appearance → Menus**.
+3. Publish. Update the **Upcoming Session Page ID** setting with the new page's ID.
 
 ---
 
