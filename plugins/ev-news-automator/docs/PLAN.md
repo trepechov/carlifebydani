@@ -59,18 +59,31 @@ The team plans to migrate away from Google Sheets as the article database in a f
 
 **7-day cycle:** Wednesday 09:00 (first collection after recording) → Tuesday 09:00 (last collection before recording). Visitors can read and click articles throughout the week; GA4 click data accumulates so the most-engaged articles rise to the top of the podcast script.
 
-### Engagement Sort Order (applied during sync)
+### Two-Layer Ordering
 
-Every sync writes articles to `wp_options` in three groups, so the live page always surfaces the most relevant content first without ever deleting anything:
+The system maintains two distinct orderings that serve different purposes.
+
+**Sheet order** — physical row order in the active tab, managed by `sort_by_clicks()` on every daily run:
+
+| Priority | Field | Direction |
+|---|---|---|
+| 1 | `clicks` | DESC — most-clicked articles at the top |
+| 2 | `added_date` | DESC — tiebreaker; most recently scraped row wins when clicks are equal |
+
+This is what the Google Sheet reflects visually and what the podcast script uses. It is **not** what visitors see on `/ev-news-feed/`.
+
+**Display order** — applied by `ENA_Sync` when writing `ev_news_live_articles` to `wp_options`. The Sheet row order is ignored; articles are re-sorted into three groups at display time:
 
 ```
-Group 1 — New today        (added_date = today):  shown first, unsorted
-           → articles just scraped haven't had time to earn clicks; no penalty
-Group 2 — Engaged          (added_date < today, clicks > 0):  sorted by clicks DESC
-           → proven audience interest; highest-clicked rises to top
-Group 3 — Zero-click older (added_date < today, clicks = 0):  shown last, unsorted
+Group 1 — Published today  (pub_date === today):  shown first, Sheet insertion order preserved
+           → new articles go to the top even if they have zero clicks yet
+Group 2 — Engaged older    (pub_date < today, clicks > 0):  sorted by clicks DESC
+           → proven audience interest; highest-clicked rises within this group
+Group 3 — Zero-click older (pub_date < today, clicks = 0):  shown last, Sheet insertion order preserved
            → had at least one day to attract clicks; users weren't interested
 ```
+
+`pub_date` (the RSS `<pubDate>` field, stored as Y-m-d) is used for group assignment. If `pub_date` is missing, `added_date` (the scrape date) is used as a fallback so those rows still land in a group.
 
 A new article enters at the top of Group 1. After the next daily run updates GA4 clicks it either moves to Group 2 (any clicks → sorted by count) or sinks to Group 3 (still zero). Nothing is ever deleted by the plugin — the team manages deletions manually via the Sheet. Zero-click articles remain visible at the bottom, giving the editorial team full visibility of what exists.
 
