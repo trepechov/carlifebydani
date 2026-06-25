@@ -24,6 +24,7 @@ define( 'ENA_OPT_CRON_TRANSCRIPT',    'ena_cron_transcript' );
 define( 'ENA_OPT_STATUS_COLLECTION',  'ena_status_last_collection' );
 define( 'ENA_OPT_STATUS_SYNC',        'ena_status_last_sync' );
 define( 'ENA_OPT_STATUS_PODCAST',     'ena_status_last_podcast' );
+define( 'ENA_OPT_ACTIVE_JOB',         'ena_active_job' );
 
 // Load all includes
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-http.php';
@@ -38,6 +39,7 @@ require_once ENA_PLUGIN_DIR . 'includes/class-ena-scraper.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-collector.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-sync.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-podcast.php';
+require_once ENA_PLUGIN_DIR . 'includes/class-ena-background.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-cron.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-ajax.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-plugin.php';

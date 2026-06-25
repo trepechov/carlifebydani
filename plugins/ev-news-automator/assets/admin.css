@@ -2,12 +2,82 @@
     font-size: 14px;
 }
 
-#ena-result.success {
-    color: #46b450;
+/* ── Job status bar ──────────────────────────────────────────────────────── */
+
+#ena-job-bar {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    line-height: 1.4;
 }
 
-#ena-result.error {
-    color: #dc3232;
+#ena-job-bar.is-running {
+    display: flex;
+    background: #f0f6ff;
+    border-left: 3px solid #2271b1;
+    color: #1d2327;
+}
+
+#ena-job-bar.is-done {
+    display: flex;
+    background: #f0faf1;
+    border-left: 3px solid #46b450;
+    color: #1d2327;
+}
+
+#ena-job-bar.is-error {
+    display: flex;
+    background: #fdf2f2;
+    border-left: 3px solid #dc3232;
+    color: #8a1c1c;
+}
+
+#ena-job-elapsed {
+    margin-left: auto;
+    font-size: 12px;
+    color: #787c82;
+    white-space: nowrap;
+}
+
+/* ── Button loading spinner ──────────────────────────────────────────────── */
+
+.ena-btn-spinner {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: ena-spin 0.65s linear infinite;
+    vertical-align: middle;
+    margin-right: 5px;
+    margin-top: -2px;
+}
+
+.ena-btn-spinner--dark {
+    border-color: rgba(0, 0, 0, 0.15);
+    border-top-color: #50575e;
+}
+
+/* ── Bar spinner (animated ring inside the status bar) ───────────────────── */
+
+.ena-bar-spinner {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    border: 2px solid rgba(34, 113, 177, 0.25);
+    border-top-color: #2271b1;
+    border-radius: 50%;
+    animation: ena-spin 0.65s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes ena-spin {
+    to { transform: rotate(360deg); }
 }
 
 /* Usage stats */

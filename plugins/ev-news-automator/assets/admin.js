@@ -1,63 +1,202 @@
 (function () {
-    const { url, nonce } = window.enaAjax || {};
+    const { url, nonce, jobState } = window.enaAjax || {};
     if (!url || !nonce) return;
 
-    let elapsed = 0;
-    let timer   = null;
+    // ── State ─────────────────────────────────────────────────────────────────
 
-    function startSpinner() {
-        elapsed = 0;
-        document.getElementById('ena-elapsed').textContent = '0s';
-        document.getElementById('ena-spinner').style.display = 'inline-flex';
-        document.getElementById('ena-result').textContent = '';
-        document.getElementById('ena-result').className = '';
-        timer = setInterval(() => {
-            elapsed++;
-            document.getElementById('ena-elapsed').textContent = elapsed + 's';
-        }, 1000);
+    let pollTimer    = null;
+    let elapsedTimer = null;
+    let activeJobType = null;
+
+    // ── Job bar ───────────────────────────────────────────────────────────────
+
+    function setBar(cls, iconHtml, msg, timeText) {
+        const bar = document.getElementById('ena-job-bar');
+        if (!bar) return;
+        bar.className = cls;
+        document.getElementById('ena-job-icon').innerHTML    = iconHtml;
+        document.getElementById('ena-job-msg').textContent   = msg;
+        document.getElementById('ena-job-elapsed').textContent = timeText || '';
     }
 
-    function stopSpinner(message, isError) {
-        clearInterval(timer);
-        document.getElementById('ena-spinner').style.display = 'none';
-        const el = document.getElementById('ena-result');
-        el.textContent = message;
-        el.className   = isError ? 'error' : 'success';
+    function clearBar() {
+        const bar = document.getElementById('ena-job-bar');
+        if (bar) bar.className = '';
     }
 
-    function trigger(action, button) {
-        startSpinner();
-        button.disabled = true;
+    // ── Button loading state ──────────────────────────────────────────────────
 
-        const body = new URLSearchParams({ action, nonce });
+    function setButtonRunning(type) {
+        activeJobType = type;
+        const id  = type === 'collection' ? 'ena-btn-collection' : 'ena-btn-podcast';
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.dataset.originalText = btn.textContent;
+        const label = type === 'collection' ? 'Collecting…' : 'Generating…';
+        const spinnerClass = (id === 'ena-btn-collection') ? 'ena-btn-spinner' : 'ena-btn-spinner ena-btn-spinner--dark';
+        btn.innerHTML = '<span class="' + spinnerClass + '"></span>' + label;
+    }
 
-        fetch(url, { method: 'POST', body })
+    function restoreButtons() {
+        ['ena-btn-collection', 'ena-btn-podcast'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn && btn.dataset.originalText) {
+                btn.textContent = btn.dataset.originalText;
+                delete btn.dataset.originalText;
+            }
+        });
+        activeJobType = null;
+    }
+
+    function setButtonsDisabled(disabled) {
+        ['ena-btn-collection', 'ena-btn-podcast'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.disabled = disabled;
+        });
+    }
+
+    // ── Show states ───────────────────────────────────────────────────────────
+
+    function showIdle() {
+        stopTimers();
+        clearBar();
+        restoreButtons();
+        setButtonsDisabled(false);
+    }
+
+    function showRunning(job) {
+        const spinnerHtml = '<span class="ena-bar-spinner"></span>';
+        const label = job.type === 'podcast' ? 'Generating podcast script' : 'Running collection';
+        setBar('is-running', spinnerHtml, label + '…', '');
+        setButtonRunning(job.type);
+        setButtonsDisabled(true);
+        if (job.started_at) startElapsedTimer(job.started_at);
+    }
+
+    function showDone(job) {
+        stopTimers();
+        restoreButtons();
+        setButtonsDisabled(false);
+
+        const result = job.result || {};
+        let msg = job.type === 'podcast' ? 'Podcast script generated' : 'Collection complete';
+        const parts = [];
+        if (result.added   != null) parts.push(result.added   + ' added');
+        if (result.removed != null) parts.push(result.removed + ' removed');
+        if (result.synced  != null) parts.push(result.synced  + ' synced');
+        if (parts.length) msg += ' · ' + parts.join(', ');
+
+        const duration = (job.finished_at && job.started_at)
+            ? 'took ' + (job.finished_at - job.started_at) + 's'
+            : '';
+
+        setBar('is-done', '✓', msg, duration);
+    }
+
+    function showError(job) {
+        stopTimers();
+        restoreButtons();
+        setButtonsDisabled(false);
+        setBar('is-error', '✕', 'Error: ' + (job.error || 'unknown'), '');
+    }
+
+    // ── Timers ────────────────────────────────────────────────────────────────
+
+    function stopTimers() {
+        if (pollTimer)    { clearInterval(pollTimer);    pollTimer    = null; }
+        if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; }
+    }
+
+    function startElapsedTimer(startedAt) {
+        if (elapsedTimer) clearInterval(elapsedTimer);
+        const tick = () => {
+            const secs = Math.floor(Date.now() / 1000) - startedAt;
+            document.getElementById('ena-job-elapsed').textContent = secs + 's';
+        };
+        tick();
+        elapsedTimer = setInterval(tick, 1000);
+    }
+
+    // ── Polling ───────────────────────────────────────────────────────────────
+
+    function applyJobState(job) {
+        if      (job.status === 'idle')    showIdle();
+        else if (job.status === 'running') showRunning(job);
+        else if (job.status === 'done')    showDone(job);
+        else if (job.status === 'error')   showError(job);
+    }
+
+    function startPolling() {
+        if (pollTimer) return; // already polling
+        pollTimer = setInterval(fetchStatus, 3000);
+    }
+
+    function fetchStatus() {
+        fetch(url, {
+            method: 'POST',
+            body: new URLSearchParams({ action: 'ena_job_status', nonce }),
+        })
             .then(r => r.json())
             .then(data => {
-                if (data.success) {
-                    const info = JSON.stringify(data.data);
-                    stopSpinner('Done: ' + info, false);
+                if (!data.success) return;
+                const job = data.data;
+                applyJobState(job);
+                if (job.status === 'running') {
+                    startPolling();
                 } else {
-                    stopSpinner('Error: ' + (data.data || 'unknown'), true);
+                    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
                 }
             })
-            .catch(err => stopSpinner('Network error: ' + err.message, true))
-            .finally(() => {
-                button.disabled = false;
-            });
+            .catch(() => {}); // silently ignore transient network errors during polling
     }
+
+    // ── Dispatch ──────────────────────────────────────────────────────────────
+
+    function dispatch(job_type) {
+        setButtonsDisabled(true);
+        setBar('is-running', '<span class="ena-bar-spinner"></span>', 'Starting…', '');
+        setButtonRunning(job_type);
+
+        fetch(url, {
+            method: 'POST',
+            body: new URLSearchParams({ action: 'ena_dispatch_job', nonce, job_type }),
+        })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) {
+                    showError({ error: data.data || 'Dispatch failed' });
+                    return;
+                }
+                const { dispatched, reason, job } = data.data;
+                if (!dispatched && reason === 'already_running') {
+                    applyJobState(job);
+                } else {
+                    applyJobState({ status: 'running', type: job_type, started_at: Math.floor(Date.now() / 1000) });
+                }
+                startPolling();
+            })
+            .catch(err => showError({ error: 'Network error: ' + err.message }));
+    }
+
+    // ── Button handlers ───────────────────────────────────────────────────────
 
     document.getElementById('ena-btn-collection')?.addEventListener('click', function () {
         if (!confirm('Run collection now?\n\nThis scrapes all sources, calls OpenRouter for each new article, and writes to Google Sheets. Running it multiple times in a row wastes API credits and may append duplicate articles.\n\nOnly run once unless you have a specific reason to re-run.')) return;
-        trigger('ena_run_collection', this);
+        dispatch('collection');
     });
 
     document.getElementById('ena-btn-podcast')?.addEventListener('click', function () {
         if (!confirm('Generate podcast script?\n\nBefore continuing, make sure:\n• You have created a new Google Doc for this session\n• The correct Document ID is saved in Settings → Podcast Script Document ID\n\nThe script will be appended to whatever doc ID is currently configured.')) return;
-        trigger('ena_run_podcast', this);
+        dispatch('podcast');
     });
 
-    // ── OpenRouter Usage ────────────────────────────────────────────────────
+    // On page load: apply server-rendered state immediately (no async flash on refresh)
+    if (jobState) {
+        applyJobState(jobState);
+        if (jobState.status === 'running') startPolling();
+    }
+
+    // ── OpenRouter Usage ──────────────────────────────────────────────────────
 
     function fmt(n) {
         return Number(n).toLocaleString();

@@ -69,8 +69,9 @@ class ENA_Admin {
         );
 
         wp_localize_script( 'ena-admin', 'enaAjax', [
-            'url'   => admin_url( 'admin-ajax.php' ),
-            'nonce' => wp_create_nonce( 'ena_admin' ),
+            'url'      => admin_url( 'admin-ajax.php' ),
+            'nonce'    => wp_create_nonce( 'ena_admin' ),
+            'jobState' => ENA_Background::status_for_client(),
         ] );
     }
 

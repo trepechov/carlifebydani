@@ -3,7 +3,7 @@
  * EV News Feed — single article card.
  *
  * $args:
- *   article  array  { id, title, link, description, source, date, clicks }
+ *   article  array  { id, title, link, description, source, pub_date, clicks }
  *
  * Mobile  : full-height (70 vh) card, image fills background, text overlaid at bottom.
  * Desktop : horizontal flex row, thumbnail left, content right.
@@ -16,7 +16,8 @@ $title       = esc_html( $article['title']       ?? '' );
 $link        = esc_url(  $article['link']        ?? '' );
 $source      = esc_html( $article['source']      ?? '' );
 $description = esc_html( $article['description'] ?? '' );
-$date        = esc_html( $article['date']        ?? '' );
+$pub_date_raw = $article['pub_date'] ?? '';
+$date        = $pub_date_raw ? esc_html( date_i18n( 'j M Y', strtotime( $pub_date_raw ) ) ) : '';
 $clicks      = (int) ( $article['clicks'] ?? 0 );
 $data_title  = esc_attr( $article['title'] ?? '' );
 $data_url    = esc_attr( $article['link']  ?? '' );

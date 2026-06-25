@@ -3,17 +3,18 @@
     <h1>EV News Automator — Dashboard</h1>
 
     <div class="postbox" style="margin-bottom:24px;padding:16px 20px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
             <h2 style="margin:0;font-size:16px;">Pipeline Status</h2>
             <div style="display:flex;gap:8px;align-items:center;">
-                <span id="ena-result" style="font-size:12px;color:#46b450;"></span>
-                <span id="ena-spinner" style="display:none;">
-                    <span class="spinner is-active" style="float:none;vertical-align:middle;"></span>
-                    <span id="ena-elapsed" style="font-size:12px;color:#999;">0s</span>
-                </span>
                 <button class="button button-primary" id="ena-btn-collection">Run Collection Now</button>
                 <button class="button" id="ena-btn-podcast">Generate Podcast Script</button>
             </div>
+        </div>
+
+        <div id="ena-job-bar">
+            <span id="ena-job-icon"></span>
+            <span id="ena-job-msg"></span>
+            <span id="ena-job-elapsed"></span>
         </div>
 
         <div style="display:flex;gap:20px;flex-wrap:wrap;">
