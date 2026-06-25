@@ -25,10 +25,7 @@ class ENA_OpenRouter {
 
         $parsed = json_decode( $result, true );
         if ( json_last_error() !== JSON_ERROR_NONE || empty( $parsed['title'] ) ) {
-            return [
-                'bg_title'   => $original_title,
-                'bg_summary' => substr( $excerpt_or_body, 0, 300 ),
-            ];
+            return new WP_Error( 'openrouter_parse', 'Invalid or empty JSON response from OpenRouter' );
         }
 
         return [

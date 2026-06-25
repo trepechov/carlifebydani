@@ -74,11 +74,11 @@ class ENA_Collector {
             $summary = $this->openrouter->summarize( $article['title'], $article['excerpt'] ?? '' );
 
             if ( is_wp_error( $summary ) ) {
-                $this->logger->step( 'openrouter_call', 'error', "article {$num}/{$total} — " . $summary->get_error_message() );
-                $summary = [ 'bg_title' => $article['title'], 'bg_summary' => '' ];
-            } else {
-                $this->logger->step( 'openrouter_call', 'ok', "article {$num}/{$total} — bg_title generated" );
+                $this->logger->step( 'openrouter_call', 'skip', "article {$num}/{$total} — skipped, will retry next run: " . $summary->get_error_message() );
+                continue;
             }
+
+            $this->logger->step( 'openrouter_call', 'ok', "article {$num}/{$total} — bg_title generated" );
 
             // upvote/downvote deprecated; clicks=0 on insert (updated daily by GA4 sync).
             // added_date is written by the storage adapter automatically.
