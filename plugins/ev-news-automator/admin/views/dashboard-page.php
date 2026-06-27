@@ -94,6 +94,7 @@
     $total_calls  = (int) $ai_stats['total_calls'];
     $summ_calls   = (int) $ai_stats['summarize_calls'];
     $pod_calls    = (int) $ai_stats['podcast_calls'];
+    $cp_calls     = (int) $ai_stats['counterpoint_calls'];
     $prompt_tok   = (int) $ai_stats['total_prompt_tokens'];
     $compl_tok    = (int) $ai_stats['total_completion_tokens'];
     $total_tok    = (int) $ai_stats['total_tokens'];
@@ -132,6 +133,7 @@
                         <tr><td>Total AI calls</td><td><?php echo esc_html( number_format( $total_calls ) ); ?></td></tr>
                         <tr><td>&nbsp;&nbsp;↳ Summaries</td><td><?php echo esc_html( number_format( $summ_calls ) ); ?></td></tr>
                         <tr><td>&nbsp;&nbsp;↳ Podcast scripts</td><td><?php echo esc_html( number_format( $pod_calls ) ); ?></td></tr>
+                        <tr><td>&nbsp;&nbsp;↳ Counterpoints</td><td><?php echo esc_html( number_format( $cp_calls ) ); ?></td></tr>
                         <tr><td colspan="2"><hr style="margin:6px 0;border:0;border-top:1px solid #ddd;"></td></tr>
                         <tr><td>Prompt tokens</td><td><?php echo esc_html( number_format( $prompt_tok ) ); ?></td></tr>
                         <tr><td>Generated tokens</td><td><?php echo esc_html( number_format( $compl_tok ) ); ?></td></tr>

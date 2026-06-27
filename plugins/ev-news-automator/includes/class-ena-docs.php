@@ -170,6 +170,61 @@ class ENA_Docs {
                 $cursor += $dlen;
             }
 
+            // ── Counterpoint: "Другата гледна точка" + sources ───────────────
+            $counterpoint = trim( $s['counterpoint'] ?? '' );
+            if ( $counterpoint !== '' ) {
+                $cp_head = "Другата гледна точка\n";
+                $chlen   = $this->utf16_len( $cp_head );
+                $requests[] = $this->req_insert( $cp_head, $cursor );
+                $requests[] = $this->req_para_style( $cursor, $cursor + $chlen, 'HEADING_3' );
+                $cursor += $chlen;
+
+                $cp_body = $counterpoint . "\n\n";
+                $cblen   = $this->utf16_len( $cp_body );
+                $requests[] = $this->req_insert( $cp_body, $cursor );
+                $cursor += $cblen;
+
+                $sources = $s['sources'] ?? [];
+                if ( ! empty( $sources ) ) {
+                    $lbl    = "Източници:\n";
+                    $lbllen = $this->utf16_len( $lbl );
+                    $requests[] = $this->req_insert( $lbl, $cursor );
+                    $requests[] = $this->req_text_style( $cursor, $cursor + $lbllen - 1, [
+                        'bold' => true,
+                    ], 'bold' );
+                    $cursor += $lbllen;
+
+                    $bullet     = '• ';
+                    $bullet_len = $this->utf16_len( $bullet );
+                    foreach ( $sources as $src ) {
+                        $label = trim( $src['title'] ?? '' ) ?: ( $src['url'] ?? '' );
+                        $line  = $bullet . $label . "\n";
+                        $linelen = $this->utf16_len( $line );
+                        $requests[] = $this->req_insert( $line, $cursor );
+                        if ( ! empty( $src['url'] ) ) {
+                            // Hyperlink the label only (skip the bullet prefix and trailing newline).
+                            $requests[] = $this->req_text_style(
+                                $cursor + $bullet_len,
+                                $cursor + $linelen - 1,
+                                [
+                                    'link'            => [ 'url' => $src['url'] ],
+                                    'italic'          => true,
+                                    'foregroundColor' => [ 'color' => [ 'rgbColor' => [
+                                        'red' => 0.11, 'green' => 0.44, 'blue' => 0.73,
+                                    ] ] ],
+                                ],
+                                'link,italic,foregroundColor'
+                            );
+                        }
+                        $cursor += $linelen;
+                    }
+
+                    // blank line after the source list
+                    $requests[] = $this->req_insert( "\n", $cursor );
+                    $cursor += 1;
+                }
+            }
+
             // ── Separator ────────────────────────────────────────────────────
             $sep     = str_repeat( '─', 48 ) . "\n\n";
             $seplen  = $this->utf16_len( $sep );

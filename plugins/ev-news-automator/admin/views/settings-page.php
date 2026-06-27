@@ -106,6 +106,28 @@
                 </td>
             </tr>
             <tr>
+                <th scope="row">Counterpoint ("Другата гледна точка")</th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="counterpoint_enabled" value="1"
+                               <?php checked( $settings->get( 'counterpoint_enabled' ), 1 ); ?>>
+                        Generate a contrarian counterpoint per article
+                    </label>
+                    <p class="description">Adds a second AI call per article that challenges the article with the opposing view.</p>
+                    <label style="display:block;margin-top:8px;">
+                        <input type="checkbox" name="counterpoint_web_search" value="1"
+                               <?php checked( $settings->get( 'counterpoint_web_search' ), 1 ); ?>>
+                        Use web search for real sources
+                    </label>
+                    <p class="description">Cites real sources via OpenRouter web search (billed per result returned).</p>
+                    <label style="display:block;margin-top:8px;">
+                        Max sources:
+                        <input type="number" name="counterpoint_max_sources" min="1" max="10"
+                               value="<?php echo esc_attr( $settings->get( 'counterpoint_max_sources' ) ); ?>" class="small-text">
+                    </label>
+                </td>
+            </tr>
+            <tr>
                 <th scope="row"><label for="article_age_limit">Article Age Limit</label></th>
                 <td>
                     <select name="article_age_limit" id="article_age_limit">

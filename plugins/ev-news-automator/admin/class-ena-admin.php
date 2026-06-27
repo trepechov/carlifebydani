@@ -99,6 +99,9 @@ class ENA_Admin {
         $values['podcast_doc_id']       = sanitize_text_field( $_POST['podcast_doc_id'] ?? '' );
         $values['max_articles']         = absint( $_POST['max_articles'] ?? 50 );
         $values['max_script_articles']  = absint( $_POST['max_script_articles'] ?? 10 );
+        $values['counterpoint_enabled']    = empty( $_POST['counterpoint_enabled'] ) ? 0 : 1;
+        $values['counterpoint_web_search'] = empty( $_POST['counterpoint_web_search'] ) ? 0 : 1;
+        $values['counterpoint_max_sources'] = max( 1, absint( $_POST['counterpoint_max_sources'] ?? 5 ) );
 
         $age = sanitize_text_field( $_POST['article_age_limit'] ?? '1d' );
         $values['article_age_limit'] = in_array( $age, $allowed_ages, true ) ? $age : '1d';

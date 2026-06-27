@@ -34,6 +34,77 @@ class ENA_OpenRouter {
         ];
     }
 
+    /**
+     * Generate a contrarian counterpoint ("Другата гледна точка") for an article.
+     * Challenges the article's thesis with the strongest opposing arguments and,
+     * when web search is enabled, backs them with real sources pulled from the
+     * model's url_citation annotations (never hallucinated URLs).
+     *
+     * Returns [ 'text' => string, 'sources' => [ [ 'title' => ..., 'url' => ... ], ... ] ].
+     */
+    public function counterpoint( string $bg_title, string $description ): array|WP_Error {
+        $max_sources = max( 1, (int) $this->settings->get( 'counterpoint_max_sources', 5 ) );
+        $today       = wp_date( 'j F Y' );          // human-readable, e.g. "27 June 2026"
+        $year        = (int) wp_date( 'Y' );
+
+        $opts = [ 'temperature' => 0.7 ];
+        if ( $this->settings->get( 'counterpoint_web_search', 1 ) ) {
+            // OpenRouter web plugin — returns real sources as url_citation annotations.
+            // search_prompt steers the model toward the freshest results (general web
+            // search has no native date filter, so recency must be prompted).
+            $opts['plugins'] = [ [
+                'id'            => 'web',
+                'max_results'   => $max_sources,
+                'search_prompt' => "Уеб търсене, извършено на {$today}. Приоритизирай НАЙ-НОВИТЕ и "
+                    . "най-актуалните резултати (последните месеци, {$year} г.). Включи следните резултати в отговора си:",
+            ] ];
+        }
+
+        $result = $this->chat_raw(
+            "Днешна дата: {$today}. Ти си критичен анализатор на новини за електромобили за българския подкаст Car Life by Dani. "
+            . 'Задачата ти е да ОСПОРИШ статията: представи най-силните аргументи ПРОТИВ нейната теза и другата гледна точка. '
+            . 'КРИТИЧНО ВАЖНО ЗА АКТУАЛНОСТТА: използвай само НАЙ-НОВАТА налична информация и приоритизирай източници от '
+            . "последните месеци. Когато цитираш данни (финанси, продажби, статистика, събития), използвай най-скорошните "
+            . "стойности и ЗАДЪЛЖИТЕЛНО посочи към кой период/дата се отнасят. НЕ използвай остарели факти отпреди повече от "
+            . "година, освен ако няма по-нови — по-добре пропусни аргумент, отколкото да цитираш остарели данни. "
+            . 'Подкрепи всяко твърдение с реален източник от мрежата. Пиши на български, 3-5 изречения, разговорен стил, без markdown.',
+            "Заглавие: {$bg_title}\n\nОписание: {$description}\n\nПотърси най-актуална информация и напиши контрапункт — защо някой основателно би оспорил тази статия днес, {$today}.",
+            $opts,
+            'counterpoint'
+        );
+
+        if ( is_wp_error( $result ) ) return $result;
+
+        return [
+            'text'    => trim( $result['content'] ),
+            'sources' => $this->extract_sources( $result['annotations'], $max_sources ),
+        ];
+    }
+
+    /** Build a deduped source list from OpenRouter url_citation annotations. */
+    private function extract_sources( array $annotations, int $max ): array {
+        $sources = [];
+        $seen    = [];
+
+        foreach ( $annotations as $a ) {
+            if ( ( $a['type'] ?? '' ) !== 'url_citation' ) continue;
+
+            $citation = $a['url_citation'] ?? [];
+            $url      = trim( $citation['url'] ?? '' );
+            if ( $url === '' || isset( $seen[ $url ] ) ) continue;
+
+            $seen[ $url ] = true;
+            $sources[]    = [
+                'title' => trim( $citation['title'] ?? '' ) ?: $url,
+                'url'   => $url,
+            ];
+
+            if ( count( $sources ) >= $max ) break;
+        }
+
+        return $sources;
+    }
+
     public function podcast_script( string $bg_title, string $body_text ): string|WP_Error {
         $truncated = mb_substr( $body_text, 0, 6000 );
         return $this->chat(
@@ -85,12 +156,14 @@ class ENA_OpenRouter {
             'summarize_calls'                        => 0,
             'podcast_calls'                          => 0,
             'podcast_summary_calls'                  => 0,
+            'counterpoint_calls'                     => 0,
             'total_prompt_tokens'                    => 0,
             'total_completion_tokens'                => 0,
             'total_tokens'                           => 0,
             'summarize_completion_tokens'            => 0,
             'podcast_completion_tokens'              => 0,
             'podcast_summary_completion_tokens'      => 0,
+            'counterpoint_completion_tokens'         => 0,
             'first_call_at'                          => null,
             'last_call_at'                           => null,
         ];
@@ -104,6 +177,16 @@ class ENA_OpenRouter {
     }
 
     private function chat( string $system, string $user, array $opts = [], string $type = 'general' ): string|WP_Error {
+        $result = $this->chat_raw( $system, $user, $opts, $type );
+        if ( is_wp_error( $result ) ) return $result;
+        return $result['content'];
+    }
+
+    /**
+     * Like chat() but returns the full message payload so callers can read web-search
+     * annotations: [ 'content' => string, 'annotations' => array ].
+     */
+    private function chat_raw( string $system, string $user, array $opts = [], string $type = 'general' ): array|WP_Error {
         $api_key = $this->settings->get( 'openrouter_api_key' );
         $model   = $this->settings->get( 'openrouter_model', 'anthropic/claude-opus-4-8' );
 
@@ -127,14 +210,18 @@ class ENA_OpenRouter {
         $data = ENA_HTTP::retrieve_json( $response );
         if ( is_wp_error( $data ) ) return $data;
 
-        $content = $data['choices'][0]['message']['content'] ?? null;
+        $message = $data['choices'][0]['message'] ?? null;
+        $content = $message['content'] ?? null;
         if ( $content === null ) {
             return new WP_Error( 'openrouter_empty', 'No content in response', $data );
         }
 
         $this->record_usage( $data['usage'] ?? [], $type );
 
-        return $content;
+        return [
+            'content'     => $content,
+            'annotations' => is_array( $message['annotations'] ?? null ) ? $message['annotations'] : [],
+        ];
     }
 
     private function record_usage( array $usage, string $type ): void {

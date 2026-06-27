@@ -70,11 +70,27 @@ class ENA_Podcast {
                 $this->logger->step( 'podcast_summary', 'ok', "generated for: {$row['title']}" );
             }
 
+            // Generate a contrarian counterpoint with real sources (optional).
+            $counterpoint = '';
+            $cp_sources   = [];
+            if ( $this->settings->get( 'counterpoint_enabled', 1 ) ) {
+                $cp = $this->openrouter->counterpoint( $row['title'], $row['description'] );
+                if ( is_wp_error( $cp ) ) {
+                    $this->logger->step( 'counterpoint', 'error', $cp->get_error_message() );
+                } else {
+                    $counterpoint = $cp['text'];
+                    $cp_sources   = $cp['sources'];
+                    $this->logger->step( 'counterpoint', 'ok', count( $cp_sources ) . " sources for: {$row['title']}" );
+                }
+            }
+
             $sections[] = [
-                'bg_title'    => $row['title'],
-                'url'         => $row['link'],
-                'description' => $row['description'],
-                'summary'     => $summary,
+                'bg_title'     => $row['title'],
+                'url'          => $row['link'],
+                'description'  => $row['description'],
+                'summary'      => $summary,
+                'counterpoint' => $counterpoint,
+                'sources'      => $cp_sources,
             ];
         }
 
