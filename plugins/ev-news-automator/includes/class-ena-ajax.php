@@ -26,30 +26,7 @@ class ENA_Ajax {
         $plugin->logger->begin_run( 'manual', 'collection' );
 
         try {
-            $rows   = $plugin->storage->read_data_rows();
-            $urls   = is_wp_error( $rows ) ? [] : array_column( $rows, 'link' );
-            $clicks = $plugin->analytics->fetch_clicks( $urls );
-
-            if ( is_wp_error( $clicks ) ) {
-                $plugin->logger->log_error( 'analytics_fetch', $clicks->get_error_message() );
-            } else {
-                $plugin->storage->update_clicks( $clicks );
-                $with_clicks = count( array_filter( $clicks, fn ( $c ) => $c > 0 ) );
-                $plugin->logger->step( 'analytics_fetch', 'ok', count( $urls ) . " URLs, {$with_clicks} with clicks" );
-
-                $sort_result = $plugin->storage->sort_by_clicks();
-                if ( is_wp_error( $sort_result ) ) {
-                    $plugin->logger->step( 'sheets_sort', 'error', $sort_result->get_error_message() );
-                } else {
-                    $plugin->logger->step( 'sheets_sort', 'ok', 'rows sorted by clicks DESC' );
-                }
-            }
-
-            $result = $plugin->collector->run();
-
-            $sync_result = $plugin->sync->run();
-            $result['synced'] = $sync_result['count'] ?? 0;
-
+            $result = ENA_Cron::run_pipeline( $plugin );
             $plugin->logger->end_run( $result );
             wp_send_json_success( $result );
         } catch ( \Throwable $e ) {
@@ -165,29 +142,7 @@ class ENA_Ajax {
 
         try {
             if ( $type === 'collection' ) {
-                $rows   = $plugin->storage->read_data_rows();
-                $urls   = is_wp_error( $rows ) ? [] : array_column( $rows, 'link' );
-                $clicks = $plugin->analytics->fetch_clicks( $urls );
-
-                if ( is_wp_error( $clicks ) ) {
-                    $plugin->logger->log_error( 'analytics_fetch', $clicks->get_error_message() );
-                } else {
-                    $plugin->storage->update_clicks( $clicks );
-                    $with_clicks = count( array_filter( $clicks, fn ( $c ) => $c > 0 ) );
-                    $plugin->logger->step( 'analytics_fetch', 'ok', count( $urls ) . " URLs, {$with_clicks} with clicks" );
-
-                    $sort_result = $plugin->storage->sort_by_clicks();
-                    if ( is_wp_error( $sort_result ) ) {
-                        $plugin->logger->step( 'sheets_sort', 'error', $sort_result->get_error_message() );
-                    } else {
-                        $plugin->logger->step( 'sheets_sort', 'ok', 'rows sorted by clicks DESC' );
-                    }
-                }
-
-                $result           = $plugin->collector->run();
-                $sync_result      = $plugin->sync->run();
-                $result['synced'] = $sync_result['count'] ?? 0;
-
+                $result = ENA_Cron::run_pipeline( $plugin );
                 $plugin->logger->end_run( $result );
                 ENA_Background::finish( $job_id, $result );
 
