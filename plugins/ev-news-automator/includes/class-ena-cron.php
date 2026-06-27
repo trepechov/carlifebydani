@@ -50,9 +50,15 @@ class ENA_Cron {
                 $plugin->storage->update_clicks( $clicks );
                 $with_clicks = count( array_filter( $clicks, fn ( $c ) => $c > 0 ) );
                 $plugin->logger->step( 'analytics_fetch', 'ok', count( $urls ) . " URLs, {$with_clicks} with clicks" );
+            }
 
-                // Reorder rows by clicks so the public CSV export reflects engagement order
-                // before new articles are appended at the bottom.
+            $result = $plugin->collector->run();
+
+            // Sort after collection so today's newly appended articles (added_date = today)
+            // are present when the sheet sorts and land at the top of the zero-click group
+            // via the added_date DESC secondary key. Running before collection caused new
+            // articles to be appended below an already-sorted set, pushing them to the bottom.
+            if ( ! is_wp_error( $clicks ) ) {
                 $sort_result = $plugin->storage->sort_by_clicks();
                 if ( is_wp_error( $sort_result ) ) {
                     $plugin->logger->step( 'sheets_sort', 'error', $sort_result->get_error_message() );
@@ -60,8 +66,6 @@ class ENA_Cron {
                     $plugin->logger->step( 'sheets_sort', 'ok', 'rows sorted by clicks DESC' );
                 }
             }
-
-            $result = $plugin->collector->run();
 
             $sync_result = $plugin->sync->run();
             $result['synced'] = $sync_result['count'] ?? 0;

@@ -254,6 +254,10 @@ class ENA_Sheets {
                                 'sortOrder'      => 'DESCENDING',
                             ],
                             [
+                                'dimensionIndex' => 8, // column I = pub_date
+                                'sortOrder'      => 'DESCENDING',
+                            ],
+                            [
                                 'dimensionIndex' => 7, // column H = added_date
                                 'sortOrder'      => 'DESCENDING',
                             ],

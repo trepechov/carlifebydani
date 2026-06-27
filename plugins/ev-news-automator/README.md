@@ -10,7 +10,7 @@ WordPress plugin for **Car Life by Dani**. Collects English-language EV news fro
 2. **Summarises** each new article — sends the title and excerpt to an OpenRouter AI model, receives a Bulgarian headline and 2–3 sentence summary.
 3. **Stores** results in a Google Sheet (one tab per recording session). Deduplicates against existing URLs. Trims the sheet to a configurable maximum.
 4. **Tracks clicks** — syncs `ev_news_click` GA4 event counts back into the sheet's clicks column on every collection run.
-5. **Syncs to live** — pushes the current sheet tab's articles into a WordPress option (`ev_news_live_articles`), sorted by engagement (new-today first, then by click count). The theme reads this option to render the **EV News Feed** page (`/ev-news-feed/`) — a standalone public page with an Instagram-style mobile feed and a desktop grid layout.
+5. **Syncs to live** — pushes the current sheet tab's articles into a WordPress option (`ev_news_live_articles`), sorted for display: clicked articles first (clicks DESC, then pub_date DESC), followed by zero-click articles newest-first (pub_date DESC, then added_date DESC). The theme reads this option to render the **EV News Feed** page (`/ev-news-feed/`) — a standalone public page with an Instagram-style mobile feed and a desktop grid layout.
 6. **Generates a podcast script** on recording day — scrapes the full body of each article, passes them through the AI model, and appends the resulting Bulgarian script to a configured Google Doc.
 
 ---
@@ -69,7 +69,7 @@ ln -s /path/to/repo/theme carlifebydani
 | Service Account JSON Path | Absolute server path to the service account key file. Must be outside webroot. |
 | GA4 Property ID | Numeric GA4 property ID (e.g. `427729375`). Leave blank to disable click sync. |
 | Upcoming Session Page ID | WordPress page ID for the live news placeholder page. Leave `0` to disable. |
-| Max Articles | Maximum rows kept in the active sheet tab. Oldest rows are trimmed automatically. |
+| Max Articles | Maximum rows kept in the active sheet tab. Oldest zero-click rows are trimmed first; articles with at least one click are never automatically deleted. |
 | Collection Interval | How often the cron job runs (15 min / 30 min / 1 hr / 6 hr / 12 hr / daily). |
 | Podcast Recording | Day and time the podcast script generation cron fires. |
 | News Sources | One source per line: `https://example.com/feed rss` or `https://example.com html`. Method defaults to `rss`. |

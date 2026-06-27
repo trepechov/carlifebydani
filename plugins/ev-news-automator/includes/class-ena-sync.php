@@ -7,18 +7,17 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * Article ordering (applied before the JSON snapshot is written):
  *
- *   Group 1 — published today (pub_date === today)
- *             Shown first. Sheet insertion order preserved within the group.
+ *   Group 1 — any article with at least one click (clicks > 0)
+ *             Shown first. Sorted by clicks DESC; ties broken by pub_date DESC.
  *
- *   Group 2 — older articles with at least one click (pub_date < today, clicks > 0)
- *             Sorted by clicks DESC. Ties keep Sheet insertion order (PHP 8 stable sort).
- *
- *   Group 3 — older articles with zero clicks (pub_date < today, clicks = 0)
- *             Shown last. Sheet insertion order preserved within the group.
+ *   Group 2 — zero-click articles (clicks = 0)
+ *             Shown after Group 1. Sorted by pub_date DESC then added_date DESC,
+ *             so articles collected today naturally appear above older ones.
+ *             The bottom of this group (oldest pub_date) are the trim candidates.
  *
  * Date resolution: pub_date (Y-m-d, sourced from the RSS <pubDate> field) is the
  * primary date. If pub_date is missing for a row, added_date (the date the row was
- * scraped into the Sheet) is used as a fallback so those rows still land in a group.
+ * scraped into the Sheet) is used as a fallback.
  */
 class ENA_Sync {
 
@@ -38,18 +37,27 @@ class ENA_Sync {
             return [ 'count' => 0 ];
         }
 
-        $today = gmdate( 'Y-m-d' );
-
-        // Group 1 — published today: shown first, Sheet insertion order preserved.
-        // Group 2 — older, clicks > 0: sorted by clicks DESC; ties keep Sheet insertion order (PHP 8 stable sort).
-        // Group 3 — older, clicks = 0: shown last, Sheet insertion order preserved.
         // pub_date (Y-m-d) is preferred; falls back to added_date for rows where pub_date is missing.
-        $pub_date_of  = fn ( $r ) => ! empty( $r['pub_date'] ) ? $r['pub_date'] : $r['added_date'];
-        $new_today    = array_values( array_filter( $rows, fn ( $r ) => $pub_date_of( $r ) === $today ) );
-        $with_clicks  = array_values( array_filter( $rows, fn ( $r ) => $pub_date_of( $r ) < $today && (int) $r['clicks'] > 0 ) );
-        $zero_clicks  = array_values( array_filter( $rows, fn ( $r ) => $pub_date_of( $r ) < $today && (int) $r['clicks'] === 0 ) );
-        usort( $with_clicks, fn ( $a, $b ) => (int) $b['clicks'] <=> (int) $a['clicks'] );
-        $sorted = array_merge( $new_today, $with_clicks, $zero_clicks );
+        $pub_date_of = fn ( $r ) => ! empty( $r['pub_date'] ) ? $r['pub_date'] : ( $r['added_date'] ?? '' );
+
+        $with_clicks = array_values( array_filter( $rows, fn ( $r ) => (int) $r['clicks'] > 0 ) );
+        $zero_clicks = array_values( array_filter( $rows, fn ( $r ) => (int) $r['clicks'] === 0 ) );
+
+        // Group 1: clicks DESC → pub_date DESC for ties.
+        usort( $with_clicks, function ( $a, $b ) use ( $pub_date_of ) {
+            $cmp = (int) $b['clicks'] <=> (int) $a['clicks'];
+            if ( $cmp !== 0 ) return $cmp;
+            return strcmp( $pub_date_of( $b ), $pub_date_of( $a ) );
+        } );
+
+        // Group 2: pub_date DESC → added_date DESC so articles collected today float above older ones.
+        usort( $zero_clicks, function ( $a, $b ) use ( $pub_date_of ) {
+            $cmp = strcmp( $pub_date_of( $b ), $pub_date_of( $a ) );
+            if ( $cmp !== 0 ) return $cmp;
+            return strcmp( $b['added_date'] ?? '', $a['added_date'] ?? '' );
+        } );
+
+        $sorted = array_merge( $with_clicks, $zero_clicks );
 
         $articles = array_map( fn ( $r ) => [
             'id'          => md5( $r['link'] ),
@@ -73,7 +81,6 @@ class ENA_Sync {
         $this->logger->set_status( ENA_OPT_STATUS_SYNC, [
             'timestamp'   => ( new DateTimeImmutable() )->format( 'c' ),
             'count'       => $count,
-            'published_today' => count( $new_today ),
             'with_clicks' => count( $with_clicks ),
             'zero_clicks' => count( $zero_clicks ),
             'sheet_name'  => is_wp_error( $sheet_name ) ? '' : $sheet_name,
