@@ -47,7 +47,7 @@
 
         $statuses = [
             'Last Sync'      => [ ENA_OPT_STATUS_COLLECTION, [ 'added', 'removed' ] ],
-            'Collection'     => [ ENA_OPT_STATUS_SYNC,       [ 'count', 'published_today', 'with_clicks', 'zero_clicks' ] ],
+            'Collection'     => [ ENA_OPT_STATUS_SYNC,       [ 'count', 'with_clicks', 'zero_clicks' ] ],
             'Podcast Script' => [ ENA_OPT_STATUS_PODCAST,    [ 'count', 'top_clicks' ] ],
         ];
         foreach ( $statuses as $label => [ $key, $fields ] ) :

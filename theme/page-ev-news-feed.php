@@ -15,6 +15,14 @@ if ( ! is_array( $articles ) ) {
     $articles = [];
 }
 
+// Display-only: articles collected today float to the top for 24 hours.
+// The stored option (and its engagement-based order) is never modified.
+$_today    = gmdate( 'Y-m-d' );
+$_new      = array_values( array_filter( $articles, fn ( $a ) => ( $a['added_date'] ?? '' ) === $_today ) );
+$_older    = array_values( array_filter( $articles, fn ( $a ) => ( $a['added_date'] ?? '' ) !== $_today ) );
+$articles  = array_merge( $_new, $_older );
+unset( $_today, $_new, $_older );
+
 $sync_status = get_option( 'ena_status_last_sync', [] );
 $sheet_name  = $sync_status['sheet_name'] ?? '';
 if ( ! $sheet_name && ! empty( $articles[0]['date'] ) ) {
