@@ -108,6 +108,12 @@ class ENA_Cron {
         $sync_result      = $plugin->sync->run();
         $result['synced'] = $sync_result['count'] ?? 0;
 
+        // 6. Push badge update to all subscribed PWA users.
+        $today_count = $sync_result['published_today'] ?? 0;
+        if ( $today_count > 0 ) {
+            ENA_Push::send_all( $today_count );
+        }
+
         return $result;
     }
 

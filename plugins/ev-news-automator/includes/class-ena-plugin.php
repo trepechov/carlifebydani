@@ -44,6 +44,7 @@ class ENA_Plugin {
 
         ENA_Cron::register_hooks();
         ENA_Ajax::register();
+        ENA_PWA::register();
 
         $admin = new ENA_Admin( $this->settings, $this->logger );
         add_action( 'admin_menu', [ $admin, 'add_menu' ] );

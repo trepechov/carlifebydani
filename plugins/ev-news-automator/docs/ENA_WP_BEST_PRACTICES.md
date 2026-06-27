@@ -19,6 +19,8 @@ The plugin uses **no custom database tables**. All data is stored in the standar
 | `ena_status_last_collection` | Timestamp + stats of last collection run |
 | `ena_status_last_sync` | Timestamp + stats of last sync run |
 | `ena_status_last_podcast` | Timestamp + stats of last podcast run |
+| `ena_vapid_keys` | VAPID P-256 key pair (PEM) + base64url public key for Web Push |
+| `ena_push_subscriptions` | JSON array of PWA push subscription objects (one per subscribed device) |
 
 Primary article storage is **Google Sheets** via the Sheets API. `ev_news_live_articles` is a local JSON snapshot written by `ENA_Sync` so the frontend doesn't need to call the API on every request.
 

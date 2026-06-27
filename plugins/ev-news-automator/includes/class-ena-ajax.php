@@ -14,6 +14,10 @@ class ENA_Ajax {
         add_action( 'wp_ajax_ena_dispatch_job',         [ __CLASS__, 'handle_dispatch_job' ] );
         add_action( 'wp_ajax_ena_job_status',            [ __CLASS__, 'handle_job_status' ] );
         add_action( 'wp_ajax_nopriv_ena_bg_worker',      [ __CLASS__, 'handle_bg_worker' ] );
+
+        // PWA push subscriptions (public — fired from home-screen PWA)
+        add_action( 'wp_ajax_nopriv_ena_save_push_sub', [ __CLASS__, 'handle_save_push_sub' ] );
+        add_action( 'wp_ajax_ena_save_push_sub',         [ __CLASS__, 'handle_save_push_sub' ] );
     }
 
     public static function handle_run_collection(): void {
@@ -123,6 +127,19 @@ class ENA_Ajax {
         }
 
         wp_send_json_success( ENA_Background::status_for_client() );
+    }
+
+    public static function handle_save_push_sub(): void {
+        check_ajax_referer( 'ena_push_sub', 'nonce' );
+
+        $json = sanitize_text_field( wp_unslash( $_POST['subscription'] ?? '' ) );
+        if ( ! $json ) {
+            wp_send_json_error( 'Missing subscription', 400 );
+        }
+
+        ENA_Push::save_subscription( $json )
+            ? wp_send_json_success()
+            : wp_send_json_error( 'Invalid subscription', 400 );
     }
 
     public static function handle_bg_worker(): void {

@@ -39,6 +39,8 @@ require_once ENA_PLUGIN_DIR . 'includes/class-ena-scraper.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-collector.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-sync.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-podcast.php';
+require_once ENA_PLUGIN_DIR . 'includes/class-ena-push.php';
+require_once ENA_PLUGIN_DIR . 'includes/class-ena-pwa.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-background.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-cron.php';
 require_once ENA_PLUGIN_DIR . 'includes/class-ena-ajax.php';
