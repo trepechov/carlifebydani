@@ -22,12 +22,6 @@ class ENA_Google_Auth {
         $jwt = $this->build_jwt( $sa, $scopes );
         if ( is_wp_error( $jwt ) ) return $jwt;
 
-        $response = ENA_HTTP::post_json( self::TOKEN_URL, [
-            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            'assertion'  => $jwt,
-        ], [ 'Content-Type' => 'application/x-www-form-urlencoded' ] );
-
-        // Override content-type for form-encoded post
         $response = wp_remote_post( self::TOKEN_URL, [
             'timeout' => 30,
             'headers' => [ 'Content-Type' => 'application/x-www-form-urlencoded' ],

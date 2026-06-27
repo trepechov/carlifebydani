@@ -30,24 +30,25 @@
         $podcast_doc_url = $podcast_doc_id ? 'https://docs.google.com/document/d/' . $podcast_doc_id . '/edit' : '';
 
         $field_labels = [
-            'Collection' => [
+            'Last Sync' => [
                 'added'   => 'Added',
                 'removed' => 'Removed',
             ],
-            'Sync' => [
+            'Collection' => [
                 'count'       => 'Count',
                 'with_clicks' => 'With clicks',
                 'zero_clicks' => 'Zero clicks',
             ],
             'Podcast Script' => [
-                'count' => 'Limit',
+                'count'      => 'Limit',
+                'top_clicks' => 'Click events',
             ],
         ];
 
         $statuses = [
-            'Collection'     => [ ENA_OPT_STATUS_COLLECTION, [ 'added', 'removed' ] ],
-            'Sync'           => [ ENA_OPT_STATUS_SYNC,       [ 'count', 'with_clicks', 'zero_clicks' ] ],
-            'Podcast Script' => [ ENA_OPT_STATUS_PODCAST,    [ 'count' ] ],
+            'Last Sync'      => [ ENA_OPT_STATUS_COLLECTION, [ 'added', 'removed' ] ],
+            'Collection'     => [ ENA_OPT_STATUS_SYNC,       [ 'count', 'published_today', 'with_clicks', 'zero_clicks' ] ],
+            'Podcast Script' => [ ENA_OPT_STATUS_PODCAST,    [ 'count', 'top_clicks' ] ],
         ];
         foreach ( $statuses as $label => [ $key, $fields ] ) :
             $status = $logger->get_status( $key );
@@ -62,7 +63,13 @@
                         <?php echo esc_html( $status[ $f ] ); ?>
                     </p>
                 <?php endif; endforeach; ?>
-                <?php if ( $label === 'Sync' && $sheet_url ) : ?>
+                <?php if ( $label !== 'Collection' && ! empty( $status['timestamp'] ) ) : ?>
+                    <p style="margin:4px 0;">
+                        <strong>Run at:</strong>
+                        <?php echo esc_html( date_i18n( 'j M Y · H:i', strtotime( $status['timestamp'] ) ) ); ?>
+                    </p>
+                <?php endif; ?>
+                <?php if ( $label === 'Collection' && $sheet_url ) : ?>
                     <p style="margin:4px 0;">
                         <strong>Sheet URL:</strong>
                         <a href="<?php echo esc_url( $sheet_url ); ?>" target="_blank">Open Sheet</a>
@@ -74,10 +81,6 @@
                         <a href="<?php echo esc_url( $podcast_doc_url ); ?>" target="_blank">Open Doc</a>
                     </p>
                 <?php endif; ?>
-                <p style="margin:4px 0;">
-                    <strong>Last run:</strong>
-                    <?php echo esc_html( date_i18n( 'j M Y · H:i', strtotime( $status['timestamp'] ) ) ); ?>
-                </p>
             <?php else : ?>
                 <p style="color:#999;">No runs yet.</p>
             <?php endif; ?>

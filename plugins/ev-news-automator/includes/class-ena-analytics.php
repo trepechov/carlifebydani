@@ -32,7 +32,18 @@ class ENA_Analytics {
         if ( is_wp_error( $token ) ) return $token;
 
         $report = $this->run_report( $token, $property_id, $days_back );
-        if ( is_wp_error( $report ) ) return $report;
+        if ( is_wp_error( $report ) ) {
+            // Attach the GA4 response body to the error so callers can log the full detail.
+            $data = $report->get_error_data();
+            if ( ! empty( $data['body'] ) ) {
+                return new WP_Error(
+                    $report->get_error_code(),
+                    $report->get_error_message() . ' — ' . substr( $data['body'], 0, 300 ),
+                    $data
+                );
+            }
+            return $report;
+        }
 
         // Seed all requested URLs at 0, then overlay GA4 counts.
         // GA4 truncates custom dimension values at 100 chars, so build a

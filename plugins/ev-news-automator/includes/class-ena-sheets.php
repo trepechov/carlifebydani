@@ -273,6 +273,29 @@ class ENA_Sheets {
         return true;
     }
 
+    /**
+     * Trim the active sheet to at most $max data rows by deleting the bottom rows.
+     *
+     * Must be called AFTER sort_by_clicks(): once the sheet is sorted
+     * (clicks DESC → pub_date DESC → added_date DESC), the bottom rows are the
+     * zero-click articles with the oldest pub_date — exactly the ones that should
+     * age out. Deleting by position is therefore both correct and simple.
+     *
+     * Returns the number of rows removed.
+     */
+    public function trim_to_max( int $max ): int {
+        $count = $this->row_count();
+        if ( $count <= $max ) return 0;
+
+        $excess  = $count - $max;
+        $indices = range( $count - $excess, $count - 1 ); // bottom $excess data rows (0-based)
+
+        $result = $this->delete_rows( $indices );
+        if ( is_wp_error( $result ) ) return 0;
+
+        return $excess;
+    }
+
     public function row_count(): int {
         $rows = $this->read_data_rows();
         if ( is_wp_error( $rows ) ) return 0;

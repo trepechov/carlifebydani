@@ -96,13 +96,15 @@ class ENA_Podcast {
 
         $this->docs->append_sections( $doc_id, $sections );
 
-        $url   = $this->docs->doc_url( $doc_id );
-        $count = count( $sections );
+        $url        = $this->docs->doc_url( $doc_id );
+        $count      = count( $sections );
+        $top_clicks = array_sum( array_column( $top, 'clicks' ) );
 
         $this->logger->set_status( ENA_OPT_STATUS_PODCAST, [
-            'timestamp' => ( new DateTimeImmutable() )->format( 'c' ),
-            'doc_url'   => $url,
-            'count'     => $count,
+            'timestamp'  => ( new DateTimeImmutable() )->format( 'c' ),
+            'doc_url'    => $url,
+            'count'      => $count,
+            'top_clicks' => $top_clicks,
         ] );
 
         return [ 'doc_url' => $url, 'count' => $count ];

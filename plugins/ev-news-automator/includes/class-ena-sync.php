@@ -74,17 +74,22 @@ class ENA_Sync {
         update_option( ENA_OPT_LIVE_ARTICLES, wp_json_encode( $articles ) );
         $count = count( $articles );
 
+        // Count articles added today — uses gmdate to match the UTC date written by append_rows().
+        $today           = gmdate( 'Y-m-d' );
+        $published_today = count( array_filter( $rows, fn ( $r ) => ( $r['added_date'] ?? '' ) === $today ) );
+
         $this->logger->step( 'sync', 'ok', "{$count} articles written to ev_news_live_articles" );
         $sheet_name = $this->storage->active_sheet_name();
         $sheet_url  = $this->storage->active_sheet_url();
 
         $this->logger->set_status( ENA_OPT_STATUS_SYNC, [
-            'timestamp'   => ( new DateTimeImmutable() )->format( 'c' ),
-            'count'       => $count,
-            'with_clicks' => count( $with_clicks ),
-            'zero_clicks' => count( $zero_clicks ),
-            'sheet_name'  => is_wp_error( $sheet_name ) ? '' : $sheet_name,
-            'sheet_url'   => is_wp_error( $sheet_url ) ? '' : $sheet_url,
+            'timestamp'       => ( new DateTimeImmutable() )->format( 'c' ),
+            'count'           => $count,
+            'published_today' => $published_today,
+            'with_clicks'     => count( $with_clicks ),
+            'zero_clicks'     => count( $zero_clicks ),
+            'sheet_name'      => is_wp_error( $sheet_name ) ? '' : $sheet_name,
+            'sheet_url'       => is_wp_error( $sheet_url ) ? '' : $sheet_url,
         ] );
 
         return [ 'count' => $count ];
