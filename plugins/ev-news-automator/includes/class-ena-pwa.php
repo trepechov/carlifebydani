@@ -44,10 +44,10 @@ class ENA_PWA {
         if ( $file === 'manifest' ) {
             header( 'Content-Type: application/manifest+json; charset=utf-8' );
             header( 'Cache-Control: no-cache' );
-            $theme_uri = get_stylesheet_directory_uri();
+            $icon = get_stylesheet_directory_uri() . '/images/pwaicon.png';
             echo wp_json_encode( [
-                'name'             => 'CarLife by Dani – EV Новини',
-                'short_name'       => 'EV Новини',
+                'name'             => 'CLBD News Feed',
+                'short_name'       => 'CLBD News Feed',
                 'description'      => 'EV новини, ревюта и подкаст за електрически автомобили',
                 'start_url'        => '/ev-news-feed/',
                 'scope'            => '/',
@@ -56,9 +56,7 @@ class ENA_PWA {
                 'theme_color'      => '#FE3652',
                 'orientation'      => 'portrait-primary',
                 'icons'            => [
-                    [ 'src' => $theme_uri . '/images/android-chrome-192x192.png', 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any maskable' ],
-                    [ 'src' => $theme_uri . '/images/android-chrome-512x512.png', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any maskable' ],
-                    [ 'src' => $theme_uri . '/images/apple-touch-icon.png',       'sizes' => '180x180', 'type' => 'image/png' ],
+                    [ 'src' => $icon, 'sizes' => '400x400', 'type' => 'image/png', 'purpose' => 'any maskable' ],
                 ],
             ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
             exit;
@@ -73,12 +71,14 @@ class ENA_PWA {
     // ── Head tags ─────────────────────────────────────────────────────────────
 
     public static function inject_head_tags(): void {
+        $icon = get_stylesheet_directory_uri() . '/images/pwaicon.png';
         echo '<link rel="manifest" href="/manifest.json">' . "\n";
+        echo '<link rel="apple-touch-icon" href="' . esc_url( $icon ) . '">' . "\n";
         echo '<meta name="theme-color" content="#FE3652">' . "\n";
         echo '<meta name="mobile-web-app-capable" content="yes">' . "\n";
         echo '<meta name="apple-mobile-web-app-capable" content="yes">' . "\n";
         echo '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">' . "\n";
-        echo '<meta name="apple-mobile-web-app-title" content="EV Новини">' . "\n";
+        echo '<meta name="apple-mobile-web-app-title" content="CLBD News Feed">' . "\n";
     }
 
     // ── Scripts ───────────────────────────────────────────────────────────────

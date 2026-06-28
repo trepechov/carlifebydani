@@ -2,7 +2,7 @@
 
 const DAILY_COUNT_URL = '/wp-json/carlifebydani/v1/daily-count';
 const FEED_URL        = '/ev-news-feed/';
-const ICON_URL        = '/wp-content/themes/carlifebydani/images/android-chrome-192x192.png';
+const ICON_URL        = '/wp-content/themes/carlifebydani/images/pwaicon.png';
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
@@ -13,7 +13,7 @@ self.addEventListener('push', event => {
             .then(r => r.ok ? r.json() : Promise.reject())
             .then(({ count }) => Promise.all([
                 self.registration.setAppBadge(count),
-                self.registration.showNotification('EV Новини – CarLife by Dani', {
+                self.registration.showNotification('CLBD News Feed', {
                     body: `${count} нов${count === 1 ? 'а статия' : 'и статии'} днес`,
                     icon: ICON_URL,
                     badge: ICON_URL,
@@ -22,7 +22,7 @@ self.addEventListener('push', event => {
                     data: { url: FEED_URL },
                 }),
             ]))
-            .catch(() => self.registration.showNotification('EV Новини', {
+            .catch(() => self.registration.showNotification('CLBD News Feed', {
                 body: 'Нови статии са достъпни',
                 icon: ICON_URL,
                 badge: ICON_URL,
