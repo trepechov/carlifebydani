@@ -17,7 +17,7 @@ class ENA_Push {
      * Keys are auto-generated on first call and persisted in wp_options.
      */
     public static function get_public_key_base64url(): string {
-        return self::get_keys()['public_key_base64url'];
+        return self::get_keys()['public_key_base64url'] ?? '';
     }
 
     /**
@@ -98,7 +98,13 @@ class ENA_Push {
         if ( is_array( $keys ) && ! empty( $keys['public_key_base64url'] ) ) {
             return $keys;
         }
-        $keys = self::generate_keys();
+        try {
+            $keys = self::generate_keys();
+        } catch ( \RuntimeException $e ) {
+            // EC key generation unavailable in this environment (e.g. LibreSSL on macOS).
+            // Push notifications are disabled; the site continues to work normally.
+            return [];
+        }
         update_option( self::OPT_KEYS, $keys, false );
         return $keys;
     }
@@ -108,6 +114,10 @@ class ENA_Push {
             'curve_name'       => 'prime256v1',
             'private_key_type' => OPENSSL_KEYTYPE_EC,
         ] );
+
+        if ( $res === false ) {
+            throw new \RuntimeException( 'OpenSSL EC key generation failed: ' . openssl_error_string() );
+        }
 
         openssl_pkey_export( $res, $private_pem );
         $details   = openssl_pkey_get_details( $res );
