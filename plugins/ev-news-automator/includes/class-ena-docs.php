@@ -155,21 +155,6 @@ class ENA_Docs {
             $requests[] = $this->req_insert( $summary, $cursor );
             $cursor += $slen;
 
-            // ── Background description (gray italic) ─────────────────────────
-            if ( ! empty( $s['description'] ) ) {
-                $desc = trim( $s['description'] ) . "\n\n";
-                $dlen = $this->utf16_len( $desc );
-                $requests[] = $this->req_insert( $desc, $cursor );
-                // Apply italic + gray to everything except the trailing \n\n
-                $requests[] = $this->req_text_style( $cursor, $cursor + $dlen - 2, [
-                    'italic'          => true,
-                    'foregroundColor' => [ 'color' => [ 'rgbColor' => [
-                        'red' => 0.4, 'green' => 0.4, 'blue' => 0.4,
-                    ] ] ],
-                ], 'italic,foregroundColor' );
-                $cursor += $dlen;
-            }
-
             // ── Separator ────────────────────────────────────────────────────
             $sep     = str_repeat( '─', 48 ) . "\n\n";
             $seplen  = $this->utf16_len( $sep );

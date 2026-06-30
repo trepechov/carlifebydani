@@ -3,6 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ENA_Collector {
 
+    // Spacing between OpenRouter calls so a full batch doesn't burst past the account's rate limit.
+    private const REQUEST_DELAY_SECONDS = 2;
+
     private ENA_Sheets     $storage;
     private ENA_Scraper    $scraper;
     private ENA_OpenRouter $openrouter;
@@ -70,7 +73,10 @@ class ENA_Collector {
         $total = count( $new_articles );
 
         foreach ( $new_articles as $i => $article ) {
-            $num     = $i + 1;
+            $num = $i + 1;
+            if ( $i > 0 ) {
+                sleep( self::REQUEST_DELAY_SECONDS );
+            }
             $summary = $this->openrouter->summarize( $article['title'], $article['excerpt'] ?? '' );
 
             if ( is_wp_error( $summary ) ) {

@@ -36,7 +36,7 @@ class ENA_Plugin {
 
         $this->analytics  = new ENA_Analytics( $this->auth, $this->settings );
         $this->docs       = new ENA_Docs( $this->auth );
-        $this->openrouter = new ENA_OpenRouter( $this->settings );
+        $this->openrouter = new ENA_OpenRouter( $this->settings, $this->logger );
         $this->scraper    = new ENA_Scraper( $this->logger );
         $this->collector  = new ENA_Collector( $this->storage, $this->scraper, $this->openrouter, $this->logger, $this->settings );
         $this->sync       = new ENA_Sync( $this->storage, $this->logger );

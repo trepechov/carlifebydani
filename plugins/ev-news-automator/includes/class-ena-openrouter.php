@@ -3,14 +3,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ENA_OpenRouter {
 
-    private const API_URL      = 'https://openrouter.ai/api/v1/chat/completions';
-    private const KEY_INFO_URL = 'https://openrouter.ai/api/v1/auth/key';
-    private const USAGE_OPTION = 'ena_openrouter_usage';
+    private const API_URL          = 'https://openrouter.ai/api/v1/chat/completions';
+    private const KEY_INFO_URL     = 'https://openrouter.ai/api/v1/auth/key';
+    private const USAGE_OPTION     = 'ena_openrouter_usage';
+    private const MAX_RETRIES      = 2; // attempts after a 429, before giving up.
+    private const RETRY_BASE_DELAY = 5; // seconds, used when OpenRouter sends no Retry-After header.
 
     private ENA_Settings $settings;
+    private ENA_Logger   $logger;
 
-    public function __construct( ENA_Settings $settings ) {
+    public function __construct( ENA_Settings $settings, ENA_Logger $logger ) {
         $this->settings = $settings;
+        $this->logger   = $logger;
     }
 
     public function summarize( string $original_title, string $excerpt_or_body ): array|WP_Error {
@@ -119,12 +123,31 @@ class ENA_OpenRouter {
             ],
         ], $opts );
 
-        $response = ENA_HTTP::post_json( self::API_URL, $body, [
+        $headers = [
             'Authorization' => "Bearer {$api_key}",
             'HTTP-Referer'  => get_site_url(),
-        ] );
+        ];
 
-        $data = ENA_HTTP::retrieve_json( $response );
+        $data = null;
+        for ( $attempt = 0; $attempt <= self::MAX_RETRIES; $attempt++ ) {
+            $response = ENA_HTTP::post_json( self::API_URL, $body, $headers );
+            $data     = ENA_HTTP::retrieve_json( $response );
+
+            if ( ! is_wp_error( $data ) ) break;
+            if ( $data->get_error_code() !== 'http_429' || $attempt === self::MAX_RETRIES ) break;
+
+            $retry_after = (int) ( $data->get_error_data()['retry_after'] ?? 0 );
+            $delay       = $retry_after > 0 ? $retry_after : self::RETRY_BASE_DELAY * ( $attempt + 1 );
+
+            $this->logger->step(
+                'openrouter_throttle',
+                'wait',
+                "{$type} — rate limited (429), retrying in {$delay}s (attempt " . ( $attempt + 1 ) . '/' . self::MAX_RETRIES . ')'
+            );
+
+            sleep( $delay );
+        }
+
         if ( is_wp_error( $data ) ) return $data;
 
         $content = $data['choices'][0]['message']['content'] ?? null;

@@ -3,6 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ENA_Podcast {
 
+    // Spacing between OpenRouter calls so a full batch doesn't burst past the account's rate limit.
+    private const REQUEST_DELAY_SECONDS = 2;
+
     private ENA_Sheets     $storage;
     private ENA_Analytics  $analytics;
     private ENA_OpenRouter $openrouter;
@@ -60,7 +63,10 @@ class ENA_Podcast {
         // Step 3: generate summaries from existing title + description — no scraping needed.
         $sections = [];
 
-        foreach ( $top as $row ) {
+        foreach ( $top as $i => $row ) {
+            if ( $i > 0 ) {
+                sleep( self::REQUEST_DELAY_SECONDS );
+            }
             $generated = $this->openrouter->podcast_summary( $row['title'], $row['description'] );
             if ( is_wp_error( $generated ) ) {
                 $this->logger->step( 'podcast_summary', 'error', $generated->get_error_message() );
@@ -71,10 +77,9 @@ class ENA_Podcast {
             }
 
             $sections[] = [
-                'bg_title'    => $row['title'],
-                'url'         => $row['link'],
-                'description' => $row['description'],
-                'summary'     => $summary,
+                'bg_title' => $row['title'],
+                'url'      => $row['link'],
+                'summary'  => $summary,
             ];
         }
 
