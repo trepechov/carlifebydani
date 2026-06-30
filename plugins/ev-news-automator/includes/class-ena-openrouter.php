@@ -55,9 +55,9 @@ class ENA_OpenRouter {
      */
     public function podcast_summary( string $bg_title, string $description ): string|WP_Error {
         return $this->chat(
-            'Редактор за български EV подкаст Car Life by Dani. Напиши 3-5 изречения на български с най-интересните факти и детайли от статията. Без markdown, само обикновен текст.',
-            "Заглавие: {$bg_title}\n\nКратко описание: {$description}\n\nНапиши резюме за водещите на подкаста.",
-            [ 'temperature' => 0.5 ],
+            'Пишеш кратко фактическо резюме на новинарска статия на български. Съдържай само фактите от статията — без упоменаване на подкаст, водещи, слушатели или епизоди. Без markdown.',
+            "Заглавие: {$bg_title}\n\nОписание: {$description}\n\nНапиши 3-5 изречения с ключовите факти.",
+            [ 'temperature' => 0.3 ],
             'podcast_summary'
         );
     }
