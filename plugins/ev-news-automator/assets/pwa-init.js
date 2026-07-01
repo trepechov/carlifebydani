@@ -78,7 +78,7 @@
             // Clear badge whenever the app is opened
             if ('clearAppBadge' in navigator) navigator.clearAppBadge();
 
-            if (!pwaConfig.vapidPublicKey || !window.location.pathname.startsWith('/ev-news-feed')) return;
+            if (!pwaConfig.vapidPublicKey) return;
 
             // Already subscribed — just re-save the endpoint (handles key rotation)
             const existing = await reg.pushManager.getSubscription();
