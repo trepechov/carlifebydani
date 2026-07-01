@@ -10,6 +10,7 @@ class ENA_PWA {
     public static function register(): void {
         add_action( 'init',               [ __CLASS__, 'register_rewrites' ] );
         add_filter( 'query_vars',         [ __CLASS__, 'add_query_vars' ] );
+        add_filter( 'redirect_canonical', [ __CLASS__, 'suppress_pwa_redirect' ] );
         add_action( 'template_redirect',  [ __CLASS__, 'serve_static_files' ] );
         add_action( 'after_switch_theme', [ __CLASS__, 'flush' ] );
         add_action( 'wp_head',            [ __CLASS__, 'inject_head_tags' ], 1 );
@@ -22,6 +23,16 @@ class ENA_PWA {
     public static function register_rewrites(): void {
         add_rewrite_rule( '^sw\.js$',       'index.php?ena_pwa_file=sw',       'top' );
         add_rewrite_rule( '^manifest\.json$', 'index.php?ena_pwa_file=manifest', 'top' );
+    }
+
+    // WordPress's canonical redirect turns /sw.js into /sw.js/ which browsers
+    // reject for service worker registration. Suppress it for PWA static files.
+    public static function suppress_pwa_redirect( $redirect_url ) {
+        $uri = $_SERVER['REQUEST_URI'] ?? '';
+        if ( preg_match( '#/(sw\.js|manifest\.json)/?$#', $uri ) ) {
+            return false;
+        }
+        return $redirect_url;
     }
 
     public static function add_query_vars( array $vars ): array {
