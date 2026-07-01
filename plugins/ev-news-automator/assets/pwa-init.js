@@ -42,21 +42,19 @@
     function showOptInBanner(reg) {
         const banner = document.createElement('div');
         banner.style.cssText = [
-            'position:fixed', 'bottom:1.5rem', 'left:50%',
-            'transform:translateX(-50%)',
-            'background:#1e293b', 'color:#f8fafc',
-            'border:1px solid #FE3652',
-            'border-radius:1rem', 'padding:0.875rem 1.25rem',
-            'display:flex', 'align-items:center', 'gap:0.875rem',
-            'font-size:0.875rem', 'z-index:9999',
-            'box-shadow:0 4px 24px rgba(0,0,0,0.5)',
-            'max-width:calc(100vw - 2rem)',
+            'position:fixed', 'bottom:0', 'left:0', 'right:0',
+            'background:#111827', 'color:#f8fafc',
+            'border-radius:1.25rem 1.25rem 0 0',
+            'padding:1.5rem 1.25rem 2rem',
+            'z-index:9999',
+            'box-shadow:0 -4px 32px rgba(0,0,0,0.6)',
         ].join(';');
 
         banner.innerHTML = `
-            <span>🔔 Получавай известия за нови статии</span>
-            <button id="ena-allow-btn" style="background:#FE3652;color:#fff;border:none;border-radius:0.5rem;padding:0.4rem 0.9rem;font-size:0.8125rem;font-weight:600;cursor:pointer;white-space:nowrap;">Разреши</button>
-            <button id="ena-dismiss-btn" style="background:transparent;color:#94a3b8;border:none;font-size:1.1rem;cursor:pointer;padding:0 0.2rem;line-height:1;">✕</button>
+            <p style="font-size:1.125rem;font-weight:700;margin:0 0 0.625rem;color:#f8fafc;">Получавай известия за нови статии</p>
+            <p style="font-size:0.875rem;color:#94a3b8;margin:0 0 1.25rem;line-height:1.5;">Уведомявай ме, когато са публикувани нови статии и подкаст епизоди.</p>
+            <button id="ena-allow-btn" style="display:block;width:100%;background:#FE3652;color:#fff;border:none;border-radius:0.75rem;padding:0.875rem;font-size:1rem;font-weight:600;cursor:pointer;margin-bottom:0.75rem;">Разреши</button>
+            <button id="ena-dismiss-btn" style="display:block;width:100%;background:#1f2937;color:#94a3b8;border:none;border-radius:0.75rem;padding:0.875rem;font-size:1rem;cursor:pointer;">Отхвърляне</button>
         `;
 
         document.body.appendChild(banner);
