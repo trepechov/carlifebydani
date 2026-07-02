@@ -42,9 +42,8 @@
     function showOptInBanner(reg) {
         const banner = document.createElement('div');
         banner.style.cssText = [
-            'position:fixed', 'bottom:0', 'left:0', 'right:0',
+            'position:fixed', 'bottom:0', 'left:1rem', 'right:1rem',
             'background:#111827', 'color:#f8fafc',
-            'border-radius:1.25rem 1.25rem 0 0',
             'padding:1.5rem 1.25rem 2rem',
             'z-index:9999',
             'box-shadow:0 -4px 32px rgba(0,0,0,0.6)',
@@ -53,8 +52,8 @@
         banner.innerHTML = `
             <p style="font-size:1.125rem;font-weight:700;margin:0 0 0.625rem;color:#f8fafc;">Получавай известия за нови статии</p>
             <p style="font-size:0.875rem;color:#94a3b8;margin:0 0 1.25rem;line-height:1.5;">Уведомявай ме, когато са публикувани нови статии и подкаст епизоди.</p>
-            <button id="ena-allow-btn" style="display:block;width:100%;background:#FE3652;color:#fff;border:none;border-radius:0.75rem;padding:0.875rem;font-size:1rem;font-weight:600;cursor:pointer;margin-bottom:0.75rem;">Разреши</button>
-            <button id="ena-dismiss-btn" style="display:block;width:100%;background:#1f2937;color:#94a3b8;border:none;border-radius:0.75rem;padding:0.875rem;font-size:1rem;cursor:pointer;">Отхвърляне</button>
+            <button id="ena-allow-btn" style="display:block;width:100%;background:#FE3652;color:#fff;border:none;border-radius:0.25rem;padding:0.875rem;font-size:1rem;font-weight:600;cursor:pointer;margin-bottom:0.75rem;">Разреши</button>
+            <button id="ena-dismiss-btn" style="display:block;width:100%;background:#1f2937;color:#94a3b8;border:none;border-radius:0.25rem;padding:0.875rem;font-size:1rem;cursor:pointer;">Отхвърляне</button>
         `;
 
         document.body.appendChild(banner);
