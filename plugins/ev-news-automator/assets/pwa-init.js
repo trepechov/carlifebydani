@@ -76,7 +76,8 @@
             // Clear badge whenever the app is opened
             if ('clearAppBadge' in navigator) navigator.clearAppBadge();
 
-            if (!pwaConfig.vapidPublicKey) return;
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || !!window.navigator.standalone;
+            if (!pwaConfig.vapidPublicKey || !isStandalone) return;
 
             // Already subscribed — just re-save the endpoint (handles key rotation)
             const existing = await reg.pushManager.getSubscription();
