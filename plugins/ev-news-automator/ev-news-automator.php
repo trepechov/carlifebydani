@@ -2,14 +2,14 @@
 /**
  * Plugin Name: EV News Automator
  * Description: Automated Bulgarian EV news collection, summarization, and podcast script generation.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: Car Life by Dani
  * Text Domain: ev-news-automator
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'ENA_VERSION',          '1.0.4' );
+define( 'ENA_VERSION',          '1.0.5' );
 define( 'ENA_PLUGIN_FILE',      __FILE__ );
 define( 'ENA_PLUGIN_DIR',       plugin_dir_path( __FILE__ ) );
 define( 'ENA_PLUGIN_URL',       plugin_dir_url( __FILE__ ) );

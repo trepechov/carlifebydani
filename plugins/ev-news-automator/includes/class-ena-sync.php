@@ -92,6 +92,6 @@ class ENA_Sync {
             'sheet_url'       => is_wp_error( $sheet_url ) ? '' : $sheet_url,
         ] );
 
-        return [ 'count' => $count ];
+        return [ 'count' => $count, 'published_today' => $published_today ];
     }
 }
