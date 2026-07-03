@@ -12,7 +12,7 @@ self.addEventListener('push', event => {
         fetch(DAILY_COUNT_URL)
             .then(r => r.ok ? r.json() : Promise.reject())
             .then(({ count }) => Promise.all([
-                self.registration.setAppBadge(count),
+                self.setAppBadge(count),
                 self.registration.showNotification('CLBD News Feed', {
                     body: `${count} нов${count === 1 ? 'а статия' : 'и статии'} днес`,
                     icon: ICON_URL,
@@ -22,13 +22,16 @@ self.addEventListener('push', event => {
                     data: { url: FEED_URL },
                 }),
             ]))
-            .catch(() => self.registration.showNotification('CLBD News Feed', {
-                body: 'Нови статии са достъпни',
-                icon: ICON_URL,
-                badge: ICON_URL,
-                tag: 'ev-daily',
-                data: { url: FEED_URL },
-            }))
+            .catch(() => Promise.all([
+                self.setAppBadge(),
+                self.registration.showNotification('CLBD News Feed', {
+                    body: 'Нови статии са достъпни',
+                    icon: ICON_URL,
+                    badge: ICON_URL,
+                    tag: 'ev-daily',
+                    data: { url: FEED_URL },
+                }),
+            ]))
     );
 });
 
@@ -40,11 +43,11 @@ self.addEventListener('notificationclick', event => {
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
             for (const client of clients) {
                 if (client.url.includes(FEED_URL) && 'focus' in client) {
-                    self.registration.clearAppBadge();
+                    self.clearAppBadge();
                     return client.focus();
                 }
             }
-            return self.clients.openWindow(target).then(() => self.registration.clearAppBadge());
+            return self.clients.openWindow(target).then(() => self.clearAppBadge());
         })
     );
 });
