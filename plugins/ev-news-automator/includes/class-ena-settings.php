@@ -54,6 +54,16 @@ class ENA_Settings {
     }
 
     public function article_age_cutoff(): int {
+        $last_run = (int) get_option( 'ena_last_collection_at', 0 );
+
+        if ( $last_run > 0 ) {
+            // Subtract a 1-hour buffer so articles published right at the boundary
+            // are never missed. Any overlap is harmless — the dedup filter in
+            // ENA_Collector drops URLs already present in the active sheet.
+            return $last_run - HOUR_IN_SECONDS;
+        }
+
+        // First-ever run: fall back to the configured age limit.
         $map = [
             '1d' => DAY_IN_SECONDS,
             '2d' => 2 * DAY_IN_SECONDS,

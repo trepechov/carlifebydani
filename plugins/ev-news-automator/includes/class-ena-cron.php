@@ -65,6 +65,10 @@ class ENA_Cron {
      * @return array{added:int,removed:int,synced:int}
      */
     public static function run_pipeline( ENA_Plugin $plugin ): array {
+        // Record start time before fetching so the next run's cutoff covers
+        // any articles published during this run's execution window.
+        $run_started_at = time();
+
         // 1. Refresh clicks on existing rows.
         $rows   = $plugin->storage->read_data_rows();
         $urls   = is_wp_error( $rows ) ? [] : array_column( $rows, 'link' );
@@ -113,6 +117,10 @@ class ENA_Cron {
         if ( $today_count > 0 ) {
             ENA_Push::send_all( $today_count );
         }
+
+        // 7. Persist the run timestamp so the next cutoff starts from here
+        //    (minus the 1-hour buffer applied in ENA_Settings::article_age_cutoff).
+        update_option( 'ena_last_collection_at', $run_started_at );
 
         return $result;
     }
