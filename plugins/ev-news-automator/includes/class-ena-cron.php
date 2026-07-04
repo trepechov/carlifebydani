@@ -115,7 +115,11 @@ class ENA_Cron {
         // 6. Push badge update to all subscribed PWA users.
         $today_count = $sync_result['published_today'] ?? 0;
         if ( $today_count > 0 ) {
-            ENA_Push::send_all( $today_count );
+            $push = ENA_Push::send_all( $today_count );
+            $plugin->logger->step( 'push', $push['failed'] === 0 ? 'ok' : 'warn',
+                "subs:{$push['subs']} sent:{$push['sent']} failed:{$push['failed']} stale:{$push['stale']} count:{$today_count}" );
+        } else {
+            $plugin->logger->step( 'push', 'skip', "published_today=0, no push sent" );
         }
 
         // 7. Persist the run timestamp so the next cutoff starts from here

@@ -50,13 +50,15 @@ class ENA_Push {
      * Sends a VAPID push (no payload) to every stored subscription.
      * Removes endpoints that respond with 404/410 (expired or unsubscribed).
      */
-    public static function send_all( int $count ): void {
+    public static function send_all( int $count ): array {
         $subs = get_option( self::OPT_SUBS, [] );
-        if ( empty( $subs ) ) return;
+        if ( empty( $subs ) ) return [ 'subs' => 0, 'sent' => 0, 'failed' => 0, 'stale' => 0 ];
 
         $subject = 'mailto:' . get_option( 'admin_email' );
         $pub_b64 = self::get_keys()['public_key_base64url'];
         $stale   = [];
+        $sent    = 0;
+        $failed  = 0;
 
         foreach ( $subs as $i => $sub ) {
             $endpoint = $sub['endpoint'] ?? '';
@@ -75,10 +77,17 @@ class ENA_Push {
                 'body' => '',
             ] );
 
-            if ( ! is_wp_error( $response ) ) {
+            if ( is_wp_error( $response ) ) {
+                $failed++;
+            } else {
                 $code = (int) wp_remote_retrieve_response_code( $response );
-                if ( $code === 404 || $code === 410 ) {
+                if ( $code === 201 || $code === 202 ) {
+                    $sent++;
+                } elseif ( $code === 404 || $code === 410 ) {
                     $stale[] = $i;
+                    $failed++;
+                } else {
+                    $failed++;
                 }
             }
         }
@@ -89,6 +98,8 @@ class ENA_Push {
             }
             update_option( self::OPT_SUBS, $subs, false );
         }
+
+        return [ 'subs' => count( $subs ), 'sent' => $sent, 'failed' => $failed, 'stale' => count( $stale ) ];
     }
 
     // ── VAPID key management ─────────────────────────────────────────────────
