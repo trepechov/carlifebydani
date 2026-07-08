@@ -16,7 +16,7 @@ EV news articles are currently collected manually, formatted into a CSV file, an
 
 Replace the manual CSV workflow with an automated pipeline:
 
-1. A daily AI agent collects EV news, translates headlines and writes short Bulgarian summaries, and writes articles to Google Sheets.
+1. A scheduled AI agent (configurable interval, e.g. every 6 hours) collects EV news, translates headlines and writes short Bulgarian summaries, and writes articles to Google Sheets.
 2. The team curates the live list directly in Google Sheets (edit, reorder, delete).
 3. The website always shows the current state of the Sheet — a live rolling feed of 20–50 articles visible to all visitors.
 4. On recording day, a script generation run takes a snapshot of the current live articles and produces a Google Doc with extended Bulgarian summaries for the podcast hosts.
@@ -35,9 +35,9 @@ Replace the manual CSV workflow with an automated pipeline:
 
 ## Core Flow
 
-### Phase 1 — Daily Collection (automated, WP-Cron)
+### Phase 1 — Scheduled Collection (automated, WP-Cron)
 
-- WP-Cron fires once daily (configurable time, e.g. 6:00 AM)
+- WP-Cron fires at a configurable interval (e.g. every 6 hours), anchored to a specific time of day (e.g. 08:00 → slots at 02:00, 08:00, 14:00, 20:00)
 - Plugin scrapes a configured list of EV news websites
   - RSS feeds used where available; HTML scraping (wp_remote_get + DOMDocument) as fallback
   - Deduplicates by URL against all existing articles in the Sheet

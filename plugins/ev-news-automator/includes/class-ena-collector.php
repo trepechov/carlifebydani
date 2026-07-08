@@ -87,7 +87,7 @@ class ENA_Collector {
                 ) );
                 $filtered = $count - count( $items );
                 $msg      = "{$source['url']} — {$count} articles found";
-                if ( $filtered > 0 ) $msg .= ", {$filtered} older than 24h or undated skipped";
+                if ( $filtered > 0 ) $msg .= ", {$filtered} before cutoff or undated skipped";
             }
 
             $this->logger->step( 'scrape_source', 'ok', $msg );

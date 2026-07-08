@@ -125,7 +125,7 @@
                             <option value="<?php echo esc_attr( $val ); ?>"<?php selected( $cur_age, $val ); ?>><?php echo esc_html( $label ); ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <p class="description">Only RSS articles published within this window are collected. HTML sources (no pub date) are always capped to the 5 most recent items regardless of this setting.</p>
+                    <p class="description">Used only on the very first collection run (no prior run timestamp). After the first run, the cutoff is set to 1 hour before the previous run's start time, so no articles fall through the gap between runs. HTML sources (no pub date) are always capped to the 5 most recent items regardless of this setting.</p>
                 </td>
             </tr>
             <tr>
@@ -148,25 +148,14 @@
                         <?php endforeach; ?>
                     </select>
                     <span style="margin-left:12px;">
-                        at <input type="time" name="collection_time" id="collection_time"
-                                  value="<?php echo esc_attr( $settings->get( 'collection_time', '09:00' ) ); ?>"
-                                  <?php echo $cur_interval !== 'daily' ? 'disabled' : ''; ?>>
+                        anchor <input type="time" name="collection_time" id="collection_time"
+                                  value="<?php echo esc_attr( $settings->get( 'collection_time', '09:00' ) ); ?>">
                         <span class="description" style="margin-left:6px;">
                             (site local time — currently <strong><?php echo esc_html( wp_date( 'H:i', null, wp_timezone() ) ); ?></strong> / <?php echo esc_html( wp_timezone_string() ); ?>).
-                            If using a real server cron instead of WP-Cron, point it to <code>wp-cron.php</code> at this same time.
+                            This time is always one of the run slots. Shorter intervals divide the day evenly from it —
+                            e.g. 6 h + 08:00 → runs at 02:00, 08:00, 14:00, 20:00.
                         </span>
                     </span>
-                    <script>
-                    (function(){
-                        var sel = document.getElementById('collection_interval');
-                        var inp = document.getElementById('collection_time');
-                        if ( sel && inp ) {
-                            sel.addEventListener('change', function(){
-                                inp.disabled = this.value !== 'daily';
-                            });
-                        }
-                    })();
-                    </script>
                 </td>
             </tr>
             <tr>

@@ -19,13 +19,7 @@ class ENA_Cron {
 
         $settings = new ENA_Settings();
         $interval = self::get_interval( $settings->get( 'collection_interval', 'daily' ) );
-
-        // For the production daily schedule, fire at the configured collection_time
-        // so the team can rely on a predictable morning run. For shorter dev intervals,
-        // fire within 60 seconds so iteration is immediate.
-        $start = $interval === 'daily'
-            ? self::next_collection_timestamp( $settings )
-            : time() + 60;
+        $start    = self::next_collection_timestamp( $settings );
 
         wp_schedule_event( $start, $interval, self::HOOK_COLLECTION );
     }
@@ -48,7 +42,7 @@ class ENA_Cron {
     }
 
     /**
-     * The full collection pipeline, shared by the daily cron, the manual
+     * The full collection pipeline, shared by the scheduled cron, the manual
      * "Run collection now" admin trigger, and the background worker so the
      * ordering is identical everywhere:
      *
@@ -148,18 +142,47 @@ class ENA_Cron {
         return $map[ $setting ] ?? 'daily';
     }
 
-    // Returns the Unix timestamp of the next occurrence of collection_time in the site's timezone.
+    /**
+     * Returns the Unix timestamp of the next run slot, anchored to collection_time.
+     *
+     * For any interval, collection_time is always one of the evenly-distributed slots.
+     * Example: interval=6h, time=08:00 → slots at 02:00, 08:00, 14:00, 20:00 every day.
+     * The first event fires at the next upcoming slot from now.
+     */
     private static function next_collection_timestamp( ENA_Settings $settings ): int {
         $time = $settings->get( 'collection_time', '09:00' );
         [ $hour, $minute ] = array_map( 'intval', explode( ':', $time ) );
 
-        $tz  = wp_timezone();
-        $now = new DateTimeImmutable( 'now', $tz );
+        $interval_secs = self::get_interval_seconds(
+            $settings->get( 'collection_interval', 'daily' )
+        );
 
-        $today_target = $now->setTime( $hour, $minute );
+        $tz     = wp_timezone();
+        $now    = new DateTimeImmutable( 'now', $tz );
+        $anchor = $now->setTime( $hour, $minute, 0 );
 
-        return ( $now < $today_target )
-            ? $today_target->getTimestamp()
-            : $today_target->modify( '+1 day' )->getTimestamp();
+        $diff = $now->getTimestamp() - $anchor->getTimestamp();
+
+        if ( $diff < 0 ) {
+            // Anchor is still upcoming today — use it as the first slot.
+            return $anchor->getTimestamp();
+        }
+
+        // Find how many full intervals have elapsed since the anchor,
+        // then schedule the very next slot after now.
+        $n = (int) floor( $diff / $interval_secs );
+        return $anchor->getTimestamp() + ( $n + 1 ) * $interval_secs;
+    }
+
+    private static function get_interval_seconds( string $setting ): int {
+        $map = [
+            '15min'   => 15 * MINUTE_IN_SECONDS,
+            '30min'   => 30 * MINUTE_IN_SECONDS,
+            '1hour'   => HOUR_IN_SECONDS,
+            '6hours'  => 6 * HOUR_IN_SECONDS,
+            '12hours' => 12 * HOUR_IN_SECONDS,
+            'daily'   => DAY_IN_SECONDS,
+        ];
+        return $map[ $setting ] ?? DAY_IN_SECONDS;
     }
 }

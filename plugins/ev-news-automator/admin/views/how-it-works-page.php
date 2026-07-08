@@ -259,8 +259,8 @@ $content_html = ena_md_to_html( $md );
         <div class="ena-phase ena-phase--auto">
             <div class="ena-phase__icon">🤖</div>
             <div class="ena-phase__body">
-                <strong>Wed → Tue 09:00</strong>
-                <span>Automatic · every day</span>
+                <strong>Wed → Tue (ongoing)</strong>
+                <span>Automatic · configurable interval</span>
                 <ul>
                     <li>GA4 sync</li>
                     <li>Sort by engagement</li>
