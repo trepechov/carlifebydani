@@ -6,6 +6,7 @@ add_theme_support('post-thumbnails');
 
 function wpdocs_carlifebydani_scripts()
 {
+    wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,1,200&display=swap', [], null);
     wp_enqueue_style('theme-css', get_stylesheet_directory_uri() . '/css/style.min.css');
     wp_enqueue_style('glightbox-css', get_stylesheet_directory_uri() . '/css/glightbox.min.css');
     wp_enqueue_style('cookieconsent-css', get_stylesheet_directory_uri() . '/css/cookieconsent.min.css');
@@ -23,6 +24,20 @@ function wpdocs_carlifebydani_scripts()
     ]);
 };
 add_action('wp_enqueue_scripts', 'wpdocs_carlifebydani_scripts');
+
+/*
+ * Preconnect to third-party origins the page always talks to, so the
+ * DNS/TLS handshake happens in parallel with HTML parsing instead of
+ * only starting once the browser reaches the script/link tag.
+ */
+add_filter('wp_resource_hints', function ($hints, $relation_type) {
+    if ($relation_type === 'preconnect') {
+        $hints[] = ['href' => 'https://fonts.googleapis.com'];
+        $hints[] = ['href' => 'https://fonts.gstatic.com', 'crossorigin'];
+        $hints[] = ['href' => 'https://www.googletagmanager.com'];
+    }
+    return $hints;
+}, 10, 2);
 
 /*
  * Move all theme scripts to load with `defer` so they never block HTML
