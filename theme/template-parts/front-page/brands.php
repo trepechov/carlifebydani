@@ -54,7 +54,7 @@ $tags = get_tags([
                     if ($brand === $tag->slug) {
             ?>
                         <a href="<?php echo get_tag_link($tag->term_id); ?>" class="opacity-50 hover:opacity-100">
-                            <img src="<?php echo get_template_directory_uri() ?>/images/brands/<?php echo $tag->slug ?>.png" alt="<?php echo $tag->name ?>">
+                            <img src="<?php echo get_template_directory_uri() ?>/images/brands/<?php echo $tag->slug ?>.png" alt="<?php echo $tag->name ?>" width="288" height="162" loading="lazy" decoding="async">
                         </a>
             <?php
                     }

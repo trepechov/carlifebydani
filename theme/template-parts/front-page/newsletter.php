@@ -30,4 +30,4 @@
     var AUTOHIDE = Boolean(0);
 </script>
 <script defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
-<script src="https://www.google.com/recaptcha/api.js?hl=en"></script>
+<script async src="https://www.google.com/recaptcha/api.js?hl=en"></script>

@@ -6,7 +6,7 @@
            data-title="<?php echo esc_attr($args['article']->title) ?>"
            data-url="<?php echo esc_attr($args['article']->link) ?>">
             <div class="aspect-[36/20] overflow-hidden relative">
-                <img src="" alt="<?php echo esc_attr($args['article']->title) ?>" class="absolute top-1/2 -translate-y-1/2 opacity-0 transition-opacity delay-1000 duration-1000 js-thumbnail">
+                <img src="" alt="<?php echo esc_attr($args['article']->title) ?>" class="absolute top-1/2 -translate-y-1/2 opacity-0 transition-opacity delay-1000 duration-1000 js-thumbnail" loading="lazy" decoding="async">
             </div>
         </a>
     </div>

@@ -9,20 +9,45 @@ function wpdocs_carlifebydani_scripts()
     wp_enqueue_style('theme-css', get_stylesheet_directory_uri() . '/css/style.min.css');
     wp_enqueue_style('glightbox-css', get_stylesheet_directory_uri() . '/css/glightbox.min.css');
     wp_enqueue_style('cookieconsent-css', get_stylesheet_directory_uri() . '/css/cookieconsent.min.css');
-    wp_enqueue_script('gtag', get_stylesheet_directory_uri() . '/js/gtag.js');
-    wp_enqueue_script('glightbox', get_stylesheet_directory_uri() . '/js/glightbox.min.js');
-    wp_enqueue_script('glightbox-init', get_stylesheet_directory_uri() . '/js/glightbox.init.js', ['glightbox', 'jquery']);
+    wp_enqueue_script('gtag', get_stylesheet_directory_uri() . '/js/gtag.js', [], '', true);
+    wp_enqueue_script('glightbox', get_stylesheet_directory_uri() . '/js/glightbox.min.js', [], '', true);
+    wp_enqueue_script('glightbox-init', get_stylesheet_directory_uri() . '/js/glightbox.init.js', ['glightbox', 'jquery'], '', true);
     wp_enqueue_script('cookieconsent', get_stylesheet_directory_uri() . '/js/cookieconsent.min.js', [], '', true);
     wp_enqueue_script('cookieconsent-init', get_stylesheet_directory_uri() . '/js/cookieconsent.init.js', ['cookieconsent'], '', true);
     wp_enqueue_script('ev-news-tracking', get_stylesheet_directory_uri() . '/js/ev-news-tracking.js', [], '', true);
     wp_enqueue_script('ev-news-voting', get_stylesheet_directory_uri() . '/js/ev-news-voting.js', [], '', true);
-    wp_enqueue_script('ogimageloader-init', get_stylesheet_directory_uri() . '/js/ogimageloader.init.js', ['jquery']);
+    wp_enqueue_script('ogimageloader-init', get_stylesheet_directory_uri() . '/js/ogimageloader.init.js', ['jquery'], '', true);
     wp_localize_script('ogimageloader-init', 'ogProxy', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'nonce'   => wp_create_nonce('fetch_og_image_nonce'),
     ]);
 };
 add_action('wp_enqueue_scripts', 'wpdocs_carlifebydani_scripts');
+
+/*
+ * Move all theme scripts to load with `defer` so they never block HTML
+ * parsing. Scripts are already enqueued in dependency order and `defer`
+ * preserves execution order, so glightbox-init/ogimageloader-init still
+ * run after their jquery/glightbox dependencies.
+ */
+add_filter('script_loader_tag', function ($tag, $handle) {
+    $theme_handles = [
+        'gtag',
+        'glightbox',
+        'glightbox-init',
+        'ogimageloader-init',
+        'cookieconsent',
+        'cookieconsent-init',
+        'ev-news-tracking',
+        'ev-news-voting',
+        'jquery-core',
+        'jquery-migrate',
+    ];
+    if (in_array($handle, $theme_handles, true) && strpos($tag, ' defer') === false) {
+        $tag = str_replace(' src', ' defer src', $tag);
+    }
+    return $tag;
+}, 10, 2);
 
 
 function register_my_menus()
