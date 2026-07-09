@@ -1,9 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Reads GA4 ev_news_click event counts via the Analytics Data API v1.
-// The site fires a dataLayer event named 'ev_news_click' with custom parameter 'article_url'
-// whenever a visitor clicks an EV news article card (theme/js/ev-news-tracking.js).
+// Reads GA4 event counts via the Analytics Data API v1.
+// The site fires dataLayer events with custom parameter 'article_url':
+//   'ev_news_click'    when a visitor clicks an EV news article card (theme/js/ev-news-tracking.js)
+//   'ev_news_upvote'   / 'ev_news_downvote' when a visitor votes on a card (theme/js/ev-news-voting.js)
 class ENA_Analytics {
 
     private const API_BASE = 'https://analyticsdata.googleapis.com/v1beta/properties';
@@ -23,6 +24,28 @@ class ENA_Analytics {
      * Returns WP_Error('ga4_not_configured') if ga4_property_id is not set.
      */
     public function fetch_clicks( array $urls, int $days_back = 7 ): array|WP_Error {
+        return $this->fetch_event_counts( 'ev_news_click', $urls, $days_back );
+    }
+
+    /**
+     * Fetch ev_news_upvote event counts for the given URLs. Same contract as fetch_clicks().
+     */
+    public function fetch_upvotes( array $urls, int $days_back = 7 ): array|WP_Error {
+        return $this->fetch_event_counts( 'ev_news_upvote', $urls, $days_back );
+    }
+
+    /**
+     * Fetch ev_news_downvote event counts for the given URLs. Same contract as fetch_clicks().
+     */
+    public function fetch_downvotes( array $urls, int $days_back = 7 ): array|WP_Error {
+        return $this->fetch_event_counts( 'ev_news_downvote', $urls, $days_back );
+    }
+
+    /**
+     * Fetch $event_name counts (dimension customEvent:article_url) for the given URLs
+     * over the past $days_back days. Returns [url => int], every URL seeded at 0.
+     */
+    private function fetch_event_counts( string $event_name, array $urls, int $days_back ): array|WP_Error {
         $property_id = $this->settings->ga4_property_id();
         if ( empty( $property_id ) ) {
             return new WP_Error( 'ga4_not_configured', 'ga4_property_id not set' );
@@ -31,7 +54,7 @@ class ENA_Analytics {
         $token = $this->auth->get_access_token( self::SCOPES );
         if ( is_wp_error( $token ) ) return $token;
 
-        $report = $this->run_report( $token, $property_id, $days_back );
+        $report = $this->run_report( $token, $property_id, $event_name, $days_back );
         if ( is_wp_error( $report ) ) {
             // Attach the GA4 response body to the error so callers can log the full detail.
             $data = $report->get_error_data();
@@ -48,24 +71,24 @@ class ENA_Analytics {
         // Seed all requested URLs at 0, then overlay GA4 counts.
         // GA4 truncates custom dimension values at 100 chars, so build a
         // prefix → full-url index as a fallback for long URLs.
-        $clicks = array_fill_keys( $urls, 0 );
+        $counts = array_fill_keys( $urls, 0 );
         $prefix_to_full = [];
         foreach ( $urls as $u ) {
             $prefix_to_full[ substr( $u, 0, 100 ) ] = $u;
         }
 
         foreach ( $report as $ga4_url => $count ) {
-            if ( array_key_exists( $ga4_url, $clicks ) ) {
-                $clicks[ $ga4_url ] = $count;
+            if ( array_key_exists( $ga4_url, $counts ) ) {
+                $counts[ $ga4_url ] = $count;
             } elseif ( isset( $prefix_to_full[ $ga4_url ] ) ) {
-                $clicks[ $prefix_to_full[ $ga4_url ] ] = $count;
+                $counts[ $prefix_to_full[ $ga4_url ] ] = $count;
             }
         }
 
-        return $clicks;
+        return $counts;
     }
 
-    private function run_report( string $token, string $property_id, int $days_back ): array|WP_Error {
+    private function run_report( string $token, string $property_id, string $event_name, int $days_back ): array|WP_Error {
         $url  = self::API_BASE . "/{$property_id}:runReport";
         $body = [
             'dimensions'      => [ [ 'name' => 'customEvent:article_url' ] ],
@@ -74,7 +97,7 @@ class ENA_Analytics {
             'dimensionFilter' => [
                 'filter' => [
                     'fieldName'    => 'eventName',
-                    'stringFilter' => [ 'matchType' => 'EXACT', 'value' => 'ev_news_click' ],
+                    'stringFilter' => [ 'matchType' => 'EXACT', 'value' => $event_name ],
                 ],
             ],
             'limit' => 10000,

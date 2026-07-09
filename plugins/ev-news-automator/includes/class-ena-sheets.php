@@ -7,14 +7,15 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 //   One Google Spreadsheet with multiple sheets (tabs), one per podcast session.
 //   Tab names use DD.MM.YYYY format (e.g. "16.06.2026").
 //   Columns per tab: title | description | link | author | upvote | downvote | clicks | added_date
-//   upvote/downvote are deprecated fields kept for backward compatibility; always empty.
+//   upvote (col E) / downvote (col F) — real GA4-synced vote counts; written as 0 on append,
+//   updated by ENA_Analytics from the ev_news_upvote / ev_news_downvote GA4 events.
 //   clicks (col G) — GA4 click count; written as 0 on append, updated daily by ENA_Analytics.
 //   added_date (col H) — Y-m-d date the row was appended; written by the adapter, never changed.
 //   The session date lives in the tab name, not a column.
 //   "Active sheet" = the tab whose name is the most recent valid DD.MM.YYYY date.
 //
-// Backward compat: tabs created before clicks/added_date columns (A:F only) are handled by
-// read_data_rows() — missing G treated as clicks=0, missing H treated as added_date=session_date.
+// Backward compat: tabs created before the count/added_date columns are handled by
+// read_data_rows() — missing upvote/downvote/clicks treated as 0, missing added_date=session_date.
 //
 // Interface contract (all callers use these):
 //   read_data_rows(), append_rows(), delete_rows(), update_clicks(), existing_urls(), row_count()
@@ -43,7 +44,8 @@ class ENA_Sheets {
      * Returns assoc arrays with keys: title, description, link, author, upvote, downvote,
      * clicks, added_date, session_date.
      * session_date is parsed from the tab name (DD.MM.YYYY → Y-m-d), not a real column.
-     * Backward compat: missing col G → clicks=0; missing col H → added_date=session_date.
+     * upvote/downvote/clicks are real GA4-synced vote counts, cast to int.
+     * Backward compat: missing upvote/downvote/clicks → 0; missing col H → added_date=session_date.
      */
     public function read_data_rows(): array|WP_Error {
         $sheet = $this->active_sheet_name();
@@ -59,8 +61,12 @@ class ENA_Sheets {
             $padded = array_pad( $row, 9, '' );
             $assoc  = array_combine( self::COLUMNS, array_slice( $padded, 0, 9 ) );
             // Backward compat defaults for old tabs (A:F only)
-            if ( (string) $assoc['clicks'] === '' ) $assoc['clicks'] = 0;
+            if ( (string) $assoc['upvote'] === '' )   $assoc['upvote'] = 0;
+            if ( (string) $assoc['downvote'] === '' ) $assoc['downvote'] = 0;
+            if ( (string) $assoc['clicks'] === '' )   $assoc['clicks'] = 0;
             if ( (string) $assoc['added_date'] === '' ) $assoc['added_date'] = $date;
+            $assoc['upvote']       = (int) $assoc['upvote'];
+            $assoc['downvote']     = (int) $assoc['downvote'];
             $assoc['clicks']       = (int) $assoc['clicks'];
             $assoc['session_date'] = $date;
             return $assoc;
@@ -179,7 +185,31 @@ class ENA_Sheets {
      * Rows whose URL is not in $url_to_clicks are left unchanged.
      */
     public function update_clicks( array $url_to_clicks ): bool|WP_Error {
-        if ( empty( $url_to_clicks ) ) return true;
+        return $this->update_column( 'G', $url_to_clicks );
+    }
+
+    /**
+     * Update column E (upvote) for every row whose link URL matches the given map.
+     * Rows whose URL is not in $url_to_count are left unchanged.
+     */
+    public function update_upvotes( array $url_to_count ): bool|WP_Error {
+        return $this->update_column( 'E', $url_to_count );
+    }
+
+    /**
+     * Update column F (downvote) for every row whose link URL matches the given map.
+     * Rows whose URL is not in $url_to_count are left unchanged.
+     */
+    public function update_downvotes( array $url_to_count ): bool|WP_Error {
+        return $this->update_column( 'F', $url_to_count );
+    }
+
+    /**
+     * Write an integer count into $column_letter for every row whose link (column C)
+     * matches a key in $url_to_count. Rows not in the map are left unchanged.
+     */
+    private function update_column( string $column_letter, array $url_to_count ): bool|WP_Error {
+        if ( empty( $url_to_count ) ) return true;
 
         $sheet = $this->active_sheet_name();
         if ( is_wp_error( $sheet ) ) return $sheet;
@@ -200,11 +230,11 @@ class ENA_Sheets {
         foreach ( $data['values'] ?? [] as $row_index => $cell ) {
             if ( $row_index === 0 ) continue; // skip header (sheet row 1)
             $link = $cell[0] ?? '';
-            if ( ! empty( $link ) && array_key_exists( $link, $url_to_clicks ) ) {
+            if ( ! empty( $link ) && array_key_exists( $link, $url_to_count ) ) {
                 $sheet_row     = $row_index + 1; // 1-based sheet row
                 $update_data[] = [
-                    'range'  => "{$sheet}!G{$sheet_row}",
-                    'values' => [ [ (int) $url_to_clicks[ $link ] ] ],
+                    'range'  => "{$sheet}!{$column_letter}{$sheet_row}",
+                    'values' => [ [ (int) $url_to_count[ $link ] ] ],
                 ];
             }
         }
@@ -224,11 +254,11 @@ class ENA_Sheets {
     }
 
     /**
-     * Reorder all data rows in the active session sheet by clicks (column G) descending.
+     * Reorder all data rows in the active session sheet by upvote (column E) descending.
      * The header row (row 1) is preserved — sort starts at row index 1.
-     * Called after update_clicks() so the public CSV export reflects engagement order immediately.
+     * Called after update_upvotes() so the spreadsheet reflects engagement order.
      */
-    public function sort_by_clicks(): bool|WP_Error {
+    public function sort_by_upvotes(): bool|WP_Error {
         $sheet_id = $this->active_sheet_id_numeric();
         if ( is_wp_error( $sheet_id ) ) return $sheet_id;
 
@@ -250,7 +280,7 @@ class ENA_Sheets {
                         ],
                         'sortSpecs' => [
                             [
-                                'dimensionIndex' => 6, // column G = clicks
+                                'dimensionIndex' => 4, // column E = upvote
                                 'sortOrder'      => 'DESCENDING',
                             ],
                             [
@@ -276,9 +306,9 @@ class ENA_Sheets {
     /**
      * Trim the active sheet to at most $max data rows by deleting the bottom rows.
      *
-     * Must be called AFTER sort_by_clicks(): once the sheet is sorted
-     * (clicks DESC → pub_date DESC → added_date DESC), the bottom rows are the
-     * zero-click articles with the oldest pub_date — exactly the ones that should
+     * Must be called AFTER sort_by_upvotes(): once the sheet is sorted
+     * (upvote DESC → pub_date DESC → added_date DESC), the bottom rows are the
+     * zero-upvote articles with the oldest pub_date — exactly the ones that should
      * age out. Deleting by position is therefore both correct and simple.
      *
      * Returns the number of rows removed.

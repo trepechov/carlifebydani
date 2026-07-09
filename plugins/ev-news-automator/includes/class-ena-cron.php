@@ -63,7 +63,8 @@ class ENA_Cron {
         // any articles published during this run's execution window.
         $run_started_at = time();
 
-        // 1. Refresh clicks on existing rows.
+        // 1. Refresh clicks + votes on existing rows. Each GA4 fetch is logged
+        //    independently so one failing fetch never blocks the others.
         $rows   = $plugin->storage->read_data_rows();
         $urls   = is_wp_error( $rows ) ? [] : array_column( $rows, 'link' );
         $clicks = $plugin->analytics->fetch_clicks( $urls );
@@ -76,23 +77,41 @@ class ENA_Cron {
             $plugin->logger->step( 'analytics_fetch', 'ok', count( $urls ) . " URLs, {$with_clicks} with clicks" );
         }
 
+        $upvotes = $plugin->analytics->fetch_upvotes( $urls );
+        if ( is_wp_error( $upvotes ) ) {
+            $plugin->logger->log_error( 'analytics_fetch_upvotes', $upvotes->get_error_message() );
+        } else {
+            $plugin->storage->update_upvotes( $upvotes );
+            $with_upvotes = count( array_filter( $upvotes, fn ( $c ) => $c > 0 ) );
+            $plugin->logger->step( 'analytics_fetch_upvotes', 'ok', count( $urls ) . " URLs, {$with_upvotes} with upvotes" );
+        }
+
+        $downvotes = $plugin->analytics->fetch_downvotes( $urls );
+        if ( is_wp_error( $downvotes ) ) {
+            $plugin->logger->log_error( 'analytics_fetch_downvotes', $downvotes->get_error_message() );
+        } else {
+            $plugin->storage->update_downvotes( $downvotes );
+            $with_downvotes = count( array_filter( $downvotes, fn ( $c ) => $c > 0 ) );
+            $plugin->logger->step( 'analytics_fetch_downvotes', 'ok', count( $urls ) . " URLs, {$with_downvotes} with downvotes" );
+        }
+
         // 2. Collect & append new articles at the bottom.
         $result = $plugin->collector->run();
 
-        // 3. Sort the full sheet (always — independent of the clicks fetch above).
-        $sort_result = $plugin->storage->sort_by_clicks();
+        // 3. Sort the full sheet (always — independent of the vote fetch above).
+        $sort_result = $plugin->storage->sort_by_upvotes();
         if ( is_wp_error( $sort_result ) ) {
             $plugin->logger->step( 'sheets_sort', 'error', $sort_result->get_error_message() );
         } else {
-            $plugin->logger->step( 'sheets_sort', 'ok', 'rows sorted: clicks DESC → pub_date DESC' );
+            $plugin->logger->step( 'sheets_sort', 'ok', 'rows sorted: upvote DESC → pub_date DESC' );
         }
 
-        // 4. Trim to max by deleting the bottom (oldest zero-click) rows.
+        // 4. Trim to max by deleting the bottom (oldest zero-upvote) rows.
         $max     = (int) $plugin->settings->get( 'max_articles', 50 );
         $removed = $plugin->storage->trim_to_max( $max );
         $result['removed'] = $removed;
         if ( $removed > 0 ) {
-            $plugin->logger->step( 'sheets_trim', 'ok', "{$removed} oldest zero-click rows removed (max={$max})" );
+            $plugin->logger->step( 'sheets_trim', 'ok', "{$removed} oldest zero-upvote rows removed (max={$max})" );
         }
 
         // Collection status reflects this run's append + trim counts.

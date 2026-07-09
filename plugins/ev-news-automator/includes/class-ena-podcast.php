@@ -55,6 +55,22 @@ class ENA_Podcast {
             $this->logger->step( 'podcast_analytics', 'ok', count( $urls ) . " URLs, {$with_clicks} with clicks" );
         }
 
+        // Refresh upvotes/downvotes too so the sheet stays fresh (ranking below still uses clicks only,
+        // and these fields aren't read downstream, so no in-memory overlay is needed).
+        $upvotes = $this->analytics->fetch_upvotes( $urls );
+        if ( is_wp_error( $upvotes ) ) {
+            $this->logger->step( 'podcast_analytics_upvotes', 'skip', $upvotes->get_error_message() );
+        } else {
+            $this->storage->update_upvotes( $upvotes );
+        }
+
+        $downvotes = $this->analytics->fetch_downvotes( $urls );
+        if ( is_wp_error( $downvotes ) ) {
+            $this->logger->step( 'podcast_analytics_downvotes', 'skip', $downvotes->get_error_message() );
+        } else {
+            $this->storage->update_downvotes( $downvotes );
+        }
+
         // Step 2: order by clicks descending and take the top N.
         $top_n = max( 1, (int) $this->settings->get( 'max_script_articles', 10 ) );
         usort( $rows, fn ( $a, $b ) => $b['clicks'] <=> $a['clicks'] );

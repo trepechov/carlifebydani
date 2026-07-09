@@ -40,8 +40,11 @@ The team plans to migrate away from Google Sheets as the article database in a f
   - `read_data_rows(): array` — returns rows as assoc arrays with keys: `title`, `description`, `link`, `author`, `upvote`, `downvote`, `clicks`, `added_date`, `session_date`. `session_date` (Y-m-d) is derived from the sheet tab name, not a real column. `clicks` is the GA4-sourced integer click count (column G). `added_date` (Y-m-d) is the calendar date the row was appended, stored in column H — used by `ENA_Sync` to distinguish new-today articles from older ones.
   - `append_rows(array $rows): bool|WP_Error` — each row is an assoc array with the same keys (except `session_date` and `added_date`). The adapter writes today's date into column H automatically. `clicks` defaults to `0`.
   - `delete_rows(array $row_indices): bool|WP_Error` — delete by storage-internal indices (adapter translates to whatever the backend needs).
-  - `update_clicks(array $url_to_clicks): bool|WP_Error` — given a map of `[url => int]`, update column G for every matching row in the active sheet. Rows whose URL is not in the map are left unchanged.
-  - `sort_by_clicks(): bool|WP_Error` — reorder all data rows in the active sheet by column G (clicks) descending using the Sheets v4 `sortRange` batchUpdate. Header row is preserved. Called immediately after `update_clicks()` so the public CSV export reflects engagement order before new articles are appended.
+  - `update_clicks(array $url_to_clicks): bool|WP_Error` — given a map of `[url => int]`, update column G for every matching row. Rows not in the map are left unchanged.
+  - `update_upvotes(array $url_to_count): bool|WP_Error` — same contract, updates column E.
+  - `update_downvotes(array $url_to_count): bool|WP_Error` — same contract, updates column F.
+  - `sort_by_upvotes(): bool|WP_Error` — reorder all data rows by upvote (col E) DESC → pub_date (col I) DESC → added_date (col H) DESC. Header row preserved. Called after every engagement sync.
+  - `trim_to_max(int $max): int` — delete bottom rows until the data row count ≤ max. Must be called after `sort_by_upvotes()`.
   - `existing_urls(): array` — returns `[link => true]` for dedupe.
   - `row_count(): int`
 - Keep `class-ena-sheets.php` self-contained (no business logic) so it can be deleted cleanly.
@@ -52,7 +55,7 @@ The team plans to migrate away from Google Sheets as the article database in a f
 
 | When | What |
 |---|---|
-| Daily 09:00 (configurable, site local time) | WP-Cron: **fetch GA4 clicks → update Sheet column G → sort rows by clicks DESC** → scrape → summarize → append → trim |
+| Daily 09:00 (configurable, site local time) | WP-Cron: **scrape → summarize → append → fetch GA4 clicks + upvotes + downvotes → update Sheet columns E/F/G → sort by upvote DESC → trim** → sync live articles |
 | All week | Team curates directly in Google Sheets |
 | Tuesday morning (recording day) | By 09:00 the final collection of the week runs automatically — 7 full days of articles from Wednesday through Tuesday |
 | Tuesday (before recording) | **Manual**: team creates Google Doc → pastes ID in settings → clicks "Generate Podcast Script" in dashboard |
@@ -63,29 +66,29 @@ The team plans to migrate away from Google Sheets as the article database in a f
 
 The system maintains two distinct orderings that serve different purposes.
 
-**Sheet order** — physical row order in the active tab, managed by `sort_by_clicks()` on every daily run:
+**Sheet order** — physical row order in the active tab, managed by `sort_by_upvotes()` after every collection run:
 
 | Priority | Field | Direction |
 |---|---|---|
-| 1 | `clicks` | DESC — most-clicked articles at the top |
-| 2 | `added_date` | DESC — tiebreaker; most recently scraped row wins when clicks are equal |
+| 1 | `upvote` | DESC — most-upvoted articles at the top |
+| 2 | `pub_date` | DESC — newer articles win among equal upvote counts |
+| 3 | `added_date` | DESC — tiebreaker when upvote and pub_date are equal |
 
-This is what the Google Sheet reflects visually and what the podcast script uses. It is **not** what visitors see on `/ev-news-feed/`.
+This is what the Google Sheet reflects visually and what the podcast script uses. After sort, the bottom rows (zero-upvote, oldest pub_date) are trimmed to respect `max_articles`.
 
-**Display order** — applied by `ENA_Sync` when writing `ev_news_live_articles` to `wp_options`. The Sheet row order is ignored; articles are re-sorted into three groups at display time:
+**Display order** — applied by `ENA_Sync` when writing `ev_news_live_articles` to `wp_options`. The Sheet row order is preserved within each group:
 
 ```
-Group 1 — Published today  (pub_date === today):  shown first, Sheet insertion order preserved
-           → new articles go to the top even if they have zero clicks yet
-Group 2 — Engaged older    (pub_date < today, clicks > 0):  sorted by clicks DESC
-           → proven audience interest; highest-clicked rises within this group
-Group 3 — Zero-click older (pub_date < today, clicks = 0):  shown last, Sheet insertion order preserved
-           → had at least one day to attract clicks; users weren't interested
+Group 1 — Collected in the last 24 hours (added_date >= yesterday UTC):
+           shown first, in sheet order
+           → fresh articles from the latest run always appear at the top
+
+Group 2 — Everything older:
+           shown after Group 1, in sheet order
+           → already upvote-sorted by the sheet, so engaged articles naturally lead
 ```
 
-`pub_date` (the RSS `<pubDate>` field, stored as Y-m-d) is used for group assignment. If `pub_date` is missing, `added_date` (the scrape date) is used as a fallback so those rows still land in a group.
-
-A new article enters at the top of Group 1. After the next daily run updates GA4 clicks it either moves to Group 2 (any clicks → sorted by count) or sinks to Group 3 (still zero). Nothing is ever deleted by the plugin — the team manages deletions manually via the Sheet. Zero-click articles remain visible at the bottom, giving the editorial team full visibility of what exists.
+`added_date` (the date the row was scraped into the Sheet, stored as Y-m-d UTC) is used for group assignment. Both groups preserve the sheet's engagement order within them.
 
 ---
 
@@ -675,8 +678,7 @@ The storage adapter contract (`read_data_rows`, `append_rows`, `delete_rows`, `e
 
 - X / Twitter integration (API cost; deferred)
 - Automatic WP post publishing
-- Public voting or reactions
 - AI-generated featured images
 - Email / Slack notifications on cron runs
 
-> **Note:** engagement-based article ordering (GA4 click counts drive the sync sort order) is now **in scope** — see [Weekly Rhythm](#weekly-rhythm), `class-ena-analytics.php`, and `class-ena-sync.php`. Articles are never deleted by the plugin; zero-click older articles sink to the bottom of the feed rather than being removed.
+> **Note:** upvote/downvote voting is **in scope and implemented** — see `theme/js/ev-news-voting.js`, `class-ena-analytics.php` (`fetch_upvotes` / `fetch_downvotes`), and `class-ena-sheets.php` (`update_upvotes` / `update_downvotes` / `sort_by_upvotes`). The sheet sort and feed display order both reflect upvote engagement.

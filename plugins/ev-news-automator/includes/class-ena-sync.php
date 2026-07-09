@@ -3,21 +3,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
  * Runs after every collection — both the daily cron and the manual "Run collection now" trigger.
- * Reads all rows, engagement-sorts them, and writes a JSON snapshot to ev_news_live_articles.
+ * Reads all rows, orders them, and writes a JSON snapshot to ev_news_live_articles.
  *
  * Article ordering (applied before the JSON snapshot is written):
  *
- *   Group 1 — any article with at least one click (clicks > 0)
- *             Shown first. Sorted by clicks DESC; ties broken by pub_date DESC.
+ *   Group 1 — articles collected within the last 24 hours (added_date >= yesterday UTC)
+ *             Shown first, in the order they appear in the spreadsheet.
  *
- *   Group 2 — zero-click articles (clicks = 0)
- *             Shown after Group 1. Sorted by pub_date DESC then added_date DESC,
- *             so articles collected today naturally appear above older ones.
- *             The bottom of this group (oldest pub_date) are the trim candidates.
+ *   Group 2 — all older articles
+ *             Shown after Group 1, in the order they appear in the spreadsheet.
  *
- * Date resolution: pub_date (Y-m-d, sourced from the RSS <pubDate> field) is the
- * primary date. If pub_date is missing for a row, added_date (the date the row was
- * scraped into the Sheet) is used as a fallback.
+ * Within each group the spreadsheet order is preserved as-is
+ * (upvote DESC → pub_date DESC → added_date DESC, maintained by sort_by_upvotes()).
  */
 class ENA_Sync {
 
@@ -37,27 +34,13 @@ class ENA_Sync {
             return [ 'count' => 0 ];
         }
 
-        // pub_date (Y-m-d) is preferred; falls back to added_date for rows where pub_date is missing.
-        $pub_date_of = fn ( $r ) => ! empty( $r['pub_date'] ) ? $r['pub_date'] : ( $r['added_date'] ?? '' );
+        // Group 1: collected within the last 24 hours. Group 2: everything older.
+        // Both groups keep their spreadsheet order (no re-sort here).
+        $cutoff = gmdate( 'Y-m-d', time() - DAY_IN_SECONDS );
+        $recent = array_values( array_filter( $rows, fn ( $r ) => ( $r['added_date'] ?? '' ) >= $cutoff ) );
+        $older  = array_values( array_filter( $rows, fn ( $r ) => ( $r['added_date'] ?? '' ) < $cutoff ) );
 
-        $with_clicks = array_values( array_filter( $rows, fn ( $r ) => (int) $r['clicks'] > 0 ) );
-        $zero_clicks = array_values( array_filter( $rows, fn ( $r ) => (int) $r['clicks'] === 0 ) );
-
-        // Group 1: clicks DESC → pub_date DESC for ties.
-        usort( $with_clicks, function ( $a, $b ) use ( $pub_date_of ) {
-            $cmp = (int) $b['clicks'] <=> (int) $a['clicks'];
-            if ( $cmp !== 0 ) return $cmp;
-            return strcmp( $pub_date_of( $b ), $pub_date_of( $a ) );
-        } );
-
-        // Group 2: pub_date DESC → added_date DESC so articles collected today float above older ones.
-        usort( $zero_clicks, function ( $a, $b ) use ( $pub_date_of ) {
-            $cmp = strcmp( $pub_date_of( $b ), $pub_date_of( $a ) );
-            if ( $cmp !== 0 ) return $cmp;
-            return strcmp( $b['added_date'] ?? '', $a['added_date'] ?? '' );
-        } );
-
-        $sorted = array_merge( $with_clicks, $zero_clicks );
+        $sorted = array_merge( $recent, $older );
 
         $articles = array_map( fn ( $r ) => [
             'id'          => md5( $r['link'] ),
@@ -68,6 +51,8 @@ class ENA_Sync {
             'pub_date'    => $r['pub_date'] ?? '',
             'date'        => $r['session_date'],
             'clicks'      => (int) $r['clicks'],
+            'upvote'      => (int) $r['upvote'],
+            'downvote'    => (int) $r['downvote'],
             'added_date'  => $r['added_date'],
         ], $sorted );
 
@@ -86,8 +71,8 @@ class ENA_Sync {
             'timestamp'       => ( new DateTimeImmutable() )->format( 'c' ),
             'count'           => $count,
             'published_today' => $published_today,
-            'with_clicks'     => count( $with_clicks ),
-            'zero_clicks'     => count( $zero_clicks ),
+            'recent_24h'      => count( $recent ),
+            'older'           => count( $older ),
             'sheet_name'      => is_wp_error( $sheet_name ) ? '' : $sheet_name,
             'sheet_url'       => is_wp_error( $sheet_url ) ? '' : $sheet_url,
         ] );

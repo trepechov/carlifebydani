@@ -9,8 +9,8 @@ WordPress plugin for **Car Life by Dani**. Collects English-language EV news fro
 1. **Collects** articles from RSS feeds and HTML pages on a configurable schedule (cron or manual trigger).
 2. **Summarises** each new article — sends the title and excerpt to an OpenRouter AI model, receives a Bulgarian headline and 2–3 sentence summary.
 3. **Stores** results in a Google Sheet (one tab per recording session). Deduplicates against existing URLs. Trims the sheet to a configurable maximum.
-4. **Tracks clicks** — syncs `ev_news_click` GA4 event counts back into the sheet's clicks column on every collection run.
-5. **Syncs to live** — pushes the current sheet tab's articles into a WordPress option (`ev_news_live_articles`), sorted for display: clicked articles first (clicks DESC, then pub_date DESC), followed by zero-click articles newest-first (pub_date DESC, then added_date DESC). The theme reads this option to render the **EV News Feed** page (`/ev-news-feed/`) — a standalone public page with an Instagram-style mobile feed and a desktop grid layout.
+4. **Tracks engagement** — syncs `ev_news_click`, `ev_news_upvote`, and `ev_news_downvote` GA4 event counts back into the sheet on every collection run. After syncing, sorts the sheet by upvote DESC → pub_date DESC → added_date DESC and trims oldest zero-upvote rows to the configured maximum.
+5. **Syncs to live** — pushes the current sheet tab's articles into a WordPress option (`ev_news_live_articles`). Display order: articles collected in the last 24 hours first (sheet order preserved), followed by older articles (sheet order preserved). The theme reads this option to render the **EV News Feed** page (`/ev-news-feed/`) — a standalone public page with an Instagram-style mobile feed and a desktop grid layout. Each card shows upvote/downvote buttons; votes are stored in a first-party cookie and fired as GA4 events.
 6. **Generates a podcast script** on recording day — scrapes the full body of each article, passes them through the AI model, and appends the resulting Bulgarian script to a configured Google Doc.
 
 ---
@@ -26,7 +26,7 @@ WordPress plugin for **Car Life by Dani**. Collects English-language EV news fro
   - Google Docs API
   - Google Analytics Data API
 - A **Google Service Account** with a downloaded JSON key file
-- A **GA4 property** with `ev_news_click` events and `article_url` registered as an event-scoped custom dimension
+- A **GA4 property** with `ev_news_click`, `ev_news_upvote`, and `ev_news_downvote` events, and `article_url` registered as an event-scoped custom dimension
 
 ---
 
@@ -69,7 +69,7 @@ ln -s /path/to/repo/theme carlifebydani
 | Service Account JSON Path | Absolute server path to the service account key file. Must be outside webroot. |
 | GA4 Property ID | Numeric GA4 property ID (e.g. `427729375`). Leave blank to disable click sync. |
 | Upcoming Session Page ID | WordPress page ID for the live news placeholder page. Leave `0` to disable. |
-| Max Articles | Maximum rows kept in the active sheet tab. Oldest zero-click rows are trimmed first; articles with at least one click are never automatically deleted. |
+| Max Articles | Maximum rows kept in the active sheet tab. After every sort (upvote DESC → pub_date DESC → added_date DESC), the bottom rows are trimmed; zero-upvote articles with the oldest pub_date are removed first. |
 | Collection Interval | How often the cron job runs (15 min / 30 min / 1 hr / 6 hr / 12 hr / daily). |
 | Podcast Recording | Day and time the podcast script generation cron fires. |
 | News Sources | One source per line: `https://example.com/feed rss` or `https://example.com html`. Method defaults to `rss`. |
@@ -85,12 +85,14 @@ The same service account JSON is used for all Google integrations. It needs:
 
 ### GA4 custom dimension
 
-Before click tracking will work, register `article_url` as a custom dimension in GA4:
+Register `article_url` as a custom dimension in GA4 — it is shared by all three tracking events:
 
 **GA4 → Admin → Custom definitions → Custom dimensions → Create**
 - Dimension name: `article_url`
 - Scope: Event
 - Event parameter: `article_url`
+
+This one dimension covers `ev_news_click`, `ev_news_upvote`, and `ev_news_downvote` events. All three fire `article_url` as the event parameter so the same dimension is used for click tracking, upvote sync, and downvote sync.
 
 ---
 
@@ -170,11 +172,17 @@ The plugin writes `ev_news_live_articles` (a JSON-encoded array) to `wp_options`
 | `title` | Card headline |
 | `link` | External link (opens in new tab with `rel="nofollow"`) |
 | `source` | Source domain label (red, uppercase) |
-| `description` | 2-line summary clamp (desktop only) |
-| `clicks` | Green engagement badge |
-| `date` | Session date label (desktop only) |
+| `description` | 2-line summary clamp |
+| `pub_date` | Publication date in the card eyebrow |
+| `upvote` | Count shown on the green upvote button |
+| `downvote` | Count shown on the red downvote button |
+| `added_date` | Drives the green "new" icon (shown when `added_date === today`) |
 
-**GA4 click tracking** is wired via `data-ev-news-article` attributes on all article links, which `ev-news-tracking.js` picks up and pushes an `ev_news_click` event to `dataLayer`. OG images are loaded asynchronously by `ogimageloader.init.js` via the server-side proxy (`admin-ajax.php?action=fetch_og_image`).
+**GA4 click tracking** is wired via `data-ev-news-article` attributes on all article links, which `ev-news-tracking.js` picks up and pushes an `ev_news_click` event to `dataLayer`.
+
+**GA4 vote tracking** is handled by `ev-news-voting.js`. Each card has upvote/downvote buttons (`data-ev-news-upvote` / `data-ev-news-downvote`). Votes are stored in a first-party cookie (`ev_news_votes`, 365-day expiry). GA4 events (`ev_news_upvote` / `ev_news_downvote`) are fired at most once per direction per article regardless of how many times the user switches. The plugin syncs these GA4 counts back into columns E and F of the sheet on every collection run.
+
+OG images are loaded asynchronously by `ogimageloader.init.js` via the server-side proxy (`admin-ajax.php?action=fetch_og_image`).
 
 **The EV News Feed page** lives at `/ev-news-feed/` (WP ID 8851). It is a **static, permanent page** — created once, never replaced. Its content changes automatically each session as `ENA_Sync` writes the active Sheet tab's articles to `ev_news_live_articles` after every collection run.
 
