@@ -42,10 +42,10 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchOgImage(url)
             .then(function (imageUrl) {
                 var thumb = card.querySelector('.js-thumbnail');
-                if (thumb) {
-                    thumb.src = imageUrl;
-                    thumb.classList.add('opacity-100');
-                }
+                if (!thumb) return;
+                thumb.onload  = function () { thumb.classList.add('opacity-100'); };
+                thumb.onerror = function () { thumb.src = ''; };
+                thumb.src = imageUrl;
             })
             .catch(function () {});
     }

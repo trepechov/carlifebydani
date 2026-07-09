@@ -6,24 +6,27 @@
  * sm+     : horizontal 2-col — image left, content right. rounded-br-5xl.
  *
  * $args:
- *   article  array  { title, link, description, source, pub_date, clicks }
+ *   article  array  { title, link, description, source, pub_date, upvote, downvote, added_date }
  *   index    int    1-based position in the feed
  */
 
-$article     = $args['article'] ?? [];
-$index       = (int) ( $args['index'] ?? 0 );
-$num         = $index ? str_pad( $index, 2, '0', STR_PAD_LEFT ) : '';
-$title       = esc_html( $article['title']       ?? '' );
-$link        = esc_url(  $article['link']        ?? '' );
-$source      = esc_html( $article['source']      ?? '' );
-$description = esc_html( $article['description'] ?? '' );
+$article      = $args['article'] ?? [];
+$index        = (int) ( $args['index'] ?? 0 );
+$num          = $index ? str_pad( $index, 2, '0', STR_PAD_LEFT ) : '';
+$title        = esc_html( $article['title']       ?? '' );
+$link         = esc_url(  $article['link']        ?? '' );
+$source       = esc_html( $article['source']      ?? '' );
+$description  = esc_html( $article['description'] ?? '' );
 $pub_date_raw = $article['pub_date'] ?? '';
-$pub_date    = $pub_date_raw ? esc_html( date_i18n( 'j M Y', strtotime( $pub_date_raw ) ) ) : '';
-$clicks      = (int) ( $article['clicks'] ?? 0 );
-$data_title  = esc_attr( $article['title'] ?? '' );
-$data_url    = esc_attr( $article['link']  ?? '' );
+$pub_date     = $pub_date_raw ? esc_html( date_i18n( 'j M Y', strtotime( $pub_date_raw ) ) ) : '';
+$upvote       = (int) ( $article['upvote']    ?? 0 );
+$downvote     = (int) ( $article['downvote']  ?? 0 );
+$is_new       = ( $article['added_date'] ?? '' ) === gmdate( 'Y-m-d' );
+$data_title   = esc_attr( $article['title'] ?? '' );
+$data_url     = esc_attr( $article['link']  ?? '' );
+$data_id      = esc_attr( $article['id'] ?? md5( $article['link'] ?? '' ) );
 ?>
-<article class="js-external-article group grid grid-cols-1 bg-black rounded-br-4xl overflow-hidden shadow-card hover:bg-brand-solidgrey transition-colors duration-200 sm:grid-cols-2 sm:rounded-br-5xl">
+<article class="js-external-article group grid grid-cols-1 bg-black rounded-br-4xl overflow-hidden shadow-card hover:bg-brand-solidgrey transition-colors duration-300 sm:grid-cols-2 sm:rounded-br-5xl">
 
     <?php /* ── IMAGE ──
            aspect-video sets 16:9 on mobile; on sm+ the grid row stretches
@@ -37,26 +40,39 @@ $data_url    = esc_attr( $article['link']  ?? '' );
         <img src="" alt="<?php echo $title; ?>"
              class="js-thumbnail absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity delay-500 duration-1000">
         <?php if ( $num ) : ?>
-        <span class="absolute bottom-3 left-6 z-10 text-6xl font-bold leading-none select-none pointer-events-none sm:bottom-auto sm:left-auto sm:top-3 sm:right-3" style="color:rgba(255,255,255,0.25);text-shadow:1px 1px rgba(0,0,0,0.25)"><?php echo $num; ?></span>
+        <span class="absolute bottom-3 left-6 z-10 text-6xl font-bold leading-none select-none pointer-events-none sm:bottom-auto sm:top-3 sm:left-3" style="color:rgba(255,255,255,0.25);text-shadow:1px 1px rgba(0,0,0,0.25)"><?php echo $num; ?></span>
         <?php endif; ?>
     </a>
 
     <?php /* ── CONTENT ── */ ?>
     <div class="relative px-[7%] pb-[12%] min-h-[13rem]">
 
-        <?php /* Eyebrow: source · date · clicks badge */ ?>
+        <?php /* Eyebrow: source · date · new badge · vote buttons */ ?>
         <div class="mt-5 mb-3 flex items-center gap-2 flex-wrap">
             <span class="text-xs font-bold uppercase tracking-widest text-brand-red"><?php echo $source; ?></span>
             <?php if ( $pub_date ) : ?>
             <span class="w-1.5 h-1.5 rounded-full bg-brand-red flex-shrink-0"></span>
             <span class="text-xs text-brand-lightgrey"><?php echo $pub_date; ?></span>
             <?php endif; ?>
-            <?php if ( $clicks > 0 ) : ?>
-            <div class="relative ml-auto rounded-full border w-7 h-7 flex items-center justify-center bg-brand-solidgrey border-brand-green flex-shrink-0">
-                <span class="text-xs font-bold"><?php echo $clicks; ?></span>
-                <div class="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center rounded-full bg-brand-green material-symbols-outlined" style="font-size:9px">Check</div>
-            </div>
+            <?php if ( $is_new ) : ?>
+            <span class="material-symbols-outlined text-brand-red flex-shrink-0" style="font-size:20px" title="Нова статия">fiber_new</span>
             <?php endif; ?>
+
+            <?php /* Vote buttons — always rendered (clickable at 0); cookie state applied by ev-news-voting.js */ ?>
+            <button type="button"
+                    class="relative rounded-full border w-7 h-7 flex items-center justify-center bg-brand-solidgrey border-brand-green flex-shrink-0 transition-colors duration-300 disabled:cursor-not-allowed ml-auto"
+                    data-ev-news-upvote data-article-id="<?php echo $data_id; ?>" data-article-url="<?php echo $data_url; ?>" data-title="<?php echo $data_title; ?>"
+                    aria-label="Upvote">
+                <span class="text-xs font-bold" data-vote-count="up"><?php echo $upvote; ?></span>
+                <div class="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center rounded-full bg-brand-green material-symbols-outlined" style="font-size:9px;box-shadow:0 0 0 1.5px #000">thumb_up</div>
+            </button>
+            <button type="button"
+                    class="relative rounded-full border w-7 h-7 flex items-center justify-center bg-brand-solidgrey border-brand-red flex-shrink-0 transition-colors duration-300 disabled:cursor-not-allowed"
+                    data-ev-news-downvote data-article-id="<?php echo $data_id; ?>" data-article-url="<?php echo $data_url; ?>" data-title="<?php echo $data_title; ?>"
+                    aria-label="Downvote">
+                <span class="text-xs font-bold" data-vote-count="down"><?php echo $downvote; ?></span>
+                <div class="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center rounded-full bg-brand-red material-symbols-outlined" style="font-size:9px;box-shadow:0 0 0 1.5px #000">thumb_down</div>
+            </button>
         </div>
 
         <?php /* Title — smaller than category cards to leave room for description */ ?>
