@@ -40,10 +40,17 @@ add_filter('wp_resource_hints', function ($hints, $relation_type) {
 }, 10, 2);
 
 /*
- * Move all theme scripts to load with `defer` so they never block HTML
+ * Move theme scripts to load with `defer` so they never block HTML
  * parsing. Scripts are already enqueued in dependency order and `defer`
  * preserves execution order, so glightbox-init/ogimageloader-init still
  * run after their jquery/glightbox dependencies.
+ *
+ * jquery-core/jquery-migrate are deliberately excluded: they're shared
+ * WP handles that any plugin (e.g. Ninja Forms) may depend on, and
+ * plugin scripts aren't deferred by this filter. Deferring jQuery itself
+ * would make it load after those non-deferred plugin scripts run,
+ * breaking anything that expects the jQuery global to already exist.
+ * This holds regardless of which specific plugins are installed.
  */
 add_filter('script_loader_tag', function ($tag, $handle) {
     $theme_handles = [
@@ -55,8 +62,6 @@ add_filter('script_loader_tag', function ($tag, $handle) {
         'cookieconsent-init',
         'ev-news-tracking',
         'ev-news-voting',
-        'jquery-core',
-        'jquery-migrate',
     ];
     if (in_array($handle, $theme_handles, true) && strpos($tag, ' defer') === false) {
         $tag = str_replace(' src', ' defer src', $tag);
