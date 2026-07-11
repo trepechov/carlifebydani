@@ -6,18 +6,25 @@ add_theme_support('post-thumbnails');
 
 function wpdocs_carlifebydani_scripts()
 {
-    wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,1,200&display=swap', [], null);
-    wp_enqueue_style('theme-css', get_stylesheet_directory_uri() . '/css/style.min.css');
-    wp_enqueue_style('glightbox-css', get_stylesheet_directory_uri() . '/css/glightbox.min.css');
-    wp_enqueue_style('cookieconsent-css', get_stylesheet_directory_uri() . '/css/cookieconsent.min.css');
-    wp_enqueue_script('gtag', get_stylesheet_directory_uri() . '/js/gtag.js', [], '', true);
-    wp_enqueue_script('glightbox', get_stylesheet_directory_uri() . '/js/glightbox.min.js', [], '', true);
-    wp_enqueue_script('glightbox-init', get_stylesheet_directory_uri() . '/js/glightbox.init.js', ['glightbox', 'jquery'], '', true);
-    wp_enqueue_script('cookieconsent', get_stylesheet_directory_uri() . '/js/cookieconsent.min.js', [], '', true);
-    wp_enqueue_script('cookieconsent-init', get_stylesheet_directory_uri() . '/js/cookieconsent.init.js', ['cookieconsent'], '', true);
-    wp_enqueue_script('ev-news-tracking', get_stylesheet_directory_uri() . '/js/ev-news-tracking.js', [], '', true);
-    wp_enqueue_script('ev-news-voting', get_stylesheet_directory_uri() . '/js/ev-news-voting.js', [], '', true);
-    wp_enqueue_script('ogimageloader-init', get_stylesheet_directory_uri() . '/js/ogimageloader.init.js', ['jquery'], '', true);
+    // Ties every asset's ?ver= to the theme's Version header (style.css), so
+    // bumping the theme version on deploy busts the CDN/browser cache for
+    // all of these — previously they fell back to the WP core version, which
+    // never changes between theme deploys.
+    $theme_version = wp_get_theme()->get('Version');
+
+    $used_icons = 'close,favorite,fiber_new,keyboard_arrow_down,keyboard_arrow_up,menu,newspaper,search,thumb_down,thumb_up';
+    wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,1,200&icon_names=' . $used_icons . '&display=swap', [], null);
+    wp_enqueue_style('theme-css', get_stylesheet_directory_uri() . '/css/style.min.css', [], $theme_version);
+    wp_enqueue_style('glightbox-css', get_stylesheet_directory_uri() . '/css/glightbox.min.css', [], $theme_version);
+    wp_enqueue_style('cookieconsent-css', get_stylesheet_directory_uri() . '/css/cookieconsent.min.css', [], $theme_version);
+    wp_enqueue_script('gtag', get_stylesheet_directory_uri() . '/js/gtag.js', [], $theme_version, true);
+    wp_enqueue_script('glightbox', get_stylesheet_directory_uri() . '/js/glightbox.min.js', [], $theme_version, true);
+    wp_enqueue_script('glightbox-init', get_stylesheet_directory_uri() . '/js/glightbox.init.js', ['glightbox', 'jquery'], $theme_version, true);
+    wp_enqueue_script('cookieconsent', get_stylesheet_directory_uri() . '/js/cookieconsent.min.js', [], $theme_version, true);
+    wp_enqueue_script('cookieconsent-init', get_stylesheet_directory_uri() . '/js/cookieconsent.init.js', ['cookieconsent'], $theme_version, true);
+    wp_enqueue_script('ev-news-tracking', get_stylesheet_directory_uri() . '/js/ev-news-tracking.js', [], $theme_version, true);
+    wp_enqueue_script('ev-news-voting', get_stylesheet_directory_uri() . '/js/ev-news-voting.js', [], $theme_version, true);
+    wp_enqueue_script('ogimageloader-init', get_stylesheet_directory_uri() . '/js/ogimageloader.init.js', ['jquery'], $theme_version, true);
     wp_localize_script('ogimageloader-init', 'ogProxy', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'nonce'   => wp_create_nonce('fetch_og_image_nonce'),
