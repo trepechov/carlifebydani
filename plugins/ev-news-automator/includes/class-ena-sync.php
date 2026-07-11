@@ -8,13 +8,15 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Article ordering (applied before the JSON snapshot is written):
  *
  *   Group 1 — articles collected within the last 24 hours (added_date >= yesterday UTC)
- *             Shown first, in the order they appear in the spreadsheet.
+ *             Shown first, sorted by upvote DESC → pub_date DESC → added_date DESC.
  *
  *   Group 2 — all older articles
- *             Shown after Group 1, in the order they appear in the spreadsheet.
+ *             Shown after Group 1, same sort.
  *
- * Within each group the spreadsheet order is preserved as-is
- * (upvote DESC → pub_date DESC → added_date DESC, maintained by sort_by_upvotes()).
+ * Both groups are explicitly re-sorted here rather than trusting the physical
+ * spreadsheet order left by sort_by_upvotes() — that sort runs as a separate
+ * Sheets API call earlier in the pipeline, and display order must not depend
+ * on it having landed correctly by the time this reads the rows back.
  */
 class ENA_Sync {
 
@@ -35,10 +37,21 @@ class ENA_Sync {
         }
 
         // Group 1: collected within the last 24 hours. Group 2: everything older.
-        // Both groups keep their spreadsheet order (no re-sort here).
         $cutoff = gmdate( 'Y-m-d', time() - DAY_IN_SECONDS );
         $recent = array_values( array_filter( $rows, fn ( $r ) => ( $r['added_date'] ?? '' ) >= $cutoff ) );
         $older  = array_values( array_filter( $rows, fn ( $r ) => ( $r['added_date'] ?? '' ) < $cutoff ) );
+
+        // upvote DESC → pub_date DESC → added_date DESC within each group.
+        $pub_date_of = fn ( $r ) => ! empty( $r['pub_date'] ) ? $r['pub_date'] : ( $r['added_date'] ?? '' );
+        $by_engagement = function ( $a, $b ) use ( $pub_date_of ) {
+            $cmp = (int) $b['upvote'] <=> (int) $a['upvote'];
+            if ( $cmp !== 0 ) return $cmp;
+            $cmp = strcmp( $pub_date_of( $b ), $pub_date_of( $a ) );
+            if ( $cmp !== 0 ) return $cmp;
+            return strcmp( $b['added_date'] ?? '', $a['added_date'] ?? '' );
+        };
+        usort( $recent, $by_engagement );
+        usort( $older, $by_engagement );
 
         $sorted = array_merge( $recent, $older );
 
