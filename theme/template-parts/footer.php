@@ -4,7 +4,7 @@
     <div class="wrapper pt-12 pb-8">
         <div class="flex gap-14 items-stretch">
             <a href="<?php echo get_home_url(); ?>" class="my-3">
-                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo.svg" alt="Carlife by Dani" class="w-48" />
+                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo.svg" alt="Carlife by Dani" class="w-48" loading="lazy" decoding="async" />
             </a>
             <div class="flex-1 bg-carbon-stripe-white"></div>
         </div>
@@ -66,7 +66,7 @@
             </div>
             <div class="hidden flex-1 lg:flex gap-12 justify-end items-center">
                 <div class="flex gap-8 items-end">
-                    <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/mail.svg" alt="mail" class="h-14 hidden xl:block" />
+                    <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/mail.svg" alt="mail" class="h-14 hidden xl:block" loading="lazy" decoding="async" />
                     <div class="flex flex-col gap-1">
                         <span class="text-xs text-brand-red">Контакти</span>
                         <a class="text-3xl" href="mailto:media@carlifebydani.com">media@carlifebydani.com</a>

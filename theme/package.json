@@ -1,9 +1,11 @@
 {
     "name": "carlifebydani",
-    "version": "0.0.2",
+    "version": "1.1.1",
     "description": "",
     "scripts": {
         "dev": "npx postcss ./css/style.css -o ./css/style.min.css  --minify --watch",
+        "sync-version": "node scripts/sync-version.js",
+        "prebuild": "npm run sync-version",
         "build": "npx postcss ./css/style.css -o ./css/style.min.css --minify",
         "pack": "npm run build && npx copy-files-from-to && npm-build-zip --source=temp/ --name=carlifebydani --name_only=false && rm -rf temp"
     },

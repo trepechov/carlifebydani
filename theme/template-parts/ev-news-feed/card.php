@@ -25,6 +25,8 @@ $is_new       = ( $article['added_date'] ?? '' ) === gmdate( 'Y-m-d' );
 $data_title   = esc_attr( $article['title'] ?? '' );
 $data_url     = esc_attr( $article['link']  ?? '' );
 $data_id      = esc_attr( $article['id'] ?? md5( $article['link'] ?? '' ) );
+// First couple of cards are above the fold — don't lazy-load or they'll delay LCP.
+$img_loading  = $index > 2 ? 'lazy' : 'eager';
 ?>
 <article class="js-external-article group grid grid-cols-1 bg-black rounded-br-4xl overflow-hidden shadow-card hover:bg-brand-solidgrey transition-colors duration-300 sm:grid-cols-2 sm:rounded-br-5xl">
 
@@ -36,9 +38,9 @@ $data_id      = esc_attr( $article['id'] ?? md5( $article['link'] ?? '' ) );
        data-ev-news data-title="<?php echo $data_title; ?>" data-url="<?php echo $data_url; ?>">
         <div class="overlay bg-to-solidgray-gradient-post opacity-0 group-hover:opacity-100 sm:hidden"></div>
         <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/noimage-640x360.jpg" alt=""
-             class="absolute inset-0 w-full h-full object-cover">
+             class="absolute inset-0 w-full h-full object-cover" loading="<?php echo $img_loading; ?>" decoding="async">
         <img src="" alt="<?php echo $title; ?>"
-             class="js-thumbnail absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity delay-500 duration-1000">
+             class="js-thumbnail absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity delay-500 duration-1000" loading="<?php echo $img_loading; ?>" decoding="async">
         <?php if ( $num ) : ?>
         <span class="absolute bottom-3 left-6 z-10 text-6xl font-bold leading-none select-none pointer-events-none sm:bottom-auto sm:top-3 sm:left-3" style="color:rgba(255,255,255,0.25);text-shadow:1px 1px rgba(0,0,0,0.25)"><?php echo $num; ?></span>
         <?php endif; ?>

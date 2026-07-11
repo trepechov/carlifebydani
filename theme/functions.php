@@ -6,23 +6,75 @@ add_theme_support('post-thumbnails');
 
 function wpdocs_carlifebydani_scripts()
 {
-    wp_enqueue_style('theme-css', get_stylesheet_directory_uri() . '/css/style.min.css');
-    wp_enqueue_style('glightbox-css', get_stylesheet_directory_uri() . '/css/glightbox.min.css');
-    wp_enqueue_style('cookieconsent-css', get_stylesheet_directory_uri() . '/css/cookieconsent.min.css');
-    wp_enqueue_script('gtag', get_stylesheet_directory_uri() . '/js/gtag.js');
-    wp_enqueue_script('glightbox', get_stylesheet_directory_uri() . '/js/glightbox.min.js');
-    wp_enqueue_script('glightbox-init', get_stylesheet_directory_uri() . '/js/glightbox.init.js', ['glightbox', 'jquery']);
-    wp_enqueue_script('cookieconsent', get_stylesheet_directory_uri() . '/js/cookieconsent.min.js', [], '', true);
-    wp_enqueue_script('cookieconsent-init', get_stylesheet_directory_uri() . '/js/cookieconsent.init.js', ['cookieconsent'], '', true);
-    wp_enqueue_script('ev-news-tracking', get_stylesheet_directory_uri() . '/js/ev-news-tracking.js', [], '', true);
-    wp_enqueue_script('ev-news-voting', get_stylesheet_directory_uri() . '/js/ev-news-voting.js', [], '', true);
-    wp_enqueue_script('ogimageloader-init', get_stylesheet_directory_uri() . '/js/ogimageloader.init.js', ['jquery']);
+    // Ties every asset's ?ver= to the theme's Version header (style.css), so
+    // bumping the theme version on deploy busts the CDN/browser cache for
+    // all of these — previously they fell back to the WP core version, which
+    // never changes between theme deploys.
+    $theme_version = wp_get_theme()->get('Version');
+
+    $used_icons = 'close,favorite,fiber_new,keyboard_arrow_down,keyboard_arrow_up,menu,newspaper,search,thumb_down,thumb_up';
+    wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,1,200&icon_names=' . $used_icons . '&display=swap', [], null);
+    wp_enqueue_style('theme-css', get_stylesheet_directory_uri() . '/css/style.min.css', [], $theme_version);
+    wp_enqueue_style('glightbox-css', get_stylesheet_directory_uri() . '/css/glightbox.min.css', [], $theme_version);
+    wp_enqueue_style('cookieconsent-css', get_stylesheet_directory_uri() . '/css/cookieconsent.min.css', [], $theme_version);
+    wp_enqueue_script('gtag', get_stylesheet_directory_uri() . '/js/gtag.js', [], $theme_version, true);
+    wp_enqueue_script('glightbox', get_stylesheet_directory_uri() . '/js/glightbox.min.js', [], $theme_version, true);
+    wp_enqueue_script('glightbox-init', get_stylesheet_directory_uri() . '/js/glightbox.init.js', ['glightbox', 'jquery'], $theme_version, true);
+    wp_enqueue_script('cookieconsent', get_stylesheet_directory_uri() . '/js/cookieconsent.min.js', [], $theme_version, true);
+    wp_enqueue_script('cookieconsent-init', get_stylesheet_directory_uri() . '/js/cookieconsent.init.js', ['cookieconsent'], $theme_version, true);
+    wp_enqueue_script('ev-news-tracking', get_stylesheet_directory_uri() . '/js/ev-news-tracking.js', [], $theme_version, true);
+    wp_enqueue_script('ev-news-voting', get_stylesheet_directory_uri() . '/js/ev-news-voting.js', [], $theme_version, true);
+    wp_enqueue_script('ogimageloader-init', get_stylesheet_directory_uri() . '/js/ogimageloader.init.js', ['jquery'], $theme_version, true);
     wp_localize_script('ogimageloader-init', 'ogProxy', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'nonce'   => wp_create_nonce('fetch_og_image_nonce'),
     ]);
 };
 add_action('wp_enqueue_scripts', 'wpdocs_carlifebydani_scripts');
+
+/*
+ * Preconnect to third-party origins the page always talks to, so the
+ * DNS/TLS handshake happens in parallel with HTML parsing instead of
+ * only starting once the browser reaches the script/link tag.
+ */
+add_filter('wp_resource_hints', function ($hints, $relation_type) {
+    if ($relation_type === 'preconnect') {
+        $hints[] = ['href' => 'https://fonts.googleapis.com'];
+        $hints[] = ['href' => 'https://fonts.gstatic.com', 'crossorigin'];
+        $hints[] = ['href' => 'https://www.googletagmanager.com'];
+    }
+    return $hints;
+}, 10, 2);
+
+/*
+ * Move theme scripts to load with `defer` so they never block HTML
+ * parsing. Scripts are already enqueued in dependency order and `defer`
+ * preserves execution order, so glightbox-init/ogimageloader-init still
+ * run after their jquery/glightbox dependencies.
+ *
+ * jquery-core/jquery-migrate are deliberately excluded: they're shared
+ * WP handles that any plugin (e.g. Ninja Forms) may depend on, and
+ * plugin scripts aren't deferred by this filter. Deferring jQuery itself
+ * would make it load after those non-deferred plugin scripts run,
+ * breaking anything that expects the jQuery global to already exist.
+ * This holds regardless of which specific plugins are installed.
+ */
+add_filter('script_loader_tag', function ($tag, $handle) {
+    $theme_handles = [
+        'gtag',
+        'glightbox',
+        'glightbox-init',
+        'ogimageloader-init',
+        'cookieconsent',
+        'cookieconsent-init',
+        'ev-news-tracking',
+        'ev-news-voting',
+    ];
+    if (in_array($handle, $theme_handles, true) && strpos($tag, ' defer') === false) {
+        $tag = str_replace(' src', ' defer src', $tag);
+    }
+    return $tag;
+}, 10, 2);
 
 
 function register_my_menus()
