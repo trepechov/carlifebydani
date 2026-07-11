@@ -50,6 +50,17 @@ class ENA_Admin {
         );
     }
 
+    public function add_toolbar_menu( WP_Admin_Bar $wp_admin_bar ): void {
+        if ( ! current_user_can( 'manage_options' ) ) return;
+
+        $wp_admin_bar->add_node( [
+            'id'    => 'ev-news-automator',
+            'title' => '<span class="ab-icon dashicons dashicons-rss"></span> EV News',
+            'href'  => admin_url( 'admin.php?page=ev-news-automator' ),
+            'meta'  => [ 'title' => 'EV News Automator' ],
+        ] );
+    }
+
     public function enqueue( string $hook ): void {
         if ( strpos( $hook, 'ev-news-automator' ) === false ) return;
 

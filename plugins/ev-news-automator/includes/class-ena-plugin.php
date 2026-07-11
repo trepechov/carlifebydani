@@ -48,6 +48,7 @@ class ENA_Plugin {
 
         $admin = new ENA_Admin( $this->settings, $this->logger );
         add_action( 'admin_menu', [ $admin, 'add_menu' ] );
+        add_action( 'admin_bar_menu', [ $admin, 'add_toolbar_menu' ], 81 );
         add_action( 'admin_enqueue_scripts', [ $admin, 'enqueue' ] );
         add_action( 'admin_post_ena_save_settings', [ $admin, 'handle_settings_save' ] );
     }
