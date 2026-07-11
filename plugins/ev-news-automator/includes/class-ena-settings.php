@@ -54,16 +54,6 @@ class ENA_Settings {
     }
 
     public function article_age_cutoff(): int {
-        $last_run = (int) get_option( 'ena_last_collection_at', 0 );
-
-        if ( $last_run > 0 ) {
-            // Subtract a 1-hour buffer so articles published right at the boundary
-            // are never missed. Any overlap is harmless — the dedup filter in
-            // ENA_Collector drops URLs already present in the active sheet.
-            return $last_run - HOUR_IN_SECONDS;
-        }
-
-        // First-ever run: fall back to the configured age limit.
         $map = [
             '1d' => DAY_IN_SECONDS,
             '2d' => 2 * DAY_IN_SECONDS,
@@ -73,8 +63,26 @@ class ENA_Settings {
             '6d' => 6 * DAY_IN_SECONDS,
             '1w' => WEEK_IN_SECONDS,
         ];
-        $val = $this->get( 'article_age_limit', '1d' );
-        return time() - ( $map[ $val ] ?? DAY_IN_SECONDS );
+        $val   = $this->get( 'article_age_limit', '1d' );
+        $floor = time() - ( $map[ $val ] ?? DAY_IN_SECONDS );
+
+        $last_run = (int) get_option( 'ena_last_collection_at', 0 );
+
+        if ( $last_run > 0 ) {
+            // Subtract a 1-hour buffer so articles published right at the boundary
+            // are never missed. Any overlap is harmless — the dedup filter in
+            // ENA_Collector drops URLs already present in the active sheet.
+            //
+            // Never go more recent than the configured Article Age Limit floor:
+            // ena_last_collection_at is stamped by every trigger that shares
+            // run_pipeline() (cron, the "Run Collection Now" admin button, and
+            // the background worker), so an extra manual/debug run must not be
+            // able to shrink the window below the configured limit.
+            return min( $last_run - HOUR_IN_SECONDS, $floor );
+        }
+
+        // First-ever run: fall back to the configured age limit.
+        return $floor;
     }
 
     public function service_account_path(): string {
