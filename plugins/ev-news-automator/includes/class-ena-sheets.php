@@ -314,6 +314,8 @@ class ENA_Sheets {
      * Returns the number of rows removed.
      */
     public function trim_to_max( int $max ): int {
+        if ( $max <= 0 ) return 0; // Invalid/unset limit — never treat this as "delete everything."
+
         $count = $this->row_count();
         if ( $count <= $max ) return 0;
 
