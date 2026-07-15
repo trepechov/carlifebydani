@@ -71,9 +71,9 @@ class ENA_Collector {
         // Sort by published_at DESC so articles are appended in recency order within each batch.
         usort( $new_articles, fn ( $a, $b ) => $b['published_at'] <=> $a['published_at'] );
 
-        $rows          = [];
-        $total         = count( $new_articles );
-        $rate_limited  = 0;
+        $rows         = [];
+        $total        = count( $new_articles );
+        $skip_reasons = []; // WP_Error code => count, so any systematic failure is visible, not just 429s.
 
         foreach ( $new_articles as $i => $article ) {
             $num = $i + 1;
@@ -83,7 +83,8 @@ class ENA_Collector {
             $summary = $this->openrouter->summarize( $article['title'], $article['excerpt'] ?? '' );
 
             if ( is_wp_error( $summary ) ) {
-                if ( $summary->get_error_code() === 'http_429' ) $rate_limited++;
+                $code = $summary->get_error_code();
+                $skip_reasons[ $code ] = ( $skip_reasons[ $code ] ?? 0 ) + 1;
                 $this->logger->step( 'openrouter_call', 'skip', "article {$num}/{$total} — skipped, will retry next run: " . $summary->get_error_message() );
                 continue;
             }
@@ -116,16 +117,35 @@ class ENA_Collector {
             }
         }
 
-        if ( $rate_limited > 0 ) {
+        $skipped = array_sum( $skip_reasons );
+        $skip_summary = implode( ', ', array_map(
+            fn ( $code, $n ) => "{$n}× " . self::describe_error_code( $code ),
+            array_keys( $skip_reasons ),
+            $skip_reasons
+        ) );
+
+        if ( $skipped > 0 ) {
             $this->logger->step(
-                'openrouter_rate_limit',
+                'openrouter_failures',
                 'warn',
-                "{$rate_limited}/{$total} articles skipped — OpenRouter rate limit (429) persisted through retries. Check your OpenRouter account credits/limits."
+                "{$skipped}/{$total} articles skipped — {$skip_summary}"
             );
         }
 
         // Sorting and trimming happen in ENA_Cron::run_pipeline() AFTER this returns,
         // so they operate on the full set (existing + newly appended) rows.
-        return [ 'added' => $added, 'rate_limited' => $rate_limited ];
+        return [ 'added' => $added, 'skipped' => $skipped, 'skip_summary' => $skip_summary ];
+    }
+
+    /** Human-readable explanation for a WP_Error code coming out of ENA_OpenRouter::summarize(). */
+    private static function describe_error_code( string $code ): string {
+        return match ( $code ) {
+            'http_401'         => 'authentication failed (401) — check your OpenRouter API key in Settings',
+            'http_429'         => 'rate limited (429) — check your OpenRouter account credits/limits',
+            'openrouter_key'   => 'no OpenRouter API key configured',
+            'openrouter_parse' => 'invalid response from OpenRouter',
+            'openrouter_empty' => 'empty response from OpenRouter',
+            default            => "OpenRouter error ({$code})",
+        };
     }
 }

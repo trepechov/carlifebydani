@@ -90,8 +90,8 @@
             ? 'took ' + (job.finished_at - job.started_at) + 's'
             : '';
 
-        if (result.rate_limited) {
-            msg += ' · ⚠ ' + result.rate_limited + ' skipped (OpenRouter rate limited — check your account credits/limits)';
+        if (result.skipped) {
+            msg += ' · ⚠ ' + result.skipped + ' skipped (' + (result.skip_summary || 'OpenRouter errors') + ')';
             setBar('is-warning', '⚠', msg, duration);
         } else {
             setBar('is-done', '✓', msg, duration);

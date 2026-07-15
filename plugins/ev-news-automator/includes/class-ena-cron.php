@@ -139,7 +139,8 @@ class ENA_Cron {
             'timestamp'    => ( new DateTimeImmutable() )->format( 'c' ),
             'added'        => $result['added'] ?? 0,
             'removed'      => $removed,
-            'rate_limited' => $result['rate_limited'] ?? 0,
+            'skipped'      => $result['skipped'] ?? 0,
+            'skip_summary' => $result['skip_summary'] ?? '',
         ] );
 
         // 5. Rebuild the live snapshot for the feed page.

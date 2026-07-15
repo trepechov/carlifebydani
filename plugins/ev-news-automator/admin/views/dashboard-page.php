@@ -69,9 +69,10 @@
                         <?php echo esc_html( date_i18n( 'j M Y · H:i', strtotime( $status['timestamp'] ) ) ); ?>
                     </p>
                 <?php endif; ?>
-                <?php if ( $label === 'Last Sync' && ! empty( $status['rate_limited'] ) ) : ?>
+                <?php if ( $label === 'Last Sync' && ! empty( $status['skipped'] ) ) : ?>
                     <p style="margin:8px 0 0;padding:6px 8px;background:#fef8ee;border-left:3px solid #dba617;color:#8a5a00;font-size:12px;">
-                        ⚠ <?php echo esc_html( $status['rate_limited'] ); ?> article(s) skipped — OpenRouter rate limit (429).
+                        ⚠ <?php echo esc_html( $status['skipped'] ); ?> article(s) skipped —
+                        <?php echo esc_html( $status['skip_summary'] ?? '' ); ?>.
                         <a href="#ena-account-card">Check OpenRouter account</a>.
                     </p>
                 <?php endif; ?>
