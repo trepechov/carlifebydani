@@ -108,8 +108,13 @@ class ENA_Admin {
         $values['service_account_path'] = sanitize_text_field( $_POST['service_account_path'] ?? '' );
         $values['ga4_property_id']      = sanitize_text_field( $_POST['ga4_property_id'] ?? '' );
         $values['podcast_doc_id']       = sanitize_text_field( $_POST['podcast_doc_id'] ?? '' );
-        $values['max_articles']         = absint( $_POST['max_articles'] ?? 50 );
-        $values['max_script_articles']  = absint( $_POST['max_script_articles'] ?? 10 );
+        // A blank/zero submission would otherwise persist 0 and cause trim_to_max()
+        // to delete every row on the next run — fall back to the existing value instead.
+        $submitted_max = absint( $_POST['max_articles'] ?? 0 );
+        $values['max_articles'] = $submitted_max > 0 ? $submitted_max : $this->settings->get( 'max_articles', 50 );
+
+        $submitted_script_max = absint( $_POST['max_script_articles'] ?? 0 );
+        $values['max_script_articles'] = $submitted_script_max > 0 ? $submitted_script_max : $this->settings->get( 'max_script_articles', 10 );
 
         $age = sanitize_text_field( $_POST['article_age_limit'] ?? '1d' );
         $values['article_age_limit'] = in_array( $age, $allowed_ages, true ) ? $age : '1d';

@@ -4,7 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class ENA_Collector {
 
     // Spacing between OpenRouter calls so a full batch doesn't burst past the account's rate limit.
-    private const REQUEST_DELAY_SECONDS = 2;
+    // OpenRouter's free-tier (:free models) cap is 20 requests/minute (1 per 3s); 4s keeps a safety
+    // margin below that even accounting for request latency and jitter.
+    private const REQUEST_DELAY_SECONDS = 4;
 
     private ENA_Sheets     $storage;
     private ENA_Scraper    $scraper;
@@ -31,6 +33,8 @@ class ENA_Collector {
         $existing_urls = $this->storage->existing_urls();
         $new_articles  = [];
         $batch_seen    = [];
+
+        $this->logger->step( 'existing_urls', 'ok', count( $existing_urls ) . ' URLs already in active sheet (used for dedup)' );
 
         $cutoff   = $this->settings->article_age_cutoff();
         $html_cap = 5; // HTML pages carry no dates; top N items are assumed most recent.
@@ -69,8 +73,9 @@ class ENA_Collector {
         // Sort by published_at DESC so articles are appended in recency order within each batch.
         usort( $new_articles, fn ( $a, $b ) => $b['published_at'] <=> $a['published_at'] );
 
-        $rows  = [];
-        $total = count( $new_articles );
+        $rows         = [];
+        $total        = count( $new_articles );
+        $skip_reasons = []; // WP_Error code => count, so any systematic failure is visible, not just 429s.
 
         foreach ( $new_articles as $i => $article ) {
             $num = $i + 1;
@@ -80,6 +85,8 @@ class ENA_Collector {
             $summary = $this->openrouter->summarize( $article['title'], $article['excerpt'] ?? '' );
 
             if ( is_wp_error( $summary ) ) {
+                $code = $summary->get_error_code();
+                $skip_reasons[ $code ] = ( $skip_reasons[ $code ] ?? 0 ) + 1;
                 $this->logger->step( 'openrouter_call', 'skip', "article {$num}/{$total} — skipped, will retry next run: " . $summary->get_error_message() );
                 continue;
             }
@@ -112,8 +119,35 @@ class ENA_Collector {
             }
         }
 
+        $skipped = array_sum( $skip_reasons );
+        $skip_summary = implode( ', ', array_map(
+            fn ( $code, $n ) => "{$n}× " . self::describe_error_code( $code ),
+            array_keys( $skip_reasons ),
+            $skip_reasons
+        ) );
+
+        if ( $skipped > 0 ) {
+            $this->logger->step(
+                'openrouter_failures',
+                'warn',
+                "{$skipped}/{$total} articles skipped — {$skip_summary}"
+            );
+        }
+
         // Sorting and trimming happen in ENA_Cron::run_pipeline() AFTER this returns,
         // so they operate on the full set (existing + newly appended) rows.
-        return [ 'added' => $added ];
+        return [ 'added' => $added, 'skipped' => $skipped, 'skip_summary' => $skip_summary ];
+    }
+
+    /** Human-readable explanation for a WP_Error code coming out of ENA_OpenRouter::summarize(). */
+    private static function describe_error_code( string $code ): string {
+        return match ( $code ) {
+            'http_401'         => 'authentication failed (401) — check your OpenRouter API key in Settings',
+            'http_429'         => 'rate limited (429) — check your OpenRouter account credits/limits',
+            'openrouter_key'   => 'no OpenRouter API key configured',
+            'openrouter_parse' => 'invalid response from OpenRouter',
+            'openrouter_empty' => 'empty response from OpenRouter',
+            default            => "OpenRouter error ({$code})",
+        };
     }
 }

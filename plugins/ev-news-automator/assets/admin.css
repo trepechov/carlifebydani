@@ -36,6 +36,13 @@
     color: #8a1c1c;
 }
 
+#ena-job-bar.is-warning {
+    display: flex;
+    background: #fef8ee;
+    border-left: 3px solid #dba617;
+    color: #8a5a00;
+}
+
 #ena-job-elapsed {
     margin-left: auto;
     font-size: 12px;

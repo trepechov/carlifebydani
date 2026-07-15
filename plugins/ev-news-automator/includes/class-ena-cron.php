@@ -63,10 +63,28 @@ class ENA_Cron {
         // any articles published during this run's execution window.
         $run_started_at = time();
 
+        // Bypass the 5-minute sheets-list cache so a weekly tab added just before
+        // this run (e.g. right before clicking "Run collection now") is picked up
+        // as the active sheet instead of whatever was cached by an earlier page
+        // load or run.
+        $plugin->storage->flush_sheets_cache();
+
+        // Log which tab this run resolved as "active" before touching any data —
+        // the single most useful line for diagnosing a run that targets the wrong
+        // sheet or wipes an unexpectedly-empty one.
+        $active_name = $plugin->storage->active_sheet_name();
+        $plugin->logger->step(
+            'active_sheet',
+            is_wp_error( $active_name ) ? 'error' : 'ok',
+            is_wp_error( $active_name ) ? $active_name->get_error_message() : "resolved active tab: {$active_name}"
+        );
+
         // 1. Refresh clicks + votes on existing rows. Each GA4 fetch is logged
         //    independently so one failing fetch never blocks the others.
         $rows   = $plugin->storage->read_data_rows();
         $urls   = is_wp_error( $rows ) ? [] : array_column( $rows, 'link' );
+        $plugin->logger->step( 'read_data_rows', is_wp_error( $rows ) ? 'error' : 'ok',
+            is_wp_error( $rows ) ? $rows->get_error_message() : count( $rows ) . ' existing rows read' );
         $clicks = $plugin->analytics->fetch_clicks( $urls );
 
         if ( is_wp_error( $clicks ) ) {
@@ -97,6 +115,7 @@ class ENA_Cron {
 
         // 2. Collect & append new articles at the bottom.
         $result = $plugin->collector->run();
+        $plugin->logger->step( 'row_count_after_collect', 'ok', $plugin->storage->row_count() . ' rows in active sheet after append' );
 
         // 3. Sort the full sheet (always — independent of the vote fetch above).
         $sort_result = $plugin->storage->sort_by_upvotes();
@@ -107,18 +126,21 @@ class ENA_Cron {
         }
 
         // 4. Trim to max by deleting the bottom (oldest zero-upvote) rows.
-        $max     = (int) $plugin->settings->get( 'max_articles', 50 );
-        $removed = $plugin->storage->trim_to_max( $max );
+        $max        = (int) $plugin->settings->get( 'max_articles', 50 );
+        $pre_trim   = $plugin->storage->row_count();
+        $plugin->logger->step( 'sheets_trim_start', 'ok', "max_articles={$max}, rows before trim={$pre_trim}" );
+        $removed    = $plugin->storage->trim_to_max( $max );
         $result['removed'] = $removed;
-        if ( $removed > 0 ) {
-            $plugin->logger->step( 'sheets_trim', 'ok', "{$removed} oldest zero-upvote rows removed (max={$max})" );
-        }
+        $plugin->logger->step( 'sheets_trim', 'ok',
+            "{$removed} rows removed (max={$max}), rows after trim=" . $plugin->storage->row_count() );
 
         // Collection status reflects this run's append + trim counts.
         $plugin->logger->set_status( ENA_OPT_STATUS_COLLECTION, [
-            'timestamp' => ( new DateTimeImmutable() )->format( 'c' ),
-            'added'     => $result['added'] ?? 0,
-            'removed'   => $removed,
+            'timestamp'    => ( new DateTimeImmutable() )->format( 'c' ),
+            'added'        => $result['added'] ?? 0,
+            'removed'      => $removed,
+            'skipped'      => $result['skipped'] ?? 0,
+            'skip_summary' => $result['skip_summary'] ?? '',
         ] );
 
         // 5. Rebuild the live snapshot for the feed page.

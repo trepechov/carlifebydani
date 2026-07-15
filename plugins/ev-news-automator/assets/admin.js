@@ -90,7 +90,12 @@
             ? 'took ' + (job.finished_at - job.started_at) + 's'
             : '';
 
-        setBar('is-done', '✓', msg, duration);
+        if (result.skipped) {
+            msg += ' · ⚠ ' + result.skipped + ' skipped (' + (result.skip_summary || 'OpenRouter errors') + ')';
+            setBar('is-warning', '⚠', msg, duration);
+        } else {
+            setBar('is-done', '✓', msg, duration);
+        }
     }
 
     function showError(job) {
@@ -194,6 +199,12 @@
     if (jobState) {
         applyJobState(jobState);
         if (jobState.status === 'running') startPolling();
+    }
+
+    // Load OpenRouter account usage (credits used/remaining) immediately rather than
+    // waiting for a manual "Refresh" click — it's the first thing worth seeing on load.
+    if (document.getElementById('ena-account-card')) {
+        fetchUsage();
     }
 
     // ── OpenRouter Usage ──────────────────────────────────────────────────────

@@ -314,6 +314,8 @@ class ENA_Sheets {
      * Returns the number of rows removed.
      */
     public function trim_to_max( int $max ): int {
+        if ( $max <= 0 ) return 0; // Invalid/unset limit — never treat this as "delete everything."
+
         $count = $this->row_count();
         if ( $count <= $max ) return 0;
 
@@ -363,6 +365,17 @@ class ENA_Sheets {
 
         set_transient( $cache_key, $sheets, 5 * MINUTE_IN_SECONDS );
         return $sheets;
+    }
+
+    /**
+     * Force list_sheets() to hit the Sheets API on its next call instead of serving
+     * the 5-minute cache. Call this before resolving the active sheet for a pipeline
+     * run so a newly added weekly tab is picked up immediately rather than waiting
+     * out a cache warmed by an earlier page load or run.
+     */
+    public function flush_sheets_cache(): void {
+        $id = $this->settings->get( 'spreadsheet_id' );
+        delete_transient( 'ena_sheets_list_' . md5( (string) $id ) );
     }
 
     /**
