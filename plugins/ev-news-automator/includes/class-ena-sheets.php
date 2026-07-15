@@ -366,6 +366,17 @@ class ENA_Sheets {
     }
 
     /**
+     * Force list_sheets() to hit the Sheets API on its next call instead of serving
+     * the 5-minute cache. Call this before resolving the active sheet for a pipeline
+     * run so a newly added weekly tab is picked up immediately rather than waiting
+     * out a cache warmed by an earlier page load or run.
+     */
+    public function flush_sheets_cache(): void {
+        $id = $this->settings->get( 'spreadsheet_id' );
+        delete_transient( 'ena_sheets_list_' . md5( (string) $id ) );
+    }
+
+    /**
      * Return the tab title of the most recently dated session sheet (DD.MM.YYYY format).
      */
     public function active_sheet_name(): string|WP_Error {

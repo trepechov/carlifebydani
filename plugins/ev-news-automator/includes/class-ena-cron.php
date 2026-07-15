@@ -63,6 +63,12 @@ class ENA_Cron {
         // any articles published during this run's execution window.
         $run_started_at = time();
 
+        // Bypass the 5-minute sheets-list cache so a weekly tab added just before
+        // this run (e.g. right before clicking "Run collection now") is picked up
+        // as the active sheet instead of whatever was cached by an earlier page
+        // load or run.
+        $plugin->storage->flush_sheets_cache();
+
         // 1. Refresh clicks + votes on existing rows. Each GA4 fetch is logged
         //    independently so one failing fetch never blocks the others.
         $rows   = $plugin->storage->read_data_rows();
