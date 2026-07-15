@@ -1,6 +1,6 @@
 {
     "name": "carlifebydani",
-    "version": "0.0.2",
+    "version": "1.1.2",
     "description": "",
     "scripts": {
         "dev": "npx postcss ./css/style.css -o ./css/style.min.css  --minify --watch",
