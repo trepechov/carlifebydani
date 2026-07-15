@@ -1015,10 +1015,6 @@ input:-webkit-autofill {
 .border-t{
   border-top-width: 1px;
 }
-.border-black{
-  --tw-border-opacity: 1;
-  border-color: rgb(0 0 0 / var(--tw-border-opacity));
-}
 .border-brand-button{
   --tw-border-opacity: 1;
   border-color: rgb(80 80 80 / var(--tw-border-opacity));

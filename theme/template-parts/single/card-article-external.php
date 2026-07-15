@@ -37,12 +37,12 @@
 
     <div class="flex gap-3 items-center h-20">
         <div class="rounded-full border-2 w-12 h-12 flex justify-center items-center bg-brand-solidgrey border-brand-green border-opacity-40 relative">
-            <span class="text-lg font-bold"><?php echo esc_html(!empty($args['article']->clicked) ? $args['article']->clicked : '0') ?></span>
-            <div class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs font-bold rounded-full bg-brand-green material-symbols-outlined">Check</div>
+            <span class="text-lg font-bold"><?php echo esc_html(!empty($args['article']->upvote) ? $args['article']->upvote : '0') ?></span>
+            <div class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs font-bold rounded-full bg-brand-green material-symbols-outlined" style="font-size:10px">check</div>
         </div>
         <div class="rounded-full border-2 w-12 h-12 flex justify-center items-center bg-brand-solidgrey border-brand-red border-opacity-40 relative">
             <span class="text-lg font-bold"><?php echo esc_html(!empty($args['article']->downvote) ? $args['article']->downvote : '0') ?></span>
-            <div class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs font-bold rounded-full bg-brand-red material-symbols-outlined">Close</div>
+            <div class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs font-bold rounded-full bg-brand-red material-symbols-outlined" style="font-size:10px">close</div>
         </div>
     </div>
 </article>
