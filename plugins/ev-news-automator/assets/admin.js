@@ -201,6 +201,12 @@
         if (jobState.status === 'running') startPolling();
     }
 
+    // Load OpenRouter account usage (credits used/remaining) immediately rather than
+    // waiting for a manual "Refresh" click — it's the first thing worth seeing on load.
+    if (document.getElementById('ena-account-card')) {
+        fetchUsage();
+    }
+
     // ── OpenRouter Usage ──────────────────────────────────────────────────────
 
     function fmt(n) {
