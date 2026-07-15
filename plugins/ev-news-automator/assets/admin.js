@@ -90,7 +90,12 @@
             ? 'took ' + (job.finished_at - job.started_at) + 's'
             : '';
 
-        setBar('is-done', '✓', msg, duration);
+        if (result.rate_limited) {
+            msg += ' · ⚠ ' + result.rate_limited + ' skipped (OpenRouter rate limited — check your account credits/limits)';
+            setBar('is-warning', '⚠', msg, duration);
+        } else {
+            setBar('is-done', '✓', msg, duration);
+        }
     }
 
     function showError(job) {

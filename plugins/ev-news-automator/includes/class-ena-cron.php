@@ -136,9 +136,10 @@ class ENA_Cron {
 
         // Collection status reflects this run's append + trim counts.
         $plugin->logger->set_status( ENA_OPT_STATUS_COLLECTION, [
-            'timestamp' => ( new DateTimeImmutable() )->format( 'c' ),
-            'added'     => $result['added'] ?? 0,
-            'removed'   => $removed,
+            'timestamp'    => ( new DateTimeImmutable() )->format( 'c' ),
+            'added'        => $result['added'] ?? 0,
+            'removed'      => $removed,
+            'rate_limited' => $result['rate_limited'] ?? 0,
         ] );
 
         // 5. Rebuild the live snapshot for the feed page.

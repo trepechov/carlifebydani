@@ -71,8 +71,9 @@ class ENA_Collector {
         // Sort by published_at DESC so articles are appended in recency order within each batch.
         usort( $new_articles, fn ( $a, $b ) => $b['published_at'] <=> $a['published_at'] );
 
-        $rows  = [];
-        $total = count( $new_articles );
+        $rows          = [];
+        $total         = count( $new_articles );
+        $rate_limited  = 0;
 
         foreach ( $new_articles as $i => $article ) {
             $num = $i + 1;
@@ -82,6 +83,7 @@ class ENA_Collector {
             $summary = $this->openrouter->summarize( $article['title'], $article['excerpt'] ?? '' );
 
             if ( is_wp_error( $summary ) ) {
+                if ( $summary->get_error_code() === 'http_429' ) $rate_limited++;
                 $this->logger->step( 'openrouter_call', 'skip', "article {$num}/{$total} — skipped, will retry next run: " . $summary->get_error_message() );
                 continue;
             }
@@ -114,8 +116,16 @@ class ENA_Collector {
             }
         }
 
+        if ( $rate_limited > 0 ) {
+            $this->logger->step(
+                'openrouter_rate_limit',
+                'warn',
+                "{$rate_limited}/{$total} articles skipped — OpenRouter rate limit (429) persisted through retries. Check your OpenRouter account credits/limits."
+            );
+        }
+
         // Sorting and trimming happen in ENA_Cron::run_pipeline() AFTER this returns,
         // so they operate on the full set (existing + newly appended) rows.
-        return [ 'added' => $added ];
+        return [ 'added' => $added, 'rate_limited' => $rate_limited ];
     }
 }
