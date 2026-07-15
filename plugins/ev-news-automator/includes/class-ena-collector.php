@@ -4,7 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class ENA_Collector {
 
     // Spacing between OpenRouter calls so a full batch doesn't burst past the account's rate limit.
-    private const REQUEST_DELAY_SECONDS = 2;
+    // OpenRouter's free-tier (:free models) cap is 20 requests/minute (1 per 3s); 4s keeps a safety
+    // margin below that even accounting for request latency and jitter.
+    private const REQUEST_DELAY_SECONDS = 4;
 
     private ENA_Sheets     $storage;
     private ENA_Scraper    $scraper;
