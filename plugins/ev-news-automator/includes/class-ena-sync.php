@@ -7,7 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * Article ordering (applied before the JSON snapshot is written):
  *
- *   Group 1 — articles collected within the last 24 hours (added_date >= yesterday UTC)
+ *   Group 1 — articles added today (added_date === today UTC).
+ *             added_date has day-only granularity (no time-of-day), so "added today"
+ *             is the closest available proxy for "added within the last 24 hours".
+ *             Must stay in sync with the is_new badge cutoff in
+ *             template-parts/ev-news-feed/card.php — otherwise a non-badged
+ *             article can end up in this top group and outrank a badged one on votes.
  *             Shown first, sorted by upvote DESC → pub_date DESC → added_date DESC.
  *
  *   Group 2 — all older articles
@@ -36,10 +41,12 @@ class ENA_Sync {
             return [ 'count' => 0 ];
         }
 
-        // Group 1: collected within the last 24 hours. Group 2: everything older.
-        $cutoff = gmdate( 'Y-m-d', time() - DAY_IN_SECONDS );
-        $recent = array_values( array_filter( $rows, fn ( $r ) => ( $r['added_date'] ?? '' ) >= $cutoff ) );
-        $older  = array_values( array_filter( $rows, fn ( $r ) => ( $r['added_date'] ?? '' ) < $cutoff ) );
+        // Group 1: added today. Group 2: everything older.
+        // Must match the is_new cutoff in card.php exactly — otherwise the "recent"
+        // group silently admits non-badged articles that can outrank badged ones on votes.
+        $today  = gmdate( 'Y-m-d' );
+        $recent = array_values( array_filter( $rows, fn ( $r ) => ( $r['added_date'] ?? '' ) === $today ) );
+        $older  = array_values( array_filter( $rows, fn ( $r ) => ( $r['added_date'] ?? '' ) !== $today ) );
 
         // upvote DESC → pub_date DESC → added_date DESC within each group.
         $pub_date_of = fn ( $r ) => ! empty( $r['pub_date'] ) ? $r['pub_date'] : ( $r['added_date'] ?? '' );
@@ -72,9 +79,8 @@ class ENA_Sync {
         update_option( ENA_OPT_LIVE_ARTICLES, wp_json_encode( $articles ) );
         $count = count( $articles );
 
-        // Count articles added today — uses gmdate to match the UTC date written by append_rows().
-        $today           = gmdate( 'Y-m-d' );
-        $published_today = count( array_filter( $rows, fn ( $r ) => ( $r['added_date'] ?? '' ) === $today ) );
+        // $recent is already exactly "added today" rows (see the Group 1 filter above).
+        $published_today = count( $recent );
 
         $this->logger->step( 'sync', 'ok', "{$count} articles written to ev_news_live_articles" );
         $sheet_name = $this->storage->active_sheet_name();

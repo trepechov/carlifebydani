@@ -48,7 +48,7 @@ class ENA_Cron {
      *
      *   1. Fetch GA4 clicks for existing rows and write them back to the sheet.
      *   2. Collect & append newly scraped articles at the bottom.
-     *   3. Sort the FULL sheet: clicks DESC → pub_date DESC → added_date DESC.
+     *   3. Sort the FULL sheet: upvote DESC → pub_date DESC → added_date DESC.
      *   4. Trim to max_articles by deleting the bottom (oldest zero-click) rows.
      *   5. Rebuild the live JSON snapshot the feed page reads from.
      *
@@ -79,51 +79,17 @@ class ENA_Cron {
             is_wp_error( $active_name ) ? $active_name->get_error_message() : "resolved active tab: {$active_name}"
         );
 
-        // 1. Refresh clicks + votes on existing rows. Each GA4 fetch is logged
-        //    independently so one failing fetch never blocks the others.
-        $rows   = $plugin->storage->read_data_rows();
-        $urls   = is_wp_error( $rows ) ? [] : array_column( $rows, 'link' );
-        $plugin->logger->step( 'read_data_rows', is_wp_error( $rows ) ? 'error' : 'ok',
-            is_wp_error( $rows ) ? $rows->get_error_message() : count( $rows ) . ' existing rows read' );
-        $clicks = $plugin->analytics->fetch_clicks( $urls );
-
-        if ( is_wp_error( $clicks ) ) {
-            $plugin->logger->log_error( 'analytics_fetch', $clicks->get_error_message() );
-        } else {
-            $plugin->storage->update_clicks( $clicks );
-            $with_clicks = count( array_filter( $clicks, fn ( $c ) => $c > 0 ) );
-            $plugin->logger->step( 'analytics_fetch', 'ok', count( $urls ) . " URLs, {$with_clicks} with clicks" );
-        }
-
-        $upvotes = $plugin->analytics->fetch_upvotes( $urls );
-        if ( is_wp_error( $upvotes ) ) {
-            $plugin->logger->log_error( 'analytics_fetch_upvotes', $upvotes->get_error_message() );
-        } else {
-            $plugin->storage->update_upvotes( $upvotes );
-            $with_upvotes = count( array_filter( $upvotes, fn ( $c ) => $c > 0 ) );
-            $plugin->logger->step( 'analytics_fetch_upvotes', 'ok', count( $urls ) . " URLs, {$with_upvotes} with upvotes" );
-        }
-
-        $downvotes = $plugin->analytics->fetch_downvotes( $urls );
-        if ( is_wp_error( $downvotes ) ) {
-            $plugin->logger->log_error( 'analytics_fetch_downvotes', $downvotes->get_error_message() );
-        } else {
-            $plugin->storage->update_downvotes( $downvotes );
-            $with_downvotes = count( array_filter( $downvotes, fn ( $c ) => $c > 0 ) );
-            $plugin->logger->step( 'analytics_fetch_downvotes', 'ok', count( $urls ) . " URLs, {$with_downvotes} with downvotes" );
-        }
+        // 1. Refresh clicks + votes on existing rows. Shared with the podcast script
+        //    generator (ENA_Podcast::run()) so both always sort off the same data.
+        self::refresh_analytics( $plugin->storage, $plugin->analytics, $plugin->logger );
 
         // 2. Collect & append new articles at the bottom.
         $result = $plugin->collector->run();
         $plugin->logger->step( 'row_count_after_collect', 'ok', $plugin->storage->row_count() . ' rows in active sheet after append' );
 
         // 3. Sort the full sheet (always — independent of the vote fetch above).
-        $sort_result = $plugin->storage->sort_by_upvotes();
-        if ( is_wp_error( $sort_result ) ) {
-            $plugin->logger->step( 'sheets_sort', 'error', $sort_result->get_error_message() );
-        } else {
-            $plugin->logger->step( 'sheets_sort', 'ok', 'rows sorted: upvote DESC → pub_date DESC' );
-        }
+        //    Also shared with the podcast script generator.
+        self::sort_sheet( $plugin->storage, $plugin->logger );
 
         // 4. Trim to max by deleting the bottom (oldest zero-upvote) rows.
         $max        = (int) $plugin->settings->get( 'max_articles', 50 );
@@ -162,6 +128,61 @@ class ENA_Cron {
         update_option( 'ena_last_collection_at', $run_started_at );
 
         return $result;
+    }
+
+    /**
+     * Fetch GA4 clicks/upvotes/downvotes for the active sheet's existing rows and
+     * write them back to the sheet. Each fetch is logged independently so one
+     * failing fetch never blocks the others. Shared by run_pipeline() and
+     * ENA_Podcast::run() so both refresh the exact same data before sorting.
+     */
+    public static function refresh_analytics( ENA_Sheets $storage, ENA_Analytics $analytics, ENA_Logger $logger ): void {
+        $rows = $storage->read_data_rows();
+        $urls = is_wp_error( $rows ) ? [] : array_column( $rows, 'link' );
+        $logger->step( 'read_data_rows', is_wp_error( $rows ) ? 'error' : 'ok',
+            is_wp_error( $rows ) ? $rows->get_error_message() : count( $rows ) . ' existing rows read' );
+
+        $clicks = $analytics->fetch_clicks( $urls );
+        if ( is_wp_error( $clicks ) ) {
+            $logger->log_error( 'analytics_fetch', $clicks->get_error_message() );
+        } else {
+            $storage->update_clicks( $clicks );
+            $with_clicks = count( array_filter( $clicks, fn ( $c ) => $c > 0 ) );
+            $logger->step( 'analytics_fetch', 'ok', count( $urls ) . " URLs, {$with_clicks} with clicks" );
+        }
+
+        $upvotes = $analytics->fetch_upvotes( $urls );
+        if ( is_wp_error( $upvotes ) ) {
+            $logger->log_error( 'analytics_fetch_upvotes', $upvotes->get_error_message() );
+        } else {
+            $storage->update_upvotes( $upvotes );
+            $with_upvotes = count( array_filter( $upvotes, fn ( $c ) => $c > 0 ) );
+            $logger->step( 'analytics_fetch_upvotes', 'ok', count( $urls ) . " URLs, {$with_upvotes} with upvotes" );
+        }
+
+        $downvotes = $analytics->fetch_downvotes( $urls );
+        if ( is_wp_error( $downvotes ) ) {
+            $logger->log_error( 'analytics_fetch_downvotes', $downvotes->get_error_message() );
+        } else {
+            $storage->update_downvotes( $downvotes );
+            $with_downvotes = count( array_filter( $downvotes, fn ( $c ) => $c > 0 ) );
+            $logger->step( 'analytics_fetch_downvotes', 'ok', count( $urls ) . " URLs, {$with_downvotes} with downvotes" );
+        }
+    }
+
+    /**
+     * Physically re-sort the active sheet: upvote DESC → pub_date DESC → added_date DESC.
+     * Shared by run_pipeline() and ENA_Podcast::run() so the spreadsheet and the
+     * generated script always end up in the exact same order.
+     */
+    public static function sort_sheet( ENA_Sheets $storage, ENA_Logger $logger ): bool|WP_Error {
+        $sort_result = $storage->sort_by_upvotes();
+        if ( is_wp_error( $sort_result ) ) {
+            $logger->step( 'sheets_sort', 'error', $sort_result->get_error_message() );
+            return $sort_result;
+        }
+        $logger->step( 'sheets_sort', 'ok', 'rows sorted: upvote DESC → pub_date DESC → added_date DESC' );
+        return true;
     }
 
     public static function add_intervals( array $schedules ): array {

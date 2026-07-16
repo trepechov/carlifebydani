@@ -30,53 +30,27 @@ class ENA_Podcast {
     }
 
     public function run(): array {
+        // Steps 1–2: refresh GA4 clicks/votes and physically re-sort the sheet —
+        // identical to the collection pipeline (ENA_Cron::run_pipeline()) — so the
+        // script is always built from the exact same order the spreadsheet ends up in.
+        ENA_Cron::refresh_analytics( $this->storage, $this->analytics, $this->logger );
+        $sort_result = ENA_Cron::sort_sheet( $this->storage, $this->logger );
+        if ( is_wp_error( $sort_result ) ) {
+            $this->logger->log( 'podcast', 'error', $sort_result->get_error_message() );
+            return [ 'doc_url' => '', 'count' => 0 ];
+        }
+
+        // Step 3: read the now-sorted sheet and take the top N off the top —
+        // same order the spreadsheet shows.
         $rows = $this->storage->read_data_rows();
         if ( is_wp_error( $rows ) ) {
             $this->logger->log( 'podcast', 'error', $rows->get_error_message() );
             return [ 'doc_url' => '', 'count' => 0 ];
         }
-
-        // Step 1: refresh GA4 clicks so ordering reflects the most recent engagement.
-        $urls   = array_column( $rows, 'link' );
-        $clicks = $this->analytics->fetch_clicks( $urls );
-
-        if ( is_wp_error( $clicks ) ) {
-            $this->logger->step( 'podcast_analytics', 'skip', $clicks->get_error_message() );
-        } else {
-            $this->storage->update_clicks( $clicks );
-            // Overlay fresh click counts onto our in-memory rows before sorting.
-            foreach ( $rows as &$row ) {
-                if ( isset( $clicks[ $row['link'] ] ) ) {
-                    $row['clicks'] = $clicks[ $row['link'] ];
-                }
-            }
-            unset( $row );
-            $with_clicks = count( array_filter( $clicks, fn ( $c ) => $c > 0 ) );
-            $this->logger->step( 'podcast_analytics', 'ok', count( $urls ) . " URLs, {$with_clicks} with clicks" );
-        }
-
-        // Refresh upvotes/downvotes too so the sheet stays fresh (ranking below still uses clicks only,
-        // and these fields aren't read downstream, so no in-memory overlay is needed).
-        $upvotes = $this->analytics->fetch_upvotes( $urls );
-        if ( is_wp_error( $upvotes ) ) {
-            $this->logger->step( 'podcast_analytics_upvotes', 'skip', $upvotes->get_error_message() );
-        } else {
-            $this->storage->update_upvotes( $upvotes );
-        }
-
-        $downvotes = $this->analytics->fetch_downvotes( $urls );
-        if ( is_wp_error( $downvotes ) ) {
-            $this->logger->step( 'podcast_analytics_downvotes', 'skip', $downvotes->get_error_message() );
-        } else {
-            $this->storage->update_downvotes( $downvotes );
-        }
-
-        // Step 2: order by clicks descending and take the top N.
         $top_n = max( 1, (int) $this->settings->get( 'max_script_articles', 10 ) );
-        usort( $rows, fn ( $a, $b ) => $b['clicks'] <=> $a['clicks'] );
-        $top = array_slice( $rows, 0, $top_n );
+        $top   = array_slice( $rows, 0, $top_n );
 
-        // Step 3: generate summaries from existing title + description — no scraping needed.
+        // Step 4: generate summaries from existing title + description — no scraping needed.
         $sections = [];
 
         foreach ( $top as $i => $row ) {
@@ -99,7 +73,7 @@ class ENA_Podcast {
             ];
         }
 
-        // Step 4: write the script document.
+        // Step 5: write the script document.
         // WHY MANUAL DOC ID: Google service accounts have no Drive storage quota of their own.
         // Calling ENA_Docs::create_doc() via the Docs API returns PERMISSION_DENIED, and
         // calling Drive Files.create returns storageQuotaExceeded — even for zero-byte
