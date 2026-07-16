@@ -57,12 +57,12 @@ The team plans to migrate away from Google Sheets as the article database in a f
 
 | When | What |
 |---|---|
-| Daily 09:00 (configurable, site local time) | WP-Cron: **scrape → summarize → append → fetch GA4 clicks + upvotes + downvotes → update Sheet columns E/F/G → sort by upvote DESC → trim** → sync live articles |
+| Daily 09:00 (configurable, site local time) | WP-Cron: **fetch GA4 clicks + upvotes + downvotes → update Sheet columns E/F/G → scrape → summarize → append → sort by upvote DESC → trim** → sync live articles → push notification |
 | All week | Team curates directly in Google Sheets |
 | Tuesday morning (recording day) | By 09:00 the final collection of the week runs automatically — 7 full days of articles from Wednesday through Tuesday |
 | Tuesday (before recording) | **Manual**: team creates Google Doc → pastes ID in settings → clicks "Generate Podcast Script" in dashboard |
 
-**7-day cycle:** Wednesday 09:00 (first collection after recording) → Tuesday 09:00 (last collection before recording). Visitors can read and click articles throughout the week; GA4 click data accumulates so the most-engaged articles rise to the top of the podcast script.
+**7-day cycle:** Wednesday 09:00 (first collection after recording) → Tuesday 09:00 (last collection before recording). Visitors can read, click, and upvote/downvote articles throughout the week; GA4 upvote data accumulates and drives the sort (clicks are also tracked but are not the sort key), so the most-liked articles rise to the top of both the sheet and the podcast script.
 
 ### Two-Layer Ordering
 
@@ -78,19 +78,20 @@ The system maintains two distinct orderings that serve different purposes.
 
 This is what the Google Sheet reflects visually and what the podcast script uses. After sort, the bottom rows (zero-upvote, oldest pub_date) are trimmed to respect `max_articles`.
 
-**Display order** — applied by `ENA_Sync` when writing `ev_news_live_articles` to `wp_options`. The Sheet row order is preserved within each group:
+**Display order** — applied by `ENA_Sync` when writing `ev_news_live_articles` to `wp_options`. `ENA_Sync` does **not** trust the sheet's physical order for this — it independently re-sorts each group in memory with the same upvote → pub_date → added_date criteria, since the Sheets sort is a separate API call earlier in the pipeline and display order shouldn't depend on it having landed:
 
 ```
-Group 1 — Collected in the last 24 hours (added_date >= yesterday UTC):
-           shown first, in sheet order
-           → fresh articles from the latest run always appear at the top
+Group 1 — Added today (added_date === today, exact calendar-day match on UTC date —
+           must stay in sync with the is_new badge cutoff in
+           template-parts/ev-news-feed/card.php, or a non-badged article can end up
+           in this group and outrank a badged one):
+           shown first, sorted by upvote DESC → pub_date DESC → added_date DESC
 
 Group 2 — Everything older:
-           shown after Group 1, in sheet order
-           → already upvote-sorted by the sheet, so engaged articles naturally lead
+           shown after Group 1, same sort
 ```
 
-`added_date` (the date the row was scraped into the Sheet, stored as Y-m-d UTC) is used for group assignment. Both groups preserve the sheet's engagement order within them.
+`added_date` (the date the row was scraped into the Sheet, stored as Y-m-d UTC) is used for group assignment.
 
 ---
 
@@ -109,13 +110,16 @@ plugins/ev-news-automator/
 │   ├── class-ena-sheets.php           # STORAGE ADAPTER — Google Sheets v4: read, append, delete, update_clicks, existing_urls
 │   ├── class-ena-analytics.php        # GA4 Data API v1: fetch ev_news_click event counts keyed by article_url
 │   ├── class-ena-docs.php             # Google Docs v1 + Drive v3: append sections to a user-supplied doc ID
-│   ├── class-ena-openrouter.php       # OpenRouter chat completions: summarize (→ bg_title, bg_summary), podcast_script
-│   ├── class-ena-scraper.php          # fetch_source (RSS / HTML fallback), extract_body (for podcast), clean_text
-│   ├── class-ena-collector.php        # Phase 1 orchestrator: scrape → dedupe → summarize → store → trim
+│   ├── class-ena-openrouter.php       # OpenRouter chat completions: summarize (→ bg_title, bg_summary), podcast_summary (extended); rate-limit/usage tracking
+│   ├── class-ena-scraper.php          # fetch_source (RSS / HTML fallback), extract_body (unused by current podcast flow), clean_text
+│   ├── class-ena-collector.php        # Phase 1 orchestrator: scrape → dedupe → summarize → store; stops early on OpenRouter 429/401
 │   ├── class-ena-sync.php             # Phase 2 orchestrator: read storage → engagement-sort → write ev_news_live_articles to wp_options
-│   ├── class-ena-podcast.php          # Phase 4 orchestrator: read storage → fetch bodies → scripts → Google Doc
-│   ├── class-ena-cron.php             # Schedule registration, custom intervals, hook callbacks, cleanup
-│   └── class-ena-ajax.php             # wp_ajax_* handlers for manual trigger buttons in admin dashboard
+│   ├── class-ena-podcast.php          # Phase 4 orchestrator: GA4 refresh + sheet sort (shared with collection) → title/description/extended-summary → Google Doc
+│   ├── class-ena-cron.php             # Schedule registration, custom intervals, run_pipeline() orchestration, refresh_analytics()/sort_sheet() (shared with podcast)
+│   ├── class-ena-ajax.php             # wp_ajax_* handlers for manual trigger buttons in admin dashboard
+│   ├── class-ena-background.php       # Background/async run support for long-running manual triggers
+│   ├── class-ena-push.php             # Web Push notifications on new-article publish — see docs/PWA_PUSH_BADGES.md
+│   └── class-ena-pwa.php              # PWA manifest/service-worker registration — see docs/PWA_PUSH_BADGES.md
 ├── admin/
 │   ├── class-ena-admin.php            # Menu pages, settings form POST handler, asset enqueue
 │   └── views/
@@ -406,8 +410,8 @@ Per article (numbered):
   "{n}. {bg_title}"                                      → HEADING_2
   "Read the original article"                            → italic, blue hyperlink to {url}
   blank line
-  {summary}                                              → body text (AI-generated podcast summary)
-  {description}                                          → italic, gray (original short description)
+  "Описание: {description}"                              → italic (original short description, copied verbatim from the sheet)
+  "Резюме: {summary}"                                     → "Резюме:" bold prefix (AI-generated extended summary, 8-10 sentences)
   "────────────────────────────────────────────────"     → gray Unicode separator
 ```
 
@@ -422,13 +426,15 @@ Private helpers used internally: `utf16_len()` (Google Docs counts characters in
 // Model is configurable in settings (default: anthropic/claude-opus-4-8).
 // Token usage is persisted in the ena_openrouter_usage wp_option.
 summarize( string $original_title, string $excerpt_or_body ): array|WP_Error  // returns ['bg_title'=>, 'bg_summary'=>]
-podcast_summary( string $bg_title, string $bg_summary ): string|WP_Error       // used by podcast run; uses Sheet title + description, no scraping
-podcast_script( string $bg_title, string $body_text ): string|WP_Error         // exists; not called by current podcast flow
-get_key_info(): array|WP_Error    // fetches live key/credit info from OpenRouter API
-get_local_stats(): array          // returns locally tracked token usage from wp_options
-reset_local_stats(): void         // resets ena_openrouter_usage in wp_options
-private record_usage( array $usage ): void
-private chat( string $system, string $user, array $opts = [] ): string|WP_Error
+podcast_summary( string $bg_title, string $description ): string|WP_Error      // used by podcast run; extended 8-10 sentence summary from Sheet title + description, no scraping
+podcast_script( string $bg_title, string $body_text ): string|WP_Error         // exists; not called by current podcast flow (would need a scraped article body)
+get_key_info(): array|WP_Error            // fetches live key/credit info from OpenRouter API
+static get_local_stats(): array           // returns locally tracked token usage from wp_options (ena_openrouter_usage)
+static reset_local_stats(): void          // resets ena_openrouter_usage in wp_options
+static get_daily_request_count(): array   // {date, count} — requests made today (UTC) by this plugin, regardless of outcome; stored in ena_openrouter_daily_requests
+static get_last_rate_limit(): ?array      // {remaining, limit, reset_at_utc, observed_at} snapshot from the most recent 429's X-RateLimit-* headers; stored in ena_openrouter_rate_limit; null until the first 429
+private record_usage( array $usage, string $type ): void
+private chat( string $system, string $user, array $opts = [], string $type = 'general' ): string|WP_Error
 ```
 
 **Summarize prompt:**
@@ -436,10 +442,21 @@ private chat( string $system, string $user, array $opts = [] ): string|WP_Error
 - User: `"Original title: {title}\n\nArticle excerpt: {excerpt}\n\nProduce JSON."`
 - Temperature: 0.4. On JSON parse failure → fallback to `{original_title, raw_content}`.
 
-**Podcast prompt:**
+**Podcast summary prompt** (`podcast_summary()` — the one actually used by `ENA_Podcast::run()`):
+- System: `"Пишеш разширено фактическо резюме на новинарска статия на български, което да разгъне и допълни кратко описание с повече детайли и контекст. Съдържай само фактите от статията — без упоменаване на подкаст, водещи, слушатели или епизоди. Без markdown."`
+- User: `"Заглавие: {bg_title}\n\nКратко описание: {description}\n\nНапиши разширено резюме от 8-10 изречения с повече детайли и контекст, без да повтаряш описанието дословно."`
+- Temperature: 0.3. Deliberately longer than the sheet's 2-3 sentence description so the Google Doc adds material instead of just restating it.
+
+**Podcast script prompt** (`podcast_script()` — exists but unused; would need a scraped full article body):
 - System: `"Scriptwriter for Bulgarian EV podcast Car Life by Dani. Spoken-style Bulgarian, 1–2 paragraphs, no markdown."`
 - User: `"Заглавие: {bg_title}\n\nПълен текст:\n{body_text}\n\nНапиши разширен подкаст скрипт."`
 - Body text truncated to ~6000 chars before sending.
+
+**Rate limiting** (no retry-on-429 — added after the previous sleep-and-retry approach just re-hit the same wall repeatedly and blocked the run):
+- `chat()` makes exactly one request per call; a `429`/`401` response is returned to the caller immediately, not retried.
+- Every request (success or failure) increments the daily counter in `ena_openrouter_daily_requests`.
+- A `429` response's `X-RateLimit-*` headers are parsed and persisted to `ena_openrouter_rate_limit`, and the upstream error message body is merged into the returned `WP_Error` message — so logs and the dashboard show OpenRouter's actual reason and quota, not a generic "Rate limited".
+- The OpenRouter Account card on the dashboard (`ENA_Ajax::handle_openrouter_usage()` → `renderAccountCard()` in `assets/admin.js`) shows `get_key_info()` (live credit balance), `get_daily_request_count()`, and `get_last_rate_limit()` together.
 
 ---
 
@@ -462,17 +479,21 @@ All external URLs validated with `ENA_HTTP::is_safe_url()` before fetching. Sour
 ### `includes/class-ena-collector.php`
 
 ```php
-// Phase 1 orchestrator. Drives the full daily collection pipeline.
-// Depends on the storage adapter and ENA_Analytics (both injected in ENA_Plugin).
-run(): array   // returns ['added'=>int, 'removed'=>int]
-private trim_to_max( int $max ): int
+// Phase 1 orchestrator. Depends on the storage adapter, ENA_Scraper, ENA_OpenRouter,
+// ENA_Logger and ENA_Settings (all injected in ENA_Plugin).
+run(): array   // returns ['added'=>int, 'skipped'=>int, 'skip_summary'=>string]
+private static describe_error_code( string $code ): string
 ```
 
-**Daily cron invocation** calls `ENA_Analytics::fetch_clicks()` first (before `run()`), then `$this->storage->update_clicks()`, then `$this->storage->sort_by_clicks()` to reorder the sheet rows by engagement, then `run()`. This is orchestrated in `ENA_Cron::run_daily_collection()` (and mirrored in `ENA_Ajax::handle_run_collection()`) rather than inside `run()` so that `run()` remains reusable standalone.
+`run()` does **not** call GA4 refresh, sort, or trim itself — those are orchestrated around it by `ENA_Cron::run_pipeline()` (shared by the scheduled cron, "Run collection now", and the background worker): GA4 refresh happens *before* `run()`, sort + trim happen *after* it returns, on the full sheet (existing + newly appended rows). See the `class-ena-cron.php` section below for the exact order.
 
-Pipeline: load sources → for each: `ENA_Scraper::fetch_source` → flatten → **age filter** (drop articles where `published_at < time() - DAY_IN_SECONDS`; articles with `published_at === 0` always pass) → dedupe via `$this->storage->existing_urls()` (also dedupes within batch) → **sort by `published_at` DESC** (newest first within the batch) → for each new: `ENA_OpenRouter::summarize` → build row `[title=bg_title, description=bg_summary, link=url, author=source, upvote='', downvote='', clicks=0]` → `$this->storage->append_rows($rows)` → `trim_to_max($max)` → `ENA_Logger::set_status`.
+Pipeline: load sources → for each source: `ENA_Scraper::fetch_source` → **age filter, method-dependent**:
+  - RSS sources: drop items where `published_at === 0 || published_at < $cutoff`, where `$cutoff = ENA_Settings::article_age_cutoff()` (previous run's timestamp minus a 1-hour buffer, or the configured Article Age Limit on the very first run).
+  - HTML sources: no reliable publish dates, so instead the fetched list is simply capped to the first 5 items (`$html_cap`), assumed most-recent-first.
 
-The 24-hour age filter exists because the cron runs every 24 hours — articles older than that were either already collected in a previous run or are too stale to be relevant. Articles with no publish date (`published_at === 0`) are always accepted to avoid silently dropping valid content from feeds that omit dates.
+→ dedupe via `$this->storage->existing_urls()` (also dedupes within the batch across sources) → **sort by `published_at` DESC** (newest first within the batch) → for each new article: sleep 4s between calls (`REQUEST_DELAY_SECONDS`, a safety margin under OpenRouter's free-tier ~20 req/min cap) → `ENA_OpenRouter::summarize()` → on success, build row `[title=bg_title, description=bg_summary, link=url, author=source, upvote=0, downvote=0, clicks=0, pub_date]` → `$this->storage->append_rows($rows)` once at the end.
+
+**Stops early on 429/401** instead of retrying: if `summarize()` fails with `http_429` (rate limited) or `http_401` (bad/expired key), the loop `break`s immediately — the remaining not-yet-attempted articles are left for the next scheduled run rather than burning the run on repeated failures against the same wall. Other error codes (parse failures, empty responses, etc.) are logged and skipped per-article, and the loop continues to the next one. `$result['skip_summary']` aggregates a human-readable count per error code (via `describe_error_code()`) plus a "N× not attempted (run stopped early)" note when applicable; the dashboard surfaces this with a link to the OpenRouter Account card.
 
 Note: the session date is embedded in the active sheet tab name; it is not written as a column value.
 
@@ -490,13 +511,20 @@ run(): array   // returns ['count' => int, 'published_today' => int]
 
 Pipeline:
 ```
-$cutoff = gmdate('Y-m-d', time() - DAY_IN_SECONDS)   // yesterday UTC
-$rows   = $this->storage->read_data_rows()            // already in sheet order
+$today  = gmdate('Y-m-d')                              // today, UTC calendar date
+$rows   = $this->storage->read_data_rows()
 
-// — Display grouping (sheet row order is preserved within each group) —
-$recent = array_filter($rows, fn($r) => ($r['added_date'] ?? '') >= $cutoff)  // last 24 h
-$older  = array_filter($rows, fn($r) => ($r['added_date'] ?? '') < $cutoff)
-$sorted = array_merge(array_values($recent), array_values($older))
+// — Display grouping —
+// Deliberately does NOT trust the sheet's physical row order (that's a separate,
+// earlier Sheets API call via sort_by_upvotes() and may not have landed reliably by
+// the time this reads the rows back). Each group is independently re-sorted here.
+$recent = array_filter($rows, fn($r) => ($r['added_date'] ?? '') === $today)   // added today (exact match — must
+$older  = array_filter($rows, fn($r) => ($r['added_date'] ?? '') !== $today)   // stay in sync with card.php's is_new cutoff)
+
+$by_engagement = fn($a, $b) => upvote DESC, then pub_date DESC, then added_date DESC
+usort($recent, $by_engagement)
+usort($older, $by_engagement)
+$sorted = array_merge($recent, $older)
 
 // — Write live articles cache —
 // Each article in the JSON array has these keys:
@@ -514,8 +542,8 @@ $sorted = array_merge(array_values($recent), array_values($older))
 $articles = array_map(fn($r) => [...], $sorted)
 update_option(ENA_OPT_LIVE_ARTICLES, wp_json_encode($articles))
 
-// published_today = count of rows where added_date === gmdate('Y-m-d') (used for push badge)
-log + set_status(ENA_OPT_STATUS_SYNC, ['timestamp', 'count', 'published_today', 'recent_24h', 'older', 'sheet_url'])
+// published_today = count of $recent (rows where added_date === today) — also drives the push-notification badge count in ENA_Cron::run_pipeline()
+log + set_status(ENA_OPT_STATUS_SYNC, ['timestamp', 'count', 'published_today', 'recent_24h' (= count of $recent), 'older', 'sheet_name', 'sheet_url'])
 ```
 
 ---
@@ -528,9 +556,18 @@ log + set_status(ENA_OPT_STATUS_SYNC, ['timestamp', 'count', 'published_today', 
 run(): array   // returns ['doc_url'=>string, 'count'=>int]
 ```
 
-Pipeline: read `google_doc_id` from settings → `$this->storage->read_data_rows()` → **GA4 refresh**: `ENA_Analytics::fetch_clicks($urls)` → `$this->storage->update_clicks($clicks)` → overlay fresh counts onto in-memory rows → sort rows by `clicks` DESC → `array_slice` to top `max_script_articles` → for each: `ENA_OpenRouter::podcast_summary($row['title'], $row['description'])` → accumulate sections → `ENA_Docs::append_sections($doc_id, $sections)` → `ENA_Logger::set_status(ENA_OPT_STATUS_PODCAST, ...)`.
+Pipeline:
+1. `ENA_Cron::refresh_analytics()` — refreshes GA4 clicks/upvotes/downvotes on the sheet's existing rows.
+2. `ENA_Cron::sort_sheet()` — physically re-sorts the sheet: upvote DESC → pub_date DESC → added_date DESC.
 
-GA4 errors on the refresh step are non-fatal (logged as `skip`) — the run continues using whatever click counts are already in the Sheet.
+   Steps 1–2 are the exact same static helpers `ENA_Cron::run_pipeline()` uses for the daily collection — reused here (rather than the script doing its own click-only in-memory sort) specifically so the generated script's article order always matches what the sheet physically shows.
+3. `$this->storage->read_data_rows()` — reads the now-sorted sheet.
+4. `array_slice()` to the top `max_script_articles` rows (sheet order = final order, no further sorting).
+5. For each of the top N rows (sleeping `REQUEST_DELAY_SECONDS` = 2s between calls): `ENA_OpenRouter::podcast_summary($row['title'], $row['description'])` to generate an extended 8-10 sentence summary. On failure, logs the error and falls back to an empty summary (the section still gets the description).
+6. Build each section as `['bg_title'=>$row['title'], 'url'=>$row['link'], 'description'=>$row['description'], 'summary'=>$generated_or_empty]` — `description` is copied verbatim from the sheet, `summary` is the newly generated extended write-up. Both get written to the doc (see `class-ena-docs.php` section above for the exact layout).
+7. `ENA_Docs::append_sections($doc_id, $sections)` → `ENA_Logger::set_status(ENA_OPT_STATUS_PODCAST, ...)`.
+
+If `sort_sheet()` fails (WP_Error), the run aborts early and returns `['doc_url'=>'', 'count'=>0]` without calling OpenRouter or touching the doc.
 
 No body scraping — uses the Bulgarian title and description already stored in the Sheet. `podcast_script()` (which would scrape the full article body) exists in `ENA_OpenRouter` but is not called.
 
@@ -546,7 +583,10 @@ static activate(): void       // called on plugin activation
 static deactivate(): void     // wp_clear_scheduled_hook for ena_daily_collection
 static reschedule(): void     // called after settings save; re-schedules collection at next collection_time
 static register_hooks(): void // add_action for ena_daily_collection
-static run_daily_collection(): void  // fetch GA4 clicks → update_clicks → sort_by_clicks → ENA_Collector::run() → ENA_Sync::run()
+static run_daily_collection(): void  // wraps run_pipeline() in begin_run()/end_run() logging + a top-level try/catch
+static run_pipeline( ENA_Plugin $plugin ): array   // the shared pipeline itself — see detail below
+static refresh_analytics( ENA_Sheets, ENA_Analytics, ENA_Logger ): void  // GA4 clicks+upvotes+downvotes → sheet columns G/E/F; shared with ENA_Podcast::run()
+static sort_sheet( ENA_Sheets, ENA_Logger ): bool|WP_Error               // physical sheet sort; shared with ENA_Podcast::run()
 static add_intervals( array $schedules ): array  // adds ena_15min, ena_30min, ena_6hours
 ```
 
@@ -554,25 +594,44 @@ Hook name: `ena_daily_collection` (configurable interval; for `daily`, fires at 
 
 Podcast script generation is **manual only** — triggered via the admin dashboard "Generate Podcast Script" button. There is no `ena_weekly_podcast` cron hook.
 
-**`run_pipeline()` detail (shared by cron and manual trigger):**
+**`run_pipeline()` detail (shared by the scheduled cron, "Run collection now", and the background worker):**
 ```php
-// 1. Collect & append new articles at the bottom.
-$plugin->collector->run();
+// 0. Flush the 5-minute sheets-list cache, then log which tab resolved as "active" —
+//    the single most useful line for diagnosing a run that targets the wrong sheet.
+$plugin->storage->flush_sheets_cache();
+$active_name = $plugin->storage->active_sheet_name();
 
-// 2. Refresh engagement counts from GA4 (each fetch logged independently; failures non-fatal).
-$urls = array_column($plugin->storage->read_data_rows(), 'link');
-$plugin->storage->update_clicks(   $plugin->analytics->fetch_clicks($urls)   );
-$plugin->storage->update_upvotes(  $plugin->analytics->fetch_upvotes($urls)  );
-$plugin->storage->update_downvotes($plugin->analytics->fetch_downvotes($urls));
+// 1. Refresh clicks + upvotes + downvotes on EXISTING rows from GA4 (each fetch logged
+//    independently; failures non-fatal). Shared helper — also called by ENA_Podcast::run().
+self::refresh_analytics($plugin->storage, $plugin->analytics, $plugin->logger);
 
-// 3. Sort the full sheet: upvote DESC → pub_date DESC → added_date DESC.
-$plugin->storage->sort_by_upvotes();   // always runs, even if GA4 fetches failed
+// 2. Collect & append newly scraped articles at the bottom.
+$result = $plugin->collector->run();   // ['added', 'skipped', 'skip_summary']
+
+// 3. Sort the FULL sheet: upvote DESC → pub_date DESC → added_date DESC.
+//    Always runs, independent of whether the GA4 fetch in step 1 succeeded — a failed
+//    fetch must never skip the sort, or freshly appended articles are stranded at the
+//    bottom unsorted. Shared helper — also called by ENA_Podcast::run().
+self::sort_sheet($plugin->storage, $plugin->logger);
 
 // 4. Trim bottom rows to max_articles (oldest zero-upvote articles removed).
-$plugin->storage->trim_to_max($max_articles);
+$removed = $plugin->storage->trim_to_max($max_articles);
+$plugin->logger->set_status(ENA_OPT_STATUS_COLLECTION, [
+    'timestamp', 'added' => $result['added'], 'removed', 'skipped' => $result['skipped'], 'skip_summary',
+]);
 
 // 5. Rebuild the live JSON snapshot for the feed page.
-$plugin->sync->run();
+$sync_result = $plugin->sync->run();
+
+// 6. Push a badge notification to subscribed PWA users if any articles were added today.
+//    See docs/PWA_PUSH_BADGES.md for the push subscription/delivery details.
+if (($sync_result['published_today'] ?? 0) > 0) {
+    ENA_Push::send_all($sync_result['published_today']);
+}
+
+// 7. Persist this run's start time so the next run's age-cutoff (ENA_Settings::article_age_cutoff())
+//    starts from here, minus a 1-hour buffer.
+update_option('ena_last_collection_at', $run_started_at);
 ```
 
 **Configurable collection interval** (`collection_interval` setting):
@@ -586,7 +645,7 @@ $plugin->sync->run();
 | `12hours` | `twicedaily` (built-in) | Pre-production |
 | `daily` | `daily` (built-in) | **Production default** |
 
-`add_intervals()` registers the four custom intervals (`ena_15min`, `ena_30min`, `ena_6hours`). The interval is stored in settings. On save, `reschedule()` clears and re-adds `ena_daily_collection` with the new interval. The 18:00 start time still applies at `daily`; for shorter intervals the first run fires as soon as possible after activation/save.
+`add_intervals()` registers the three custom intervals (`ena_15min`, `ena_30min`, `ena_6hours`). The interval is stored in settings. On save, `reschedule()` clears and re-adds `ena_daily_collection` with the new interval, anchored to the configured `collection_time` (default `09:00`, site local timezone) via `next_collection_timestamp()` — e.g. a 6-hour interval anchored at `08:00` fires at `02:00`, `08:00`, `14:00`, `20:00`.
 
 > Dev workflow: set interval to `15min` to iterate quickly; flip to `daily` before deploying to production. The setting is in the admin UI so no code changes are needed.
 
@@ -602,14 +661,16 @@ Timestamps on scheduling use `wp_timezone()` so configured times are in the site
 // Registers admin-ajax handlers for manual trigger buttons and OpenRouter usage.
 // All handlers: check_ajax_referer('ena_admin','nonce') + current_user_can('manage_options').
 static register(): void
-static handle_run_collection(): void    // action: ena_run_collection (includes GA4 click sync before collecting)
+static handle_run_collection(): void    // action: ena_run_collection — calls ENA_Cron::run_pipeline() directly (same code path as the scheduled cron)
 static handle_run_sync(): void          // action: ena_run_sync (re-sorts and re-writes ev_news_live_articles)
-static handle_run_podcast(): void       // action: ena_run_podcast
-static handle_openrouter_usage(): void  // action: ena_openrouter_usage — returns get_key_info() + get_local_stats()
+static handle_run_podcast(): void       // action: ena_run_podcast — calls $plugin->podcast->run()
+static handle_openrouter_usage(): void  // action: ena_openrouter_usage — returns {key_info, local, daily_requests, last_rate_limit}
 static handle_reset_usage_stats(): void // action: ena_reset_usage_stats — calls reset_local_stats()
 ```
 
 Each returns `wp_send_json_success($result)` or `wp_send_json_error($message, 403/500)`.
+
+Also registers (not admin-gated the same way; documented in `docs/PWA_PUSH_BADGES.md`, out of scope for this doc): `ena_dispatch_job` / `ena_job_status` / `wp_ajax_nopriv_ena_bg_worker` for `class-ena-background.php`'s async job runner, and `wp_ajax(_nopriv)_ena_save_push_sub` for PWA push subscriptions.
 
 ---
 
@@ -634,7 +695,7 @@ Sanitization rules:
 - Sources textarea: parse each non-empty line → split on whitespace → `esc_url_raw` for URL, method whitelisted to `rss`|`html` (default `rss` if omitted); invalid lines are silently dropped
 - `max_articles`: `absint`
 - `collection_interval`: whitelisted to allowed values — `15min`, `30min`, `1hour`, `6hours`, `12hours`, `daily`
-- `collection_time`: validated `HH:MM` pattern (default `09:00`); used only when interval is `daily`
+- `collection_time`: validated `HH:MM` pattern (default `09:00`); used as the anchor slot for every interval, not just `daily` (see `next_collection_timestamp()` in the cron section above)
 - All other text fields: `sanitize_text_field`
 
 ---
@@ -667,10 +728,13 @@ Not needed. The existing `theme/template-parts/single/card-article-external.php`
 | `ENA_OPT_SHEET_META` | `ena_sheet_meta` | Cached numeric Sheets sheetId |
 | `ENA_OPT_RUN_LOG` | `ena_run_log` | Last 20 summary events (ring buffer) |
 | `ENA_OPT_CRON_TRANSCRIPT` | `ena_cron_transcript` | Full step-by-step log of the most recent cron run |
-| `ENA_OPT_STATUS_COLLECTION` | `ena_status_last_collection` | `{timestamp, added, removed}` |
-| `ENA_OPT_STATUS_SYNC` | `ena_status_last_sync` | `{timestamp, count, published_today, recent_24h, older, sheet_url}` |
-| `ENA_OPT_STATUS_PODCAST` | `ena_status_last_podcast` | `{timestamp, doc_url, count}` |
-| `ENA_OPT_LIVE_ARTICLES` | `ev_news_live_articles` | JSON-encoded array of all articles from the active sheet, engagement-sorted (new today → clicked DESC → zero-click older); each item has keys: `id` (md5 of link), `title`, `link`, `description`, `source`, `date`, `clicks`, `added_date`; written by `ENA_Sync` after every collection run; read by the live news page template at request time |
+| `ENA_OPT_STATUS_COLLECTION` | `ena_status_last_collection` | `{timestamp, added, removed, skipped, skip_summary}` |
+| `ENA_OPT_STATUS_SYNC` | `ena_status_last_sync` | `{timestamp, count, published_today, recent_24h, older, sheet_name, sheet_url}` |
+| `ENA_OPT_STATUS_PODCAST` | `ena_status_last_podcast` | `{timestamp, doc_url, count, top_clicks}` |
+| `ENA_OPT_LIVE_ARTICLES` | `ev_news_live_articles` | JSON-encoded array of all articles from the active sheet, grouped+sorted (added-today group first, then older — each group independently sorted upvote DESC → pub_date DESC → added_date DESC); each item has keys: `id` (md5 of link), `title`, `link`, `description`, `source`, `pub_date`, `date` (session date), `clicks`, `upvote`, `downvote`, `added_date`; written by `ENA_Sync` after every collection run; read by the live news page template at request time |
+| *(not an `ENA_OPT_*` bootstrap constant — private consts on `ENA_OpenRouter`)* | `ena_openrouter_usage` | Accumulated token usage / call counts by type — see `class-ena-openrouter.php` section |
+| | `ena_openrouter_daily_requests` | `{date, count}` — total OpenRouter requests made today (UTC), any outcome |
+| | `ena_openrouter_rate_limit` | `{remaining, limit, reset_at_utc, observed_at}` snapshot from the most recent 429 |
 
 ---
 
@@ -706,9 +770,10 @@ Not needed. The existing `theme/template-parts/single/card-article-external.php`
 | Settings | Save → reload → all fields persist; API key field shows empty/masked; GA4 property ID persists |
 | GA4 click sync | After at least one day of article clicks on the live site, "Run collection now" → open the active sheet tab → column G shows non-zero integers for clicked articles; dashboard transcript shows `analytics_fetch ok "N URLs, M with clicks"` |
 | Phase 1 — Collection | "Run collection now" → new rows appear with columns title/description/link/author/clicks=0/added_date=today; run twice → no duplicates; set max=5 → oldest rows removed; dashboard shows counts |
-| Phase 2 — Sync + Engagement Sort | After a day has passed: manually set G column values to simulate clicks; "Sync now" → visit the live news page → today's new articles appear first, then previous-day articles sorted by clicks descending, then zero-click older articles at the bottom; page TTFB fast (no external calls on render) |
-| Phase 3 — Podcast | Team creates Google Doc manually → pastes doc ID into settings → "Generate podcast script now" → sections appended to that doc; dashboard shows working Doc link |
-| GA4 not configured | Leave ga4_property_id empty → "Run collection now" logs `analytics_fetch skip "ga4_property_id not set"`, sync still runs (sort treats all clicks as 0, so only new-today vs older grouping applies) |
+| Phase 2 — Sync + Engagement Sort | After a day has passed: manually set E column (upvote) values to simulate votes; "Sync now" → visit the live news page → today's new articles appear first, then previous-day articles sorted by upvote descending, then zero-vote older articles at the bottom; page TTFB fast (no external calls on render) |
+| Phase 3 — Podcast | Team creates Google Doc manually → pastes doc ID into settings → "Generate podcast script now" → sheet is re-sorted first (upvote → pub_date → added_date) → sections appended to that doc in that same order, each with title, link, an italic "Описание" line copied verbatim from the sheet, and a bold-labeled "Резюме" line with a new AI-generated 8-10 sentence summary; dashboard shows working Doc link |
+| GA4 not configured | Leave ga4_property_id empty → "Run collection now" logs `analytics_fetch skip "ga4_property_id not set"`, sync still runs (sort treats all upvotes as 0, so only added-today vs older grouping applies) |
+| OpenRouter 429/401 | Force a 429 or 401 from OpenRouter (e.g. invalid key, or exhaust free-tier quota) mid-collection → run stops immediately instead of retrying with sleep(); dashboard shows a single "N article(s) skipped" notice linking to the OpenRouter Account card, which shows the real upstream error message, today's request count, and the last known quota/reset snapshot |
 | Backward compat | Open existing episode post with `news_csv` meta → `card-article-external.php` still renders with vote circles, unchanged |
 | Security | Invalid nonce → 403; non-admin AJAX → 403; SA JSON path under webroot → plugin rejects at load time |
 
