@@ -213,7 +213,7 @@
         return Number(n).toLocaleString();
     }
 
-    function renderAccountCard(keyInfo) {
+    function renderAccountCard(keyInfo, dailyRequests, lastRateLimit) {
         const card = document.getElementById('ena-account-card');
         if (!card) return;
 
@@ -229,14 +229,27 @@
         const tier      = keyInfo.is_free_tier ? 'Free tier' : 'Paid';
         const label     = keyInfo.label || '—';
 
-        card.innerHTML = '<h3 style="margin:0 0 10px;font-size:14px;">OpenRouter Account</h3>'
-            + '<table class="ena-stat-table">'
-            + '<tr><td>Key label</td><td>' + label + '</td></tr>'
+        const dailyCap = keyInfo.is_free_tier === false ? 1000 : 50; // OpenRouter :free model daily cap; unlocked to 1000 after $10+ purchased.
+        const made     = dailyRequests && typeof dailyRequests.count === 'number' ? dailyRequests.count : 0;
+
+        let rows = '<tr><td>Key label</td><td>' + label + '</td></tr>'
             + '<tr><td>Tier</td><td>' + tier + '</td></tr>'
             + '<tr><td>Credits used</td><td><strong>' + usage + '</strong></td></tr>'
             + '<tr><td>Credit limit</td><td>' + limit + '</td></tr>'
             + (keyInfo.limit_remaining != null ? '<tr><td>Remaining</td><td>' + remaining + '</td></tr>' : '')
-            + '</table>';
+            + '<tr><td colspan="2"><hr style="margin:6px 0;border:0;border-top:1px solid #ddd;"></td></tr>'
+            + '<tr><td>Requests today (this plugin)</td><td><strong>' + fmt(made) + '</strong> / ~' + fmt(dailyCap) + '</td></tr>';
+
+        if (lastRateLimit && (lastRateLimit.remaining != null || lastRateLimit.limit != null)) {
+            const quota = (lastRateLimit.remaining ?? '?') + ' / ' + (lastRateLimit.limit ?? '?');
+            rows += '<tr><td>Last 429 quota</td><td>' + quota + '</td></tr>'
+                + (lastRateLimit.reset_at_utc ? '<tr><td>Resets at</td><td>' + lastRateLimit.reset_at_utc + ' UTC</td></tr>' : '')
+                + '<tr><td>Observed</td><td>' + (lastRateLimit.observed_at || '—') + '</td></tr>';
+        }
+
+        card.innerHTML = '<h3 style="margin:0 0 10px;font-size:14px;">OpenRouter Account</h3>'
+            + '<table class="ena-stat-table">' + rows + '</table>'
+            + '<p style="margin:8px 0 0;font-size:11px;color:#999;">Daily cap is estimated from account tier; "requests today" only counts this plugin\'s calls, not other apps sharing the key.</p>';
     }
 
     function fetchUsage(btn) {
@@ -248,7 +261,7 @@
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    renderAccountCard(data.data.key_info || {});
+                    renderAccountCard(data.data.key_info || {}, data.data.daily_requests, data.data.last_rate_limit);
                     if (status) status.textContent = 'Updated ' + new Date().toLocaleTimeString();
                 } else {
                     if (status) status.textContent = 'Error: ' + (data.data || 'unknown');

@@ -3,11 +3,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ENA_OpenRouter {
 
-    private const API_URL          = 'https://openrouter.ai/api/v1/chat/completions';
-    private const KEY_INFO_URL     = 'https://openrouter.ai/api/v1/auth/key';
-    private const USAGE_OPTION     = 'ena_openrouter_usage';
-    private const MAX_RETRIES      = 2; // attempts after a 429, before giving up.
-    private const RETRY_BASE_DELAY = 5; // seconds, used when OpenRouter sends no Retry-After header.
+    private const API_URL           = 'https://openrouter.ai/api/v1/chat/completions';
+    private const KEY_INFO_URL      = 'https://openrouter.ai/api/v1/auth/key';
+    private const USAGE_OPTION      = 'ena_openrouter_usage';
+    private const DAILY_REQ_OPTION  = 'ena_openrouter_daily_requests';
+    private const RATE_LIMIT_OPTION = 'ena_openrouter_rate_limit';
+    private const MAX_RETRIES       = 2; // attempts after a 429, before giving up.
+    private const RETRY_BASE_DELAY  = 5; // seconds, used when OpenRouter sends no Retry-After header.
 
     private ENA_Settings $settings;
     private ENA_Logger   $logger;
@@ -107,6 +109,52 @@ class ENA_OpenRouter {
         delete_option( self::USAGE_OPTION );
     }
 
+    /**
+     * Requests made by this plugin today (UTC), regardless of outcome — counts against the
+     * OpenRouter request-based rate limits, unlike get_local_stats() which only counts successes.
+     * Not authoritative if the same API key is used elsewhere.
+     */
+    public static function get_daily_request_count(): array {
+        $today  = gmdate( 'Y-m-d' );
+        $stored = get_option( self::DAILY_REQ_OPTION, [] );
+        if ( ! is_array( $stored ) || ( $stored['date'] ?? '' ) !== $today ) {
+            return [ 'date' => $today, 'count' => 0 ];
+        }
+        return $stored;
+    }
+
+    /** Most recent X-RateLimit-* snapshot observed on a 429 response, or null if none yet. */
+    public static function get_last_rate_limit(): ?array {
+        $stored = get_option( self::RATE_LIMIT_OPTION, null );
+        return is_array( $stored ) ? $stored : null;
+    }
+
+    private static function bump_daily_request_count(): void {
+        $count = self::get_daily_request_count();
+        $count['count']++;
+        update_option( self::DAILY_REQ_OPTION, $count, false );
+    }
+
+    /** Persist the X-RateLimit-* headers from a 429 so the dashboard can show it without waiting for another 429. */
+    private static function record_rate_limit_snapshot( array $error_data ): void {
+        $remaining = $error_data['rate_limit_remaining'] ?? null;
+        $limit     = $error_data['rate_limit_limit'] ?? null;
+        if ( $remaining === null && $limit === null ) return;
+
+        $reset = $error_data['rate_limit_reset'] ?? null;
+        $reset_secs = null;
+        if ( is_numeric( $reset ) ) {
+            $reset_secs = $reset > 10_000_000_000 ? intdiv( (int) $reset, 1000 ) : (int) $reset; // ms vs s epoch
+        }
+
+        update_option( self::RATE_LIMIT_OPTION, [
+            'remaining'    => $remaining,
+            'limit'        => $limit,
+            'reset_at_utc' => $reset_secs ? gmdate( 'Y-m-d H:i:s', $reset_secs ) : null,
+            'observed_at'  => current_time( 'mysql' ),
+        ], false );
+    }
+
     private function chat( string $system, string $user, array $opts = [], string $type = 'general' ): string|WP_Error {
         $api_key = $this->settings->get( 'openrouter_api_key' );
         $model   = $this->settings->get( 'openrouter_model', 'anthropic/claude-opus-4-8' );
@@ -131,9 +179,11 @@ class ENA_OpenRouter {
         $data = null;
         for ( $attempt = 0; $attempt <= self::MAX_RETRIES; $attempt++ ) {
             $response = ENA_HTTP::post_json( self::API_URL, $body, $headers );
+            self::bump_daily_request_count();
             $data     = ENA_HTTP::retrieve_json( $response );
 
             if ( ! is_wp_error( $data ) ) break;
+            if ( $data->get_error_code() === 'http_429' ) self::record_rate_limit_snapshot( $data->get_error_data() );
             if ( $data->get_error_code() !== 'http_429' || $attempt === self::MAX_RETRIES ) break;
 
             $retry_after = (int) ( $data->get_error_data()['retry_after'] ?? 0 );
@@ -143,12 +193,13 @@ class ENA_OpenRouter {
                 'openrouter_throttle',
                 'wait',
                 "{$type} — rate limited (429), retrying in {$delay}s (attempt " . ( $attempt + 1 ) . '/' . self::MAX_RETRIES . ')'
+                . self::rate_limit_suffix( $data->get_error_data() )
             );
 
             sleep( $delay );
         }
 
-        if ( is_wp_error( $data ) ) return $data;
+        if ( is_wp_error( $data ) ) return self::with_upstream_message( $data );
 
         $content = $data['choices'][0]['message']['content'] ?? null;
         if ( $content === null ) {
@@ -158,6 +209,46 @@ class ENA_OpenRouter {
         $this->record_usage( $data['usage'] ?? [], $type );
 
         return $content;
+    }
+
+    /**
+     * Re-wrap a WP_Error from ENA_HTTP with OpenRouter's own error message (if present in the
+     * response body), so logs show the actual upstream reason instead of a generic HTTP status.
+     */
+    private static function with_upstream_message( WP_Error $error ): WP_Error {
+        $body = $error->get_error_data()['body'] ?? null;
+        if ( ! is_string( $body ) ) return $error;
+
+        $parsed = json_decode( $body, true );
+        $upstream_message = $parsed['error']['message'] ?? null;
+        $message = $error->get_error_message();
+        if ( ! empty( $upstream_message ) ) $message .= ' — ' . $upstream_message;
+        $message .= self::rate_limit_suffix( $error->get_error_data() );
+
+        if ( $message === $error->get_error_message() ) return $error;
+
+        return new WP_Error( $error->get_error_code(), $message, $error->get_error_data() );
+    }
+
+    /**
+     * Format the X-RateLimit-* headers OpenRouter attaches to 429 responses into a log suffix,
+     * e.g. " [quota: 0/20 remaining, resets 22:05:00]". These headers are only sent on failures —
+     * OpenRouter does not expose remaining free-tier request quota on successful calls.
+     */
+    private static function rate_limit_suffix( array $error_data ): string {
+        $remaining = $error_data['rate_limit_remaining'] ?? null;
+        $limit     = $error_data['rate_limit_limit'] ?? null;
+        $reset     = $error_data['rate_limit_reset'] ?? null;
+        if ( $remaining === null && $limit === null ) return '';
+
+        $quota = trim( ( $remaining ?? '?' ) . '/' . ( $limit ?? '?' ) );
+        $reset_str = '';
+        if ( is_numeric( $reset ) ) {
+            $reset_secs = $reset > 10_000_000_000 ? intdiv( (int) $reset, 1000 ) : (int) $reset; // ms vs s epoch
+            $reset_str  = ', resets ' . gmdate( 'H:i:s', $reset_secs ) . ' UTC';
+        }
+
+        return " [quota: {$quota} remaining{$reset_str}]";
     }
 
     private function record_usage( array $usage, string $type ): void {

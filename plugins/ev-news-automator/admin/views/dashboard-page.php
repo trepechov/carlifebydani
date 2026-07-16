@@ -123,7 +123,9 @@
 
         <div style="display:flex;gap:20px;flex-wrap:wrap;">
 
-            <!-- Account card — populated by JS on refresh -->
+            <!-- Account card — populated by JS on refresh. Includes rate-limit info: OpenRouter has
+                 no live "requests remaining" endpoint, so that part combines our own request count
+                 (this plugin only) with the last X-RateLimit-* snapshot observed on a 429, if any. -->
             <div class="postbox" id="ena-account-card" style="min-width:200px;flex:1;padding:12px 16px;">
                 <h3 style="margin:0 0 10px;font-size:14px;">OpenRouter Account</h3>
                 <p style="color:#999;font-size:12px;margin:0;">Click "Refresh" to load live account data.</p>

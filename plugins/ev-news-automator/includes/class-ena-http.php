@@ -57,9 +57,12 @@ class ENA_HTTP {
         if ( $code === 429 ) {
             $retry_after = (int) wp_remote_retrieve_header( $response, 'retry-after' );
             return new WP_Error( 'http_429', 'Rate limited (HTTP 429)', [
-                'url'         => $url,
-                'body'        => wp_remote_retrieve_body( $response ),
-                'retry_after' => $retry_after > 0 ? $retry_after : null,
+                'url'                => $url,
+                'body'               => wp_remote_retrieve_body( $response ),
+                'retry_after'        => $retry_after > 0 ? $retry_after : null,
+                'rate_limit_limit'     => wp_remote_retrieve_header( $response, 'x-ratelimit-limit' ) ?: null,
+                'rate_limit_remaining' => wp_remote_retrieve_header( $response, 'x-ratelimit-remaining' ) ?: null,
+                'rate_limit_reset'     => wp_remote_retrieve_header( $response, 'x-ratelimit-reset' ) ?: null,
             ] );
         }
         if ( $code < 200 || $code >= 300 ) {

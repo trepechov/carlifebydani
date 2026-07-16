@@ -87,10 +87,12 @@ class ENA_Ajax {
         $key_info = $plugin->openrouter->get_key_info();
 
         wp_send_json_success( [
-            'key_info' => is_wp_error( $key_info )
+            'key_info'        => is_wp_error( $key_info )
                 ? [ 'error' => $key_info->get_error_message() ]
                 : $key_info,
-            'local'    => ENA_OpenRouter::get_local_stats(),
+            'local'           => ENA_OpenRouter::get_local_stats(),
+            'daily_requests'  => ENA_OpenRouter::get_daily_request_count(),
+            'last_rate_limit' => ENA_OpenRouter::get_last_rate_limit(),
         ] );
     }
 
