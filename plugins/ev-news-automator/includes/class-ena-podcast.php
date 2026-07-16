@@ -60,16 +60,17 @@ class ENA_Podcast {
             $generated = $this->openrouter->podcast_summary( $row['title'], $row['description'] );
             if ( is_wp_error( $generated ) ) {
                 $this->logger->step( 'podcast_summary', 'error', $generated->get_error_message() );
-                $summary = $row['description']; // fall back to existing description
+                $summary = ''; // no extended summary this run — description alone still gets written
             } else {
                 $summary = $generated;
                 $this->logger->step( 'podcast_summary', 'ok', "generated for: {$row['title']}" );
             }
 
             $sections[] = [
-                'bg_title' => $row['title'],
-                'url'      => $row['link'],
-                'summary'  => $summary,
+                'bg_title'    => $row['title'],
+                'url'         => $row['link'],
+                'description' => $row['description'], // copied verbatim from the sheet
+                'summary'     => $summary,             // longer AI-generated write-up
             ];
         }
 

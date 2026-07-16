@@ -49,14 +49,15 @@ class ENA_OpenRouter {
     }
 
     /**
-     * Generate a podcast summary for the hosts to read during the live session.
-     * Uses the existing title + description from the sheet — no article scraping needed.
-     * Returns 3-5 Bulgarian sentences with the most interesting facts.
+     * Generate an extended summary for the hosts to read during the live session —
+     * longer than the sheet's short description, so it adds material rather than
+     * just restating it. Uses the existing title + description from the sheet —
+     * no article scraping needed.
      */
     public function podcast_summary( string $bg_title, string $description ): string|WP_Error {
         return $this->chat(
-            'Пишеш кратко фактическо резюме на новинарска статия на български. Съдържай само фактите от статията — без упоменаване на подкаст, водещи, слушатели или епизоди. Без markdown.',
-            "Заглавие: {$bg_title}\n\nОписание: {$description}\n\nНапиши 3-5 изречения с ключовите факти.",
+            'Пишеш разширено фактическо резюме на новинарска статия на български, което да разгъне и допълни кратко описание с повече детайли и контекст. Съдържай само фактите от статията — без упоменаване на подкаст, водещи, слушатели или епизоди. Без markdown.',
+            "Заглавие: {$bg_title}\n\nКратко описание: {$description}\n\nНапиши разширено резюме от 8-10 изречения с повече детайли и контекст, без да повтаряш описанието дословно.",
             [ 'temperature' => 0.3 ],
             'podcast_summary'
         );

@@ -145,15 +145,33 @@ class ENA_Docs {
             }
             $cursor += $llen;
 
-            // blank line before script
+            // blank line before description
             $requests[] = $this->req_insert( "\n", $cursor );
             $cursor += 1;
 
-            // ── Script / AI summary ──────────────────────────────────────────
-            $summary = trim( $s['summary'] ?? '' ) . "\n\n";
-            $slen    = $this->utf16_len( $summary );
-            $requests[] = $this->req_insert( $summary, $cursor );
-            $cursor += $slen;
+            // ── Description (copied verbatim from the sheet) ─────────────────
+            $description = trim( $s['description'] ?? '' );
+            if ( $description !== '' ) {
+                $desc_text = "Описание: {$description}\n\n";
+                $dlen      = $this->utf16_len( $desc_text );
+                $requests[] = $this->req_insert( $desc_text, $cursor );
+                $requests[] = $this->req_text_style( $cursor, $cursor + $dlen - 2, [
+                    'italic' => true,
+                ], 'italic' );
+                $cursor += $dlen;
+            }
+
+            // ── Extended summary (AI-generated, longer than the description) ─
+            $summary = trim( $s['summary'] ?? '' );
+            if ( $summary !== '' ) {
+                $summary_text = "Резюме: {$summary}\n\n";
+                $slen         = $this->utf16_len( $summary_text );
+                $requests[] = $this->req_insert( $summary_text, $cursor );
+                $requests[] = $this->req_text_style( $cursor, $cursor + $this->utf16_len( 'Резюме: ' ), [
+                    'bold' => true,
+                ], 'bold' );
+                $cursor += $slen;
+            }
 
             // ── Separator ────────────────────────────────────────────────────
             $sep     = str_repeat( '─', 48 ) . "\n\n";
