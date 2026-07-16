@@ -8,8 +8,6 @@ class ENA_OpenRouter {
     private const USAGE_OPTION      = 'ena_openrouter_usage';
     private const DAILY_REQ_OPTION  = 'ena_openrouter_daily_requests';
     private const RATE_LIMIT_OPTION = 'ena_openrouter_rate_limit';
-    private const MAX_RETRIES       = 2; // attempts after a 429, before giving up.
-    private const RETRY_BASE_DELAY  = 5; // seconds, used when OpenRouter sends no Retry-After header.
 
     private ENA_Settings $settings;
     private ENA_Logger   $logger;
@@ -176,30 +174,17 @@ class ENA_OpenRouter {
             'HTTP-Referer'  => get_site_url(),
         ];
 
-        $data = null;
-        for ( $attempt = 0; $attempt <= self::MAX_RETRIES; $attempt++ ) {
-            $response = ENA_HTTP::post_json( self::API_URL, $body, $headers );
-            self::bump_daily_request_count();
-            $data     = ENA_HTTP::retrieve_json( $response );
+        $response = ENA_HTTP::post_json( self::API_URL, $body, $headers );
+        self::bump_daily_request_count();
+        $data     = ENA_HTTP::retrieve_json( $response );
 
-            if ( ! is_wp_error( $data ) ) break;
+        if ( is_wp_error( $data ) ) {
+            // No retry on 429: retrying (and continuing to the next article) just re-hits the
+            // same wall repeatedly, wasting minutes on a run that's already going to fail.
+            // Fail fast instead — the caller stops the batch and the next trigger picks it up.
             if ( $data->get_error_code() === 'http_429' ) self::record_rate_limit_snapshot( $data->get_error_data() );
-            if ( $data->get_error_code() !== 'http_429' || $attempt === self::MAX_RETRIES ) break;
-
-            $retry_after = (int) ( $data->get_error_data()['retry_after'] ?? 0 );
-            $delay       = $retry_after > 0 ? $retry_after : self::RETRY_BASE_DELAY * ( $attempt + 1 );
-
-            $this->logger->step(
-                'openrouter_throttle',
-                'wait',
-                "{$type} — rate limited (429), retrying in {$delay}s (attempt " . ( $attempt + 1 ) . '/' . self::MAX_RETRIES . ')'
-                . self::rate_limit_suffix( $data->get_error_data() )
-            );
-
-            sleep( $delay );
+            return self::with_upstream_message( $data );
         }
-
-        if ( is_wp_error( $data ) ) return self::with_upstream_message( $data );
 
         $content = $data['choices'][0]['message']['content'] ?? null;
         if ( $content === null ) {

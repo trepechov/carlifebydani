@@ -50,9 +50,11 @@
             'Collection'     => [ ENA_OPT_STATUS_SYNC,       [ 'count', 'with_clicks', 'zero_clicks' ] ],
             'Podcast Script' => [ ENA_OPT_STATUS_PODCAST,    [ 'count', 'top_clicks' ] ],
         ];
+        $collection_status = null;
         foreach ( $statuses as $label => [ $key, $fields ] ) :
             $status = $logger->get_status( $key );
             $has_data = ! empty( $status['timestamp'] );
+            if ( $label === 'Last Sync' ) $collection_status = $status;
         ?>
         <div class="postbox" style="min-width:200px;flex:1;padding:12px 16px;">
             <h3 style="margin:0 0 8px;font-size:14px;"><?php echo esc_html( $label ); ?></h3>
@@ -67,13 +69,6 @@
                     <p style="margin:4px 0;">
                         <strong>Run at:</strong>
                         <?php echo esc_html( date_i18n( 'j M Y · H:i', strtotime( $status['timestamp'] ) ) ); ?>
-                    </p>
-                <?php endif; ?>
-                <?php if ( $label === 'Last Sync' && ! empty( $status['skipped'] ) ) : ?>
-                    <p style="margin:8px 0 0;padding:6px 8px;background:#fef8ee;border-left:3px solid #dba617;color:#8a5a00;font-size:12px;">
-                        ⚠ <?php echo esc_html( $status['skipped'] ); ?> article(s) skipped —
-                        <?php echo esc_html( $status['skip_summary'] ?? '' ); ?>.
-                        <a href="#ena-account-card">Check OpenRouter account</a>.
                     </p>
                 <?php endif; ?>
                 <?php if ( $label === 'Collection' && $sheet_url ) : ?>
@@ -94,6 +89,14 @@
         </div>
         <?php endforeach; ?>
         </div>
+
+        <?php if ( ! empty( $collection_status['skipped'] ) ) : ?>
+            <p class="ena-notice ena-notice--warning">
+                ⚠ <?php echo esc_html( $collection_status['skipped'] ); ?> article(s) skipped —
+                <?php echo esc_html( $collection_status['skip_summary'] ?? '' ); ?>.
+                <a href="#ena-account-card">Check OpenRouter account</a>.
+            </p>
+        <?php endif; ?>
     </div>
 
     <?php

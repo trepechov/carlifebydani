@@ -73,9 +73,10 @@ class ENA_Collector {
         // Sort by published_at DESC so articles are appended in recency order within each batch.
         usort( $new_articles, fn ( $a, $b ) => $b['published_at'] <=> $a['published_at'] );
 
-        $rows         = [];
-        $total        = count( $new_articles );
-        $skip_reasons = []; // WP_Error code => count, so any systematic failure is visible, not just 429s.
+        $rows          = [];
+        $total         = count( $new_articles );
+        $skip_reasons  = []; // WP_Error code => count, so any systematic failure is visible, not just 429s.
+        $stopped_early = 0;  // articles never attempted because we bailed out on a 429/401.
 
         foreach ( $new_articles as $i => $article ) {
             $num = $i + 1;
@@ -87,6 +88,20 @@ class ENA_Collector {
             if ( is_wp_error( $summary ) ) {
                 $code = $summary->get_error_code();
                 $skip_reasons[ $code ] = ( $skip_reasons[ $code ] ?? 0 ) + 1;
+
+                if ( $code === 'http_429' || $code === 'http_401' ) {
+                    $stopped_early = $total - $num;
+                    $reason = $code === 'http_429'
+                        ? 'rate limited (429), stopping run early instead of hitting the same limit repeatedly'
+                        : 'unauthorized (401) — API key looks invalid/expired, stopping run early instead of repeating the same failure';
+                    $this->logger->step(
+                        'openrouter_call',
+                        'skip',
+                        "article {$num}/{$total} — {$reason} — {$stopped_early} article(s) left for the next run: " . $summary->get_error_message()
+                    );
+                    break;
+                }
+
                 $this->logger->step( 'openrouter_call', 'skip', "article {$num}/{$total} — skipped, will retry next run: " . $summary->get_error_message() );
                 continue;
             }
@@ -125,12 +140,15 @@ class ENA_Collector {
             array_keys( $skip_reasons ),
             $skip_reasons
         ) );
+        if ( $stopped_early > 0 ) {
+            $skip_summary .= ( $skip_summary ? ', ' : '' ) . "{$stopped_early}× not attempted (run stopped early)";
+        }
 
-        if ( $skipped > 0 ) {
+        if ( $skipped > 0 || $stopped_early > 0 ) {
             $this->logger->step(
                 'openrouter_failures',
                 'warn',
-                "{$skipped}/{$total} articles skipped — {$skip_summary}"
+                ( $skipped + $stopped_early ) . "/{$total} articles skipped — {$skip_summary}"
             );
         }
 

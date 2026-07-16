@@ -65,6 +65,14 @@ class ENA_HTTP {
                 'rate_limit_reset'     => wp_remote_retrieve_header( $response, 'x-ratelimit-reset' ) ?: null,
             ] );
         }
+        if ( $code === 401 ) {
+            // Invalid/expired key — every subsequent call will fail identically, so callers
+            // should stop the batch rather than churn through the rest of the articles.
+            return new WP_Error( 'http_401', 'Unauthorized (HTTP 401)', [
+                'url'  => $url,
+                'body' => wp_remote_retrieve_body( $response ),
+            ] );
+        }
         if ( $code < 200 || $code >= 300 ) {
             return new WP_Error( 'http_error', "HTTP {$code}", [ 'url' => $url, 'body' => wp_remote_retrieve_body( $response ) ] );
         }
