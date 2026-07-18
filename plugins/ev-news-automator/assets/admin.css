@@ -4,7 +4,7 @@
 
 /* ── Job status bar ──────────────────────────────────────────────────────── */
 
-#ena-job-bar {
+.ena-status-bar {
     display: none;
     align-items: center;
     gap: 10px;
@@ -15,28 +15,28 @@
     line-height: 1.4;
 }
 
-#ena-job-bar.is-running {
+.ena-status-bar.is-running {
     display: flex;
     background: #f0f6ff;
     border-left: 3px solid #2271b1;
     color: #1d2327;
 }
 
-#ena-job-bar.is-done {
+.ena-status-bar.is-done {
     display: flex;
     background: #f0faf1;
     border-left: 3px solid #46b450;
     color: #1d2327;
 }
 
-#ena-job-bar.is-error {
+.ena-status-bar.is-error {
     display: flex;
     background: #fdf2f2;
     border-left: 3px solid #dc3232;
     color: #8a1c1c;
 }
 
-#ena-job-bar.is-warning {
+.ena-status-bar.is-warning {
     display: flex;
     background: #fef8ee;
     border-left: 3px solid #dba617;

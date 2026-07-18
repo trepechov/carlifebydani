@@ -11,7 +11,7 @@
             </div>
         </div>
 
-        <div id="ena-job-bar">
+        <div id="ena-job-bar" class="ena-status-bar">
             <span id="ena-job-icon"></span>
             <span id="ena-job-msg"></span>
             <span id="ena-job-elapsed"></span>
@@ -97,6 +97,26 @@
                 <a href="#ena-account-card">Check OpenRouter account</a>.
             </p>
         <?php endif; ?>
+    </div>
+
+    <div class="postbox" style="margin-bottom:24px;padding:16px 20px;">
+        <h2 style="margin:0 0 12px;font-size:16px;">Add Article Manually</h2>
+
+        <div id="ena-manual-add-bar" class="ena-status-bar" style="margin-bottom:12px;">
+            <span id="ena-manual-add-icon"></span>
+            <span id="ena-manual-add-msg"></span>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input type="url" id="ena-manual-url" placeholder="https://example.com/article" style="flex:1;min-width:280px;" />
+            <button class="button button-primary" id="ena-btn-manual-add">Add Article</button>
+        </div>
+
+        <p style="margin:12px 0 0;color:#666;">
+            Paste a URL not covered by any configured source. It goes through the same
+            title/summary generation as collected articles, then gets appended, sorted, and synced
+            to the live feed just like a normal collection run.
+        </p>
     </div>
 
     <?php
@@ -198,7 +218,7 @@
         <table class="widefat striped">
             <thead>
                 <tr>
-                    <th>Time</th><th>Trigger</th><th>Phase</th><th>Level</th><th>Message</th>
+                    <th>Time</th><th>Trigger</th><th>Phase</th><th>Status</th><th>Details</th>
                 </tr>
             </thead>
             <tbody>
@@ -224,7 +244,7 @@
             <summary>Show transcript (<?php echo count( $transcript ); ?> steps)</summary>
             <table class="widefat striped" style="margin-top:8px;">
                 <thead>
-                    <tr><th>Time</th><th>Step</th><th>Status</th><th>Detail</th></tr>
+                    <tr><th>Time</th><th>Step</th><th>Status</th><th>Details</th></tr>
                 </thead>
                 <tbody>
                     <?php foreach ( $transcript as $entry ) : ?>

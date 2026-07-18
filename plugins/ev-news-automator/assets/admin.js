@@ -13,7 +13,7 @@
     function setBar(cls, iconHtml, msg, timeText) {
         const bar = document.getElementById('ena-job-bar');
         if (!bar) return;
-        bar.className = cls;
+        bar.className = 'ena-status-bar' + (cls ? ' ' + cls : '');
         document.getElementById('ena-job-icon').innerHTML    = iconHtml;
         document.getElementById('ena-job-msg').textContent   = msg;
         document.getElementById('ena-job-elapsed').textContent = timeText || '';
@@ -21,7 +21,7 @@
 
     function clearBar() {
         const bar = document.getElementById('ena-job-bar');
-        if (bar) bar.className = '';
+        if (bar) bar.className = 'ena-status-bar';
     }
 
     // ── Button loading state ──────────────────────────────────────────────────
@@ -273,6 +273,57 @@
 
     document.getElementById('ena-btn-usage-refresh')?.addEventListener('click', function () {
         fetchUsage(this);
+    });
+
+    // ── Manual article add ───────────────────────────────────────────────────
+
+    function setManualBar(cls, iconHtml, msg) {
+        const bar = document.getElementById('ena-manual-add-bar');
+        if (!bar) return;
+        bar.className = 'ena-status-bar' + (cls ? ' ' + cls : '');
+        document.getElementById('ena-manual-add-icon').innerHTML  = iconHtml;
+        document.getElementById('ena-manual-add-msg').textContent = msg;
+    }
+
+    document.getElementById('ena-btn-manual-add')?.addEventListener('click', function () {
+        const btn   = this;
+        const input = document.getElementById('ena-manual-url');
+        const articleUrl = (input?.value || '').trim();
+
+        if (!articleUrl) {
+            setManualBar('is-error', '✕', 'Please enter a URL.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.dataset.originalText = btn.textContent;
+        btn.innerHTML = '<span class="ena-btn-spinner"></span>Adding…';
+        setManualBar('is-running', '<span class="ena-bar-spinner"></span>', 'Fetching article, translating title and creaiting description…');
+
+        fetch(url, {
+            method: 'POST',
+            body: new URLSearchParams({ action: 'ena_add_article', nonce, url: articleUrl }),
+        })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) {
+                    setManualBar('is-error', '✕', 'Error: ' + (data.data || 'unknown'));
+                    return;
+                }
+                const row = data.data.row || {};
+                setManualBar('is-done', '✓', 'Added "' + (row.title || articleUrl) + '" · synced ' + (data.data.synced ?? 0) + ' articles to the feed.');
+                if (input) input.value = '';
+            })
+            .catch(err => {
+                setManualBar('is-error', '✕', 'Network error: ' + err.message);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                if (btn.dataset.originalText) {
+                    btn.textContent = btn.dataset.originalText;
+                    delete btn.dataset.originalText;
+                }
+            });
     });
 
     document.getElementById('ena-btn-usage-reset')?.addEventListener('click', function () {

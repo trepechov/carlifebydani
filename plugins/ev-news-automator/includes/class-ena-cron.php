@@ -131,6 +131,54 @@ class ENA_Cron {
     }
 
     /**
+     * Add a single admin-submitted article to the active sheet, sharing every step
+     * with the automatic pipeline after the fetch/summarize stage: append, sort,
+     * trim, resync the live feed. Deliberately skips refresh_analytics() (no GA4
+     * data exists yet for a brand-new URL) and the push-notification step (a single
+     * manual add is a low-key admin action, not a "today's batch is ready" event).
+     *
+     * @return array{added:int,removed:int,synced:int,row:array}|WP_Error
+     */
+    public static function run_manual_add( ENA_Plugin $plugin, string $url ): array|WP_Error {
+        $plugin->storage->flush_sheets_cache();
+
+        $active_name = $plugin->storage->active_sheet_name();
+        $plugin->logger->step(
+            'active_sheet',
+            is_wp_error( $active_name ) ? 'error' : 'ok',
+            is_wp_error( $active_name ) ? $active_name->get_error_message() : "resolved active tab: {$active_name}"
+        );
+
+        $row = $plugin->collector->add_manual( $url );
+        if ( is_wp_error( $row ) ) {
+            $plugin->logger->log_error( 'manual_add', $row->get_error_message() );
+            return $row;
+        }
+
+        $append = $plugin->storage->append_rows( [ $row ] );
+        if ( is_wp_error( $append ) ) {
+            $plugin->logger->log_error( 'sheets_append', $append->get_error_message() );
+            return $append;
+        }
+        $plugin->logger->step( 'sheets_append', 'ok', '1 row appended (manual add)' );
+
+        self::sort_sheet( $plugin->storage, $plugin->logger );
+
+        $max     = (int) $plugin->settings->get( 'max_articles', 50 );
+        $removed = $plugin->storage->trim_to_max( $max );
+        $plugin->logger->step( 'sheets_trim', 'ok', "{$removed} rows removed (max={$max})" );
+
+        $sync_result = $plugin->sync->run();
+
+        return [
+            'added'   => 1,
+            'removed' => $removed,
+            'synced'  => $sync_result['count'] ?? 0,
+            'row'     => $row,
+        ];
+    }
+
+    /**
      * Fetch GA4 clicks/upvotes/downvotes for the active sheet's existing rows and
      * write them back to the sheet. Each fetch is logged independently so one
      * failing fetch never blocks the others. Shared by run_pipeline() and

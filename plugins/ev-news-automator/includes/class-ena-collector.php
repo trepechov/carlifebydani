@@ -8,6 +8,10 @@ class ENA_Collector {
     // margin below that even accounting for request latency and jitter.
     private const REQUEST_DELAY_SECONDS = 4;
 
+    // Manual adds scrape a full article page (uncapped), unlike RSS excerpts (500 chars, already
+    // capped by ENA_Scraper::fetch_rss()). Cap here to keep the summarize() prompt/cost bounded.
+    private const MANUAL_BODY_CAP = 3000;
+
     private ENA_Sheets     $storage;
     private ENA_Scraper    $scraper;
     private ENA_OpenRouter $openrouter;
@@ -153,6 +157,47 @@ class ENA_Collector {
         // Sorting and trimming happen in ENA_Cron::run_pipeline() AFTER this returns,
         // so they operate on the full set (existing + newly appended) rows.
         return [ 'added' => $added, 'skipped' => $skipped, 'skip_summary' => $skip_summary ];
+    }
+
+    /**
+     * Turn a single admin-submitted URL into a sheet row, using the exact same
+     * extraction + house-style summarization the automatic pipeline uses per article.
+     * Returns the row (not yet appended) or a WP_Error for an unsafe/duplicate URL
+     * or a scrape/OpenRouter failure. Caller is responsible for append/sort/trim/sync.
+     */
+    public function add_manual( string $url ): array|WP_Error {
+        $url = esc_url_raw( $url );
+        if ( empty( $url ) ) {
+            return new WP_Error( 'invalid_url', 'Please enter a valid URL.' );
+        }
+
+        $existing_urls = $this->storage->existing_urls();
+        if ( isset( $existing_urls[ $url ] ) ) {
+            return new WP_Error( 'duplicate_url', 'This article is already in the active sheet.' );
+        }
+
+        $body = $this->scraper->extract_body( $url );
+        if ( is_wp_error( $body ) ) return $body;
+        if ( trim( $body ) === '' ) {
+            return new WP_Error( 'empty_body', 'Could not extract any article text from that URL.' );
+        }
+        $body = mb_substr( $body, 0, self::MANUAL_BODY_CAP );
+
+        $summary = $this->openrouter->summarize( '', $body );
+        if ( is_wp_error( $summary ) ) return $summary;
+
+        $this->logger->step( 'manual_add', 'ok', "bg_title generated for {$url}" );
+
+        return [
+            'title'       => $summary['bg_title'],
+            'description' => $summary['bg_summary'],
+            'link'        => $url,
+            'author'      => (string) wp_parse_url( $url, PHP_URL_HOST ),
+            'upvote'      => 0,
+            'downvote'    => 0,
+            'clicks'      => 0,
+            'pub_date'    => gmdate( 'Y-m-d' ),
+        ];
     }
 
     /** Human-readable explanation for a WP_Error code coming out of ENA_OpenRouter::summarize(). */

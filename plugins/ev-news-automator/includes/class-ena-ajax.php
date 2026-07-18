@@ -7,6 +7,7 @@ class ENA_Ajax {
         add_action( 'wp_ajax_ena_run_collection',    [ __CLASS__, 'handle_run_collection' ] );
         add_action( 'wp_ajax_ena_run_sync',          [ __CLASS__, 'handle_run_sync' ] );
         add_action( 'wp_ajax_ena_run_podcast',       [ __CLASS__, 'handle_run_podcast' ] );
+        add_action( 'wp_ajax_ena_add_article',       [ __CLASS__, 'handle_add_article' ] );
         add_action( 'wp_ajax_ena_openrouter_usage',  [ __CLASS__, 'handle_openrouter_usage' ] );
         add_action( 'wp_ajax_ena_reset_usage_stats', [ __CLASS__, 'handle_reset_usage_stats' ] );
 
@@ -73,6 +74,34 @@ class ENA_Ajax {
             wp_send_json_success( $result );
         } catch ( \Throwable $e ) {
             $plugin->logger->log_error( 'podcast', 'Uncaught exception: ' . $e->getMessage() );
+            wp_send_json_error( 'Exception: ' . $e->getMessage() );
+        }
+    }
+
+    public static function handle_add_article(): void {
+        check_ajax_referer( 'ena_admin', 'nonce' );
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( 'Forbidden', 403 );
+        }
+
+        $url = esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) );
+        if ( empty( $url ) ) {
+            wp_send_json_error( 'Please enter a valid URL.' );
+        }
+
+        $plugin = ENA_Plugin::instance();
+        $plugin->logger->begin_run( 'manual', 'manual_add' );
+
+        try {
+            $result = ENA_Cron::run_manual_add( $plugin, $url );
+            if ( is_wp_error( $result ) ) {
+                $plugin->logger->end_run( [ 'error' => $result->get_error_message() ] );
+                wp_send_json_error( $result->get_error_message() );
+            }
+            $plugin->logger->end_run( $result );
+            wp_send_json_success( $result );
+        } catch ( \Throwable $e ) {
+            $plugin->logger->log_error( 'manual_add', 'Uncaught exception: ' . $e->getMessage() );
             wp_send_json_error( 'Exception: ' . $e->getMessage() );
         }
     }
