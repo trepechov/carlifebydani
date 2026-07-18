@@ -69,6 +69,27 @@ class ENA_Cron {
         // load or run.
         $plugin->storage->flush_sheets_cache();
 
+        // Auto-create this week's session tab if it's due and missing, copying the
+        // header row from whatever's currently active. Self-heals the case where
+        // the admin forgets the manual "new tab DD.MM.YYYY" step after Tuesday's
+        // podcast — without this, active_sheet_name() would keep resolving to an
+        // increasingly stale tab. create_session_tab() no-ops if the tab already
+        // exists, so this is safe to run on every pipeline call.
+        $target_tab = self::current_session_tab_name();
+        $outgoing   = $plugin->storage->active_sheet_name();
+        if ( is_wp_error( $outgoing ) || $outgoing !== $target_tab ) {
+            $header_source = is_wp_error( $outgoing ) ? '' : $outgoing;
+            $create        = $plugin->storage->create_session_tab( $target_tab, $header_source );
+            $plugin->logger->step(
+                'session_tab_create',
+                is_wp_error( $create ) ? 'error' : 'ok',
+                is_wp_error( $create )
+                    ? $create->get_error_message()
+                    : "ensured tab {$target_tab} exists" . ( $header_source ? " (header copied from {$header_source})" : ' (default header — no prior tab found)' )
+            );
+            $plugin->storage->flush_sheets_cache();
+        }
+
         // Log which tab this run resolved as "active" before touching any data —
         // the single most useful line for diagnosing a run that targets the wrong
         // sheet or wipes an unexpectedly-empty one.
@@ -78,6 +99,18 @@ class ENA_Cron {
             is_wp_error( $active_name ) ? 'error' : 'ok',
             is_wp_error( $active_name ) ? $active_name->get_error_message() : "resolved active tab: {$active_name}"
         );
+
+        // Session tabs are created manually (e.g. weekly), and refresh_analytics()/
+        // ENA_Sync only ever touch the active (newest) tab. The run that first
+        // notices the active tab changed gives the OUTGOING tab one last GA4
+        // refresh before it's abandoned — otherwise any votes/clicks that landed
+        // on it after rotation are frozen forever.
+        $previous_active = get_option( ENA_OPT_LAST_ACTIVE_SHEET, '' );
+        if ( ! is_wp_error( $active_name ) && $previous_active && $previous_active !== $active_name ) {
+            $plugin->logger->step( 'tab_rotation', 'ok',
+                "active tab changed {$previous_active} -> {$active_name}; refreshing outgoing tab one last time" );
+            self::refresh_analytics( $plugin->storage, $plugin->analytics, $plugin->logger, $previous_active );
+        }
 
         // 1. Refresh clicks + votes on existing rows. Shared with the podcast script
         //    generator (ENA_Podcast::run()) so both always sort off the same data.
@@ -124,6 +157,11 @@ class ENA_Cron {
         // 7. Persist the run timestamp so the next cutoff starts from here
         //    (minus the 1-hour buffer applied in ENA_Settings::article_age_cutoff).
         update_option( 'ena_last_collection_at', $run_started_at );
+
+        // 8. Remember this run's active tab so the next run can detect rotation.
+        if ( ! is_wp_error( $active_name ) ) {
+            update_option( ENA_OPT_LAST_ACTIVE_SHEET, $active_name );
+        }
 
         return $result;
     }
@@ -177,42 +215,46 @@ class ENA_Cron {
     }
 
     /**
-     * Fetch GA4 clicks/upvotes/downvotes for the active sheet's existing rows and
-     * write them back to the sheet. Each fetch is logged independently so one
-     * failing fetch never blocks the others. Shared by run_pipeline() and
-     * ENA_Podcast::run() so both refresh the exact same data before sorting.
+     * Fetch GA4 clicks/upvotes/downvotes for a sheet's existing rows and write them
+     * back to that sheet. Targets the active sheet by default; pass $sheet_name to
+     * refresh a specific tab instead (used to give a just-rotated-out tab one final
+     * refresh before it's abandoned — see run_pipeline()'s rotation check).
+     * Each fetch is logged independently so one failing fetch never blocks the
+     * others. Shared by run_pipeline() and ENA_Podcast::run() so both refresh the
+     * exact same data before sorting.
      */
-    public static function refresh_analytics( ENA_Sheets $storage, ENA_Analytics $analytics, ENA_Logger $logger ): void {
-        $rows = $storage->read_data_rows();
+    public static function refresh_analytics( ENA_Sheets $storage, ENA_Analytics $analytics, ENA_Logger $logger, ?string $sheet_name = null ): void {
+        $tag  = $sheet_name ? " [{$sheet_name}]" : '';
+        $rows = $storage->read_data_rows( $sheet_name );
         $urls = is_wp_error( $rows ) ? [] : array_column( $rows, 'link' );
         $logger->step( 'read_data_rows', is_wp_error( $rows ) ? 'error' : 'ok',
-            is_wp_error( $rows ) ? $rows->get_error_message() : count( $rows ) . ' existing rows read' );
+            ( is_wp_error( $rows ) ? $rows->get_error_message() : count( $urls ) . ' existing rows read' ) . $tag );
 
         $clicks = $analytics->fetch_clicks( $urls );
         if ( is_wp_error( $clicks ) ) {
-            $logger->log_error( 'analytics_fetch', $clicks->get_error_message() );
+            $logger->log_error( 'analytics_fetch', $clicks->get_error_message() . $tag );
         } else {
-            $storage->update_clicks( $clicks );
+            $storage->update_clicks( $clicks, $sheet_name );
             $with_clicks = count( array_filter( $clicks, fn ( $c ) => $c > 0 ) );
-            $logger->step( 'analytics_fetch', 'ok', count( $urls ) . " URLs, {$with_clicks} with clicks" );
+            $logger->step( 'analytics_fetch', 'ok', count( $urls ) . " URLs, {$with_clicks} with clicks{$tag}" );
         }
 
         $upvotes = $analytics->fetch_upvotes( $urls );
         if ( is_wp_error( $upvotes ) ) {
-            $logger->log_error( 'analytics_fetch_upvotes', $upvotes->get_error_message() );
+            $logger->log_error( 'analytics_fetch_upvotes', $upvotes->get_error_message() . $tag );
         } else {
-            $storage->update_upvotes( $upvotes );
+            $storage->update_upvotes( $upvotes, $sheet_name );
             $with_upvotes = count( array_filter( $upvotes, fn ( $c ) => $c > 0 ) );
-            $logger->step( 'analytics_fetch_upvotes', 'ok', count( $urls ) . " URLs, {$with_upvotes} with upvotes" );
+            $logger->step( 'analytics_fetch_upvotes', 'ok', count( $urls ) . " URLs, {$with_upvotes} with upvotes{$tag}" );
         }
 
         $downvotes = $analytics->fetch_downvotes( $urls );
         if ( is_wp_error( $downvotes ) ) {
-            $logger->log_error( 'analytics_fetch_downvotes', $downvotes->get_error_message() );
+            $logger->log_error( 'analytics_fetch_downvotes', $downvotes->get_error_message() . $tag );
         } else {
-            $storage->update_downvotes( $downvotes );
+            $storage->update_downvotes( $downvotes, $sheet_name );
             $with_downvotes = count( array_filter( $downvotes, fn ( $c ) => $c > 0 ) );
-            $logger->step( 'analytics_fetch_downvotes', 'ok', count( $urls ) . " URLs, {$with_downvotes} with downvotes" );
+            $logger->step( 'analytics_fetch_downvotes', 'ok', count( $urls ) . " URLs, {$with_downvotes} with downvotes{$tag}" );
         }
     }
 
@@ -229,6 +271,29 @@ class ENA_Cron {
         }
         $logger->step( 'sheets_sort', 'ok', 'rows sorted: upvote DESC → pub_date DESC → added_date DESC' );
         return true;
+    }
+
+    /**
+     * The DD.MM.YYYY name of the session tab that should be active right now.
+     * Sessions run Tuesday-to-Tuesday: the podcast records Tuesday evening and a
+     * fresh tab is expected once that's wrapped up — approximated as 19:00 in the
+     * site's configured timezone (expected to be Europe/Sofia / EET-EEST, matching
+     * the podcast's actual recording schedule). Before that cutoff on a Tuesday,
+     * the previous week's Tuesday is still the current session.
+     */
+    private static function current_session_tab_name(): string {
+        $now = new DateTimeImmutable( 'now', wp_timezone() );
+
+        $dow                 = (int) $now->format( 'N' ); // 1=Mon .. 7=Sun, Tuesday=2
+        $days_since_tuesday   = ( $dow - 2 + 7 ) % 7;
+        $this_weeks_tuesday   = $days_since_tuesday > 0
+            ? $now->modify( "-{$days_since_tuesday} days" )->setTime( 0, 0, 0 )
+            : $now->setTime( 0, 0, 0 );
+
+        $rollover_passed = $days_since_tuesday > 0 || $now->format( 'H:i' ) >= '19:00';
+        $target          = $rollover_passed ? $this_weeks_tuesday : $this_weeks_tuesday->modify( '-7 days' );
+
+        return $target->format( 'd.m.Y' );
     }
 
     public static function add_intervals( array $schedules ): array {

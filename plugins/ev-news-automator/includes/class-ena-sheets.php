@@ -40,15 +40,16 @@ class ENA_Sheets {
     // ── Public interface contract ────────────────────────────────────────────
 
     /**
-     * Read data rows from the active session sheet.
+     * Read data rows from a session sheet — the active one by default, or an explicit
+     * $sheet_name (e.g. a just-rotated-out tab being refreshed one last time).
      * Returns assoc arrays with keys: title, description, link, author, upvote, downvote,
      * clicks, added_date, session_date.
      * session_date is parsed from the tab name (DD.MM.YYYY → Y-m-d), not a real column.
      * upvote/downvote/clicks are real GA4-synced vote counts, cast to int.
      * Backward compat: missing upvote/downvote/clicks → 0; missing col H → added_date=session_date.
      */
-    public function read_data_rows(): array|WP_Error {
-        $sheet = $this->active_sheet_name();
+    public function read_data_rows( ?string $sheet_name = null ): array|WP_Error {
+        $sheet = $sheet_name ?? $this->active_sheet_name();
         if ( is_wp_error( $sheet ) ) return $sheet;
 
         $all = $this->read_sheet_rows( $sheet );
@@ -140,6 +141,58 @@ class ENA_Sheets {
     }
 
     /**
+     * Create a new session tab named $name if one doesn't already exist, copying
+     * the header row (row 1) from $copy_header_from. Falls back to the default
+     * COLUMNS header if $copy_header_from is blank or unreadable — e.g. the very
+     * first tab ever created for this spreadsheet.
+     * A no-op (returns true, no API writes) if $name already exists — safe to
+     * call on every pipeline run to self-heal a missed manual tab creation.
+     */
+    public function create_session_tab( string $name, string $copy_header_from = '' ): bool|WP_Error {
+        $sheets = $this->list_sheets();
+        if ( is_wp_error( $sheets ) ) return $sheets;
+
+        foreach ( $sheets as $s ) {
+            if ( $s['title'] === $name ) return true;
+        }
+
+        $token = $this->auth->get_access_token( self::SCOPES );
+        if ( is_wp_error( $token ) ) return $token;
+
+        $id = $this->settings->get( 'spreadsheet_id' );
+
+        $add_response = ENA_HTTP::post_json( self::BASE . "/{$id}:batchUpdate", [
+            'requests' => [ [ 'addSheet' => [ 'properties' => [ 'title' => $name ] ] ] ],
+        ], [ 'Authorization' => "Bearer {$token}" ] );
+        $add_result = ENA_HTTP::retrieve_json( $add_response );
+        if ( is_wp_error( $add_result ) ) return $add_result;
+
+        $this->flush_sheets_cache();
+
+        $header = null;
+        if ( $copy_header_from !== '' ) {
+            $range         = rawurlencode( "{$copy_header_from}!A1:I1" );
+            $read_response = ENA_HTTP::get( self::BASE . "/{$id}/values/{$range}", [
+                'headers' => [ 'Authorization' => "Bearer {$token}" ],
+            ] );
+            $read_data = ENA_HTTP::retrieve_json( $read_response );
+            if ( ! is_wp_error( $read_data ) && ! empty( $read_data['values'][0] ) ) {
+                $header = $read_data['values'][0];
+            }
+        }
+        if ( $header === null ) $header = self::COLUMNS;
+
+        $write_response = ENA_HTTP::post_json( self::BASE . "/{$id}/values:batchUpdate", [
+            'valueInputOption' => 'RAW',
+            'data'             => [ [ 'range' => "{$name}!A1", 'values' => [ $header ] ] ],
+        ], [ 'Authorization' => "Bearer {$token}" ] );
+        $write_result = ENA_HTTP::retrieve_json( $write_response );
+        if ( is_wp_error( $write_result ) ) return $write_result;
+
+        return true;
+    }
+
+    /**
      * Delete rows by 0-based data-row index from the active session sheet.
      * Sorted descending internally to avoid index shifting.
      */
@@ -184,34 +237,36 @@ class ENA_Sheets {
      * Update column G (clicks) for every row whose link URL matches the given map.
      * Rows whose URL is not in $url_to_clicks are left unchanged.
      */
-    public function update_clicks( array $url_to_clicks ): bool|WP_Error {
-        return $this->update_column( 'G', $url_to_clicks );
+    public function update_clicks( array $url_to_clicks, ?string $sheet_name = null ): bool|WP_Error {
+        return $this->update_column( 'G', $url_to_clicks, $sheet_name );
     }
 
     /**
      * Update column E (upvote) for every row whose link URL matches the given map.
      * Rows whose URL is not in $url_to_count are left unchanged.
      */
-    public function update_upvotes( array $url_to_count ): bool|WP_Error {
-        return $this->update_column( 'E', $url_to_count );
+    public function update_upvotes( array $url_to_count, ?string $sheet_name = null ): bool|WP_Error {
+        return $this->update_column( 'E', $url_to_count, $sheet_name );
     }
 
     /**
      * Update column F (downvote) for every row whose link URL matches the given map.
      * Rows whose URL is not in $url_to_count are left unchanged.
      */
-    public function update_downvotes( array $url_to_count ): bool|WP_Error {
-        return $this->update_column( 'F', $url_to_count );
+    public function update_downvotes( array $url_to_count, ?string $sheet_name = null ): bool|WP_Error {
+        return $this->update_column( 'F', $url_to_count, $sheet_name );
     }
 
     /**
      * Write an integer count into $column_letter for every row whose link (column C)
      * matches a key in $url_to_count. Rows not in the map are left unchanged.
+     * Targets the active sheet by default, or an explicit $sheet_name (e.g. a
+     * just-rotated-out tab being refreshed one last time).
      */
-    private function update_column( string $column_letter, array $url_to_count ): bool|WP_Error {
+    private function update_column( string $column_letter, array $url_to_count, ?string $sheet_name = null ): bool|WP_Error {
         if ( empty( $url_to_count ) ) return true;
 
-        $sheet = $this->active_sheet_name();
+        $sheet = $sheet_name ?? $this->active_sheet_name();
         if ( is_wp_error( $sheet ) ) return $sheet;
 
         $token = $this->auth->get_access_token( self::SCOPES );
