@@ -208,7 +208,9 @@ class ENA_OpenRouter {
             return new WP_Error( 'openrouter_empty', 'No content in response', $data );
         }
 
-        $this->record_usage( $data['usage'] ?? [], $type );
+        $usage = $data['usage'] ?? [];
+        $this->record_usage( $usage, $type );
+        $this->log_usage( $type, $usage );
 
         return $content;
     }
@@ -274,5 +276,19 @@ class ENA_OpenRouter {
         $stats['last_call_at'] = current_time( 'mysql' );
 
         update_option( self::USAGE_OPTION, $stats, false );
+    }
+
+    /** Record per-request token usage as a transcript step, so token burn is visible next to the call it came from. */
+    private function log_usage( string $type, array $usage ): void {
+        $prompt     = (int) ( $usage['prompt_tokens']     ?? 0 );
+        $completion = (int) ( $usage['completion_tokens'] ?? 0 );
+        $total      = (int) ( $usage['total_tokens']      ?? ( $prompt + $completion ) );
+        $session    = (int) ( get_option( self::USAGE_OPTION, [] )['total_tokens'] ?? $total );
+
+        $this->logger->step(
+            'openrouter_usage',
+            'ok',
+            "{$type}: {$total} tokens ({$prompt} prompt + {$completion} completion) — session total: {$session} tokens"
+        );
     }
 }

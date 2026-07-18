@@ -8,7 +8,7 @@ class ENA_Logger {
 
     public function log( string $phase, string $level, string $message, array $context = [] ): void {
         $entry = [
-            'time'    => ( new DateTimeImmutable() )->format( 'c' ),
+            'time'    => ( new DateTimeImmutable() )->format( 'Y-m-d H:i:s' ),
             'trigger' => $this->current_trigger,
             'phase'   => $phase,
             'level'   => $level,
@@ -25,7 +25,7 @@ class ENA_Logger {
 
     public function step( string $step, string $status, string $detail = '' ): void {
         $entry = [
-            'time'   => ( new DateTimeImmutable() )->format( 'H:i:s' ),
+            'time'   => ( new DateTimeImmutable() )->format( 'Y-m-d H:i:s' ),
             'step'   => $step,
             'status' => $status,
             'detail' => $detail,
