@@ -33,7 +33,7 @@ $data_id      = esc_attr( $article['id'] ?? md5( $article['link'] ?? '' ) );
            the cell to match the content column height (object-cover fills it). */ ?>
     <a href="<?php echo $link; ?>" target="_blank" rel="nofollow"
        class="relative block aspect-video overflow-hidden bg-black sm:aspect-auto"
-       data-ev-news data-title="<?php echo $data_title; ?>" data-url="<?php echo $data_url; ?>">
+       data-ev-news-article data-title="<?php echo $data_title; ?>" data-url="<?php echo $data_url; ?>">
         <div class="overlay bg-to-solidgray-gradient-post opacity-0 group-hover:opacity-100 sm:hidden"></div>
         <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/noimage-640x360.jpg" alt=""
              class="absolute inset-0 w-full h-full object-cover">
