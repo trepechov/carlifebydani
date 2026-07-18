@@ -51,19 +51,41 @@ class ENA_Podcast {
         $top   = array_slice( $rows, 0, $top_n );
 
         // Step 4: generate summaries from existing title + description — no scraping needed.
-        $sections = [];
+        $sections      = [];
+        $total         = count( $top );
+        $stopped_early = false; // set once a 429/401 hits, so remaining articles skip the API call too.
 
         foreach ( $top as $i => $row ) {
-            if ( $i > 0 ) {
-                sleep( self::REQUEST_DELAY_SECONDS );
-            }
-            $generated = $this->openrouter->podcast_summary( $row['title'], $row['description'] );
-            if ( is_wp_error( $generated ) ) {
-                $this->logger->step( 'podcast_summary', 'error', $generated->get_error_message() );
-                $summary = ''; // no extended summary this run — description alone still gets written
-            } else {
-                $summary = $generated;
-                $this->logger->step( 'podcast_summary', 'ok', "generated for: {$row['title']}" );
+            // Placeholder shown in the doc itself whenever no AI summary was generated, so
+            // reading the script later makes it obvious this isn't "nothing extra to add" —
+            // it's a failure the next run should be expected to fill in.
+            $summary = '[AI резюме не е генерирано — генерирането спря по-рано в тази партида]';
+
+            if ( ! $stopped_early ) {
+                if ( $i > 0 ) {
+                    sleep( self::REQUEST_DELAY_SECONDS );
+                }
+                $generated = $this->openrouter->podcast_summary( $row['title'], $row['description'] );
+
+                if ( is_wp_error( $generated ) ) {
+                    if ( ENA_OpenRouter::is_fatal_batch_error( $generated ) ) {
+                        $stopped_early = true;
+                        $left          = $total - ( $i + 1 );
+                        $reason        = ENA_OpenRouter::fatal_batch_reason( $generated );
+                        $this->logger->step(
+                            'podcast_summary',
+                            'skip',
+                            "article " . ( $i + 1 ) . "/{$total} — {$reason} — {$left} article(s) will be written with description only: " . $generated->get_error_message()
+                        );
+                        $summary = "[AI резюме не е генерирано — {$reason}]";
+                    } else {
+                        $this->logger->step( 'podcast_summary', 'error', $generated->get_error_message() );
+                        $summary = "[AI резюме неуспешно: {$generated->get_error_message()}]";
+                    }
+                } else {
+                    $summary = $generated;
+                    $this->logger->step( 'podcast_summary', 'ok', "generated for: {$row['title']}" );
+                }
             }
 
             $sections[] = [

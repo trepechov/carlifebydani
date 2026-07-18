@@ -9,6 +9,22 @@ class ENA_OpenRouter {
     private const DAILY_REQ_OPTION  = 'ena_openrouter_daily_requests';
     private const RATE_LIMIT_OPTION = 'ena_openrouter_rate_limit';
 
+    // Error codes where retrying the next item in a batch just re-hits the same wall —
+    // callers looping over multiple OpenRouter calls should stop instead of continuing.
+    private const FATAL_BATCH_ERROR_CODES = [ 'http_429', 'http_401' ];
+
+    /** True when a WP_Error from chat()/summarize()/podcast_summary() means "stop the batch now". */
+    public static function is_fatal_batch_error( WP_Error $error ): bool {
+        return in_array( $error->get_error_code(), self::FATAL_BATCH_ERROR_CODES, true );
+    }
+
+    /** Human-readable reason for a fatal batch-stopping error, for logging. */
+    public static function fatal_batch_reason( WP_Error $error ): string {
+        return $error->get_error_code() === 'http_429'
+            ? 'rate limited (429), stopping early instead of hitting the same limit repeatedly'
+            : 'unauthorized (401) — API key looks invalid/expired, stopping early instead of repeating the same failure';
+    }
+
     private ENA_Settings $settings;
     private ENA_Logger   $logger;
 

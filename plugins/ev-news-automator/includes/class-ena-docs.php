@@ -158,6 +158,9 @@ class ENA_Docs {
                 $requests[] = $this->req_text_style( $cursor, $cursor + $dlen - 2, [
                     'italic' => true,
                 ], 'italic' );
+                $requests[] = $this->req_text_style( $cursor, $cursor + $this->utf16_len( 'Описание: ' ), [
+                    'bold' => true,
+                ], 'bold' );
                 $cursor += $dlen;
             }
 

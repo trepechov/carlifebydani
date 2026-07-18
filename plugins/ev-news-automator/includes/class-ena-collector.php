@@ -89,11 +89,9 @@ class ENA_Collector {
                 $code = $summary->get_error_code();
                 $skip_reasons[ $code ] = ( $skip_reasons[ $code ] ?? 0 ) + 1;
 
-                if ( $code === 'http_429' || $code === 'http_401' ) {
+                if ( ENA_OpenRouter::is_fatal_batch_error( $summary ) ) {
                     $stopped_early = $total - $num;
-                    $reason = $code === 'http_429'
-                        ? 'rate limited (429), stopping run early instead of hitting the same limit repeatedly'
-                        : 'unauthorized (401) — API key looks invalid/expired, stopping run early instead of repeating the same failure';
+                    $reason = ENA_OpenRouter::fatal_batch_reason( $summary );
                     $this->logger->step(
                         'openrouter_call',
                         'skip',
