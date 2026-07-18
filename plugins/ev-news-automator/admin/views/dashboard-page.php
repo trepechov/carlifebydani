@@ -50,11 +50,9 @@
             'Collection'     => [ ENA_OPT_STATUS_SYNC,       [ 'count', 'with_clicks', 'zero_clicks' ] ],
             'Podcast Script' => [ ENA_OPT_STATUS_PODCAST,    [ 'count', 'top_clicks' ] ],
         ];
-        $collection_status = null;
         foreach ( $statuses as $label => [ $key, $fields ] ) :
             $status = $logger->get_status( $key );
             $has_data = ! empty( $status['timestamp'] );
-            if ( $label === 'Last Sync' ) $collection_status = $status;
         ?>
         <div class="postbox" style="min-width:200px;flex:1;padding:12px 16px;">
             <h3 style="margin:0 0 8px;font-size:14px;"><?php echo esc_html( $label ); ?></h3>
@@ -89,14 +87,6 @@
         </div>
         <?php endforeach; ?>
         </div>
-
-        <?php if ( ! empty( $collection_status['skipped'] ) ) : ?>
-            <p class="ena-notice ena-notice--warning">
-                ⚠ <?php echo esc_html( $collection_status['skipped'] ); ?> article(s) skipped —
-                <?php echo esc_html( $collection_status['skip_summary'] ?? '' ); ?>.
-                <a href="#ena-account-card">Check OpenRouter account</a>.
-            </p>
-        <?php endif; ?>
     </div>
 
     <div class="postbox" style="margin-bottom:24px;padding:16px 20px;">
