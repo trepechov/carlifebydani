@@ -3,11 +3,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ENA_Collector {
 
-    // Spacing between OpenRouter calls so a full batch doesn't burst past the account's rate limit.
-    // OpenRouter's free-tier (:free models) cap is 20 requests/minute (1 per 3s); 4s keeps a safety
-    // margin below that even accounting for request latency and jitter.
-    private const REQUEST_DELAY_SECONDS = 4;
-
     // Manual adds scrape a full article page (uncapped), unlike RSS excerpts (500 chars, already
     // capped by ENA_Scraper::fetch_rss()). Cap here to keep the summarize() prompt/cost bounded.
     private const MANUAL_BODY_CAP = 3000;
@@ -84,9 +79,6 @@ class ENA_Collector {
 
         foreach ( $new_articles as $i => $article ) {
             $num = $i + 1;
-            if ( $i > 0 ) {
-                sleep( self::REQUEST_DELAY_SECONDS );
-            }
             $analysis = $this->openrouter->analyze( $article['title'], $article['excerpt'] ?? '' );
 
             if ( is_wp_error( $analysis ) ) {
