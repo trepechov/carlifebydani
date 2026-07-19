@@ -167,6 +167,37 @@
             </tr>
         </table>
 
+        <h2>Article Analysis</h2>
+        <p class="description" style="max-width:60em;">
+            Each article is analysed once (in the same OpenRouter call that writes the Bulgarian title &amp;
+            summary) to flag off-topic items and extract tags &amp; region. These lists steer that judgment —
+            they are guidance for the model, not a literal keyword filter. Results are written to the
+            <code>on_topic</code>, <code>tags</code> and <code>region</code> columns of the Google Sheet for review.
+        </p>
+        <table class="form-table" role="presentation">
+            <tr>
+                <th scope="row"><label for="offtopic_whitelist">On-topic list (whitelist)</label></th>
+                <td>
+                    <textarea name="offtopic_whitelist" id="offtopic_whitelist" rows="5" class="large-text"><?php echo esc_textarea( $settings->get( 'offtopic_whitelist' ) ); ?></textarea>
+                    <p class="description">Topics we actively want — bias borderline articles toward <em>on-topic</em>. One per line (e.g. new battery chemistry, EV motors, charging infrastructure).</p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label for="offtopic_blacklist">Off-topic list (blacklist)</label></th>
+                <td>
+                    <textarea name="offtopic_blacklist" id="offtopic_blacklist" rows="5" class="large-text"><?php echo esc_textarea( $settings->get( 'offtopic_blacklist' ) ); ?></textarea>
+                    <p class="description">Topics we don't cover — bias toward <em>off-topic</em>. One per line (e.g. ICE-only V8/V6 engines, scooters &amp; micro-mobility).</p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label for="tag_descriptors">Tag event descriptors (Bulgarian)</label></th>
+                <td>
+                    <textarea name="tag_descriptors" id="tag_descriptors" rows="3" class="large-text"><?php echo esc_textarea( $settings->get( 'tag_descriptors' ) ); ?></textarea>
+                    <p class="description">Preferred Bulgarian event tags the model reuses for consistency (comma- or line-separated). Brand &amp; model names are added automatically as proper nouns.</p>
+                </td>
+            </tr>
+        </table>
+
         <?php submit_button( 'Save Settings' ); ?>
     </form>
 </div>

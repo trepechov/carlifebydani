@@ -32,6 +32,12 @@ class ENA_Settings {
             'collection_time'       => '09:00',
             'article_age_limit'     => '1d',
             'sources'               => '',
+            // Off-topic filter dictionaries (guidance injected into the analyze() prompt, not a
+            // literal keyword match) + the Bulgarian event-descriptor vocabulary for tags.
+            // One item per line (commas within a line are also allowed).
+            'offtopic_whitelist'    => "battery technology, new battery chemistry, solid-state batteries\nenergy generation and storage\nnew electric motors for EVs\ncharging infrastructure",
+            'offtopic_blacklist'    => "ICE-only vehicles (petrol/diesel, e.g. V8/V6/V12 engines)\nscooters and micro-mobility",
+            'tag_descriptors'       => 'премиера, слух, тест, ревю, продажби, намаление, субсидия, промо, партньорство, производство, доставки, забавяне, спиране, зареждане, технология, автономност, регулация, данък, финанси, инцидент, рекол',
         ];
     }
 

@@ -33,25 +33,129 @@ class ENA_OpenRouter {
         $this->logger   = $logger;
     }
 
-    public function summarize( string $original_title, string $excerpt_or_body ): array|WP_Error {
+    /**
+     * Single reusable analysis pass over an article: produces the Bulgarian title + summary AND the
+     * on_topic / tags / region signals in ONE OpenRouter call (see docs/OFF_TOPIC_TAGS_PLAN.md).
+     * Both the automatic collector (ENA_Collector::run) and the manual-add path
+     * (ENA_Collector::add_manual) go through here so all rows carry the same signals.
+     *
+     * Returns:
+     *   bg_title     string  — concise Bulgarian headline
+     *   bg_summary   string  — 2-3 Bulgarian sentences
+     *   on_topic     bool    — EV/EV-industry related (dictionary-steered LLM judgment)
+     *   topic_reason string  — short model explanation of the on_topic call (for tuning), or ''
+     *   tags         array   — Bulgarian tags: brand + model (proper nouns) + event descriptors
+     *   region       string  — ISO 3166-1 alpha-2 region the article is about ("US", "CN,EU"), or ''
+     */
+    public function analyze( string $original_title, string $excerpt_or_body ): array|WP_Error {
         $result = $this->chat(
-            'Bulgarian automotive news editor. Reply ONLY with JSON: {"title":"...","summary":"..."}. Title = concise BG headline. Summary = 2-3 BG sentences. No markdown.',
+            $this->build_analysis_system_prompt(),
             "Original title: {$original_title}\n\nArticle excerpt: {$excerpt_or_body}\n\nProduce JSON.",
             [ 'temperature' => 0.4 ],
-            'summarize'
+            'summarize' // keep the usage-stat bucket name stable across the rename
         );
 
         if ( is_wp_error( $result ) ) return $result;
 
-        $parsed = json_decode( $result, true );
+        $parsed = json_decode( self::strip_json_fences( $result ), true );
         if ( json_last_error() !== JSON_ERROR_NONE || empty( $parsed['title'] ) ) {
             return new WP_Error( 'openrouter_parse', 'Invalid or empty JSON response from OpenRouter' );
         }
 
         return [
-            'bg_title'   => $parsed['title'],
-            'bg_summary' => $parsed['summary'] ?? '',
+            'bg_title'     => $parsed['title'],
+            'bg_summary'   => $parsed['summary'] ?? '',
+            'on_topic'     => self::parse_bool( $parsed['on_topic'] ?? true ),
+            'topic_reason' => is_scalar( $parsed['topic_reason'] ?? '' ) ? trim( (string) ( $parsed['topic_reason'] ?? '' ) ) : '',
+            'tags'         => self::normalize_tags( $parsed['tags'] ?? [] ),
+            'region'       => self::normalize_region( $parsed['region'] ?? '' ),
         ];
+    }
+
+    /**
+     * Build the analyze() system prompt, folding in the editable off-topic whitelist/blacklist and
+     * the Bulgarian event-descriptor vocabulary from settings. The dictionaries are injected as
+     * guidance ("strongly on/off topic"), not a literal keyword filter — the judgment stays semantic.
+     */
+    private function build_analysis_system_prompt(): string {
+        $whitelist   = self::flatten_list( (string) $this->settings->get( 'offtopic_whitelist', '' ) );
+        $blacklist   = self::flatten_list( (string) $this->settings->get( 'offtopic_blacklist', '' ) );
+        $descriptors = self::flatten_list( (string) $this->settings->get( 'tag_descriptors', '' ) );
+
+        $lines = [
+            'You are a Bulgarian automotive/EV news editor.',
+            'Reply ONLY with a single JSON object — no markdown, no code fences:',
+            '{"title":"...","summary":"...","on_topic":true,"topic_reason":"...","tags":["..."],"region":"..."}',
+            '',
+            'Fields:',
+            '- title: concise Bulgarian headline.',
+            '- summary: 2-3 Bulgarian sentences.',
+            '- on_topic: true if the article relates to electric vehicles or the EV industry in ANY way. This explicitly includes news about a specific EV brand or model and its business — deliveries, production, sales, recalls, incidents/accidents, pricing, launches, and company or market news — NOT only articles about EV technology itself. A story about an EV maker (e.g. Rivian, Tesla, BYD) or an EV model is on-topic even when it is about a delivery, customer, legal or business dispute rather than the technology. Mark false ONLY when the article is not about EVs at all — e.g. purely internal-combustion (petrol/diesel) vehicles, or an unrelated subject. When unsure, prefer true. Use judgment, not just keyword matching.',
+            '- topic_reason: one short phrase (Bulgarian or English) explaining the on_topic decision, for auditing.',
+            '- tags: array of short tags IN BULGARIAN. Include the car brand and model as their proper-noun spelling when present (e.g. "Tesla", "Model Y" — do not transliterate), plus zero or more Bulgarian event descriptors.',
+            '- region: ISO 3166-1 alpha-2 code of the region the article is ABOUT (e.g. "US", "CN", "DE"), or "EU"/"GLOBAL". Use "" if not region-specific. Comma-separate if several (e.g. "US,EU").',
+        ];
+
+        if ( $descriptors !== '' ) {
+            $lines[] = '';
+            $lines[] = "Prefer these Bulgarian event descriptors for tags when they apply: {$descriptors}.";
+        }
+        if ( $whitelist !== '' ) {
+            $lines[] = '';
+            $lines[] = "Treat these topics as strongly ON-topic: {$whitelist}.";
+        }
+        if ( $blacklist !== '' ) {
+            $lines[] = "Treat these topics as strongly OFF-topic: {$blacklist}.";
+        }
+
+        return implode( "\n", $lines );
+    }
+
+    /** Collapse a newline/comma-separated settings list into a single comma-joined line for the prompt. */
+    private static function flatten_list( string $raw ): string {
+        $parts = preg_split( '/[\r\n,]+/', $raw );
+        $parts = array_filter( array_map( 'trim', $parts ), fn ( $p ) => $p !== '' );
+        return implode( ', ', $parts );
+    }
+
+    /** Strip a ```json … ``` (or bare ```) fence some models wrap JSON in, so json_decode succeeds. */
+    private static function strip_json_fences( string $raw ): string {
+        $trimmed = trim( $raw );
+        if ( ! str_starts_with( $trimmed, '```' ) ) return $trimmed;
+        $trimmed = preg_replace( '/^```[a-zA-Z]*\s*/', '', $trimmed );
+        $trimmed = preg_replace( '/\s*```$/', '', $trimmed );
+        return trim( (string) $trimmed );
+    }
+
+    /** Coerce the model's on_topic value (bool / "true"/"false" / 1/0) to a real bool; default true. */
+    private static function parse_bool( $value ): bool {
+        if ( is_bool( $value ) ) return $value;
+        if ( is_int( $value ) ) return $value !== 0;
+        if ( is_string( $value ) ) return ! in_array( strtolower( trim( $value ) ), [ 'false', '0', 'no', '' ], true );
+        return true;
+    }
+
+    /** Trim/dedupe tag strings, drop empties, cap the count so a runaway response can't bloat a cell. */
+    private static function normalize_tags( $tags ): array {
+        if ( ! is_array( $tags ) ) return [];
+        $clean = [];
+        foreach ( $tags as $tag ) {
+            if ( ! is_scalar( $tag ) ) continue;
+            $tag = trim( (string) $tag );
+            if ( $tag !== '' && ! in_array( $tag, $clean, true ) ) $clean[] = $tag;
+        }
+        return array_slice( $clean, 0, 8 );
+    }
+
+    /** Normalize region to uppercase alpha-2 code(s), comma-joined; '' when not region-specific. */
+    private static function normalize_region( $region ): string {
+        if ( ! is_scalar( $region ) ) return '';
+        $parts = preg_split( '/[\s,]+/', strtoupper( trim( (string) $region ) ) );
+        $codes = [];
+        foreach ( $parts as $p ) {
+            if ( preg_match( '/^[A-Z]{2,6}$/', $p ) && ! in_array( $p, $codes, true ) ) $codes[] = $p;
+        }
+        return implode( ',', array_slice( $codes, 0, 3 ) );
     }
 
     public function podcast_script( string $bg_title, string $body_text ): string|WP_Error {

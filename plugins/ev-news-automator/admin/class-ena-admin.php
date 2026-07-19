@@ -129,6 +129,12 @@ class ENA_Admin {
         $raw_sources    = sanitize_textarea_field( $_POST['sources'] ?? '' );
         $values['sources'] = $raw_sources;
 
+        // Article-analysis dictionaries: free-text guidance lists, stored verbatim (line/comma
+        // separated). Injected into ENA_OpenRouter::analyze(); see docs/OFF_TOPIC_TAGS_PLAN.md.
+        $values['offtopic_whitelist'] = sanitize_textarea_field( $_POST['offtopic_whitelist'] ?? '' );
+        $values['offtopic_blacklist'] = sanitize_textarea_field( $_POST['offtopic_blacklist'] ?? '' );
+        $values['tag_descriptors']    = sanitize_textarea_field( $_POST['tag_descriptors'] ?? '' );
+
         $this->settings->update( $values );
         ENA_Cron::reschedule();
 

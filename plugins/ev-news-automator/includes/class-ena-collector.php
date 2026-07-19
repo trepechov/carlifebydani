@@ -87,41 +87,34 @@ class ENA_Collector {
             if ( $i > 0 ) {
                 sleep( self::REQUEST_DELAY_SECONDS );
             }
-            $summary = $this->openrouter->summarize( $article['title'], $article['excerpt'] ?? '' );
+            $analysis = $this->openrouter->analyze( $article['title'], $article['excerpt'] ?? '' );
 
-            if ( is_wp_error( $summary ) ) {
-                $code = $summary->get_error_code();
+            if ( is_wp_error( $analysis ) ) {
+                $code = $analysis->get_error_code();
                 $skip_reasons[ $code ] = ( $skip_reasons[ $code ] ?? 0 ) + 1;
 
-                if ( ENA_OpenRouter::is_fatal_batch_error( $summary ) ) {
+                if ( ENA_OpenRouter::is_fatal_batch_error( $analysis ) ) {
                     $stopped_early = $total - $num;
-                    $reason = ENA_OpenRouter::fatal_batch_reason( $summary );
+                    $reason = ENA_OpenRouter::fatal_batch_reason( $analysis );
                     $this->logger->step(
                         'openrouter_call',
                         'skip',
-                        "article {$num}/{$total} — {$reason} — {$stopped_early} article(s) left for the next run: " . $summary->get_error_message()
+                        "article {$num}/{$total} — {$reason} — {$stopped_early} article(s) left for the next run: " . $analysis->get_error_message()
                     );
                     break;
                 }
 
-                $this->logger->step( 'openrouter_call', 'skip', "article {$num}/{$total} — skipped, will retry next run: " . $summary->get_error_message() );
+                $this->logger->step( 'openrouter_call', 'skip', "article {$num}/{$total} — skipped, will retry next run: " . $analysis->get_error_message() );
                 continue;
             }
 
-            $this->logger->step( 'openrouter_call', 'ok', "article {$num}/{$total} — bg_title generated" );
+            $this->logger->step( 'openrouter_call', 'ok', "article {$num}/{$total} — bg_title generated (" . self::describe_analysis( $analysis ) . ')' );
 
-            // upvote/downvote/clicks are real GA4-backed vote counters seeded at 0 on insert,
-            // updated by the GA4 sync. added_date is written by the storage adapter automatically.
-            $rows[] = [
-                'title'       => $summary['bg_title'],
-                'description' => $summary['bg_summary'],
-                'link'        => $article['url'],
-                'author'      => $article['source'],
-                'upvote'      => 0,
-                'downvote'    => 0,
-                'clicks'      => 0,
-                'pub_date'    => $article['published_at'] > 0 ? gmdate( 'Y-m-d', $article['published_at'] ) : '',
-            ];
+            $rows[] = $this->build_row( $analysis, [
+                'link'     => $article['url'],
+                'author'   => $article['source'],
+                'pub_date' => $article['published_at'] > 0 ? gmdate( 'Y-m-d', $article['published_at'] ) : '',
+            ] );
         }
 
         $added = 0;
@@ -183,21 +176,52 @@ class ENA_Collector {
         }
         $body = mb_substr( $body, 0, self::MANUAL_BODY_CAP );
 
-        $summary = $this->openrouter->summarize( '', $body );
-        if ( is_wp_error( $summary ) ) return $summary;
+        $analysis = $this->openrouter->analyze( '', $body );
+        if ( is_wp_error( $analysis ) ) return $analysis;
 
-        $this->logger->step( 'manual_add', 'ok', "bg_title generated for {$url}" );
+        $this->logger->step( 'manual_add', 'ok', "bg_title generated for {$url} (" . self::describe_analysis( $analysis ) . ')' );
 
+        return $this->build_row( $analysis, [
+            'link'     => $url,
+            'author'   => (string) wp_parse_url( $url, PHP_URL_HOST ),
+            'pub_date' => gmdate( 'Y-m-d' ),
+        ] );
+    }
+
+    /**
+     * Assemble a sheet row from an analyze() result + per-article metadata (link/author/pub_date).
+     * Single source of truth shared by run() and add_manual() so every row — automatic or manual —
+     * carries the same shape and the same on_topic/tags/region signals.
+     *
+     * upvote/downvote/clicks are real GA4-backed counters seeded at 0 on insert and updated by the
+     * GA4 sync. added_date is written by the storage adapter automatically.
+     * on_topic is stored as human-readable "yes"/"no" so the sheet stays scannable during the
+     * observation phase; tags are joined into one comma-separated Bulgarian string.
+     */
+    private function build_row( array $analysis, array $meta ): array {
         return [
-            'title'       => $summary['bg_title'],
-            'description' => $summary['bg_summary'],
-            'link'        => $url,
-            'author'      => (string) wp_parse_url( $url, PHP_URL_HOST ),
+            'title'       => $analysis['bg_title'],
+            'description' => $analysis['bg_summary'],
+            'link'        => $meta['link'],
+            'author'      => $meta['author'],
             'upvote'      => 0,
             'downvote'    => 0,
             'clicks'      => 0,
-            'pub_date'    => gmdate( 'Y-m-d' ),
+            'pub_date'    => $meta['pub_date'],
+            'on_topic'    => ! empty( $analysis['on_topic'] ) ? 'yes' : 'no',
+            'tags'        => implode( ', ', $analysis['tags'] ?? [] ),
+            'region'      => $analysis['region'] ?? '',
         ];
+    }
+
+    /** Compact one-line summary of an analyze() result for the run transcript. */
+    private static function describe_analysis( array $analysis ): string {
+        $topic  = ! empty( $analysis['on_topic'] ) ? 'on-topic' : 'OFF-TOPIC';
+        $reason = trim( (string) ( $analysis['topic_reason'] ?? '' ) );
+        if ( $reason !== '' ) $topic .= " ({$reason})";
+        $region = $analysis['region'] ?? '';
+        $tags   = ! empty( $analysis['tags'] ) ? implode( ', ', $analysis['tags'] ) : '—';
+        return "{$topic}; region: " . ( $region !== '' ? $region : '—' ) . "; tags: {$tags}";
     }
 
     /** Human-readable explanation for a WP_Error code coming out of ENA_OpenRouter::summarize(). */
