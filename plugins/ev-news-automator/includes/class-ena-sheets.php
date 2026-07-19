@@ -7,13 +7,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 //   One Google Spreadsheet with multiple sheets (tabs), one per podcast session.
 //   Tab names use DD.MM.YYYY format (e.g. "16.06.2026").
 //   Columns per tab: title | description | link | author | upvote | downvote | clicks | added_date
-//                     | pub_date | on_topic | tags | region
+//                     | pub_date | off_topic | tags | region
 //   upvote (col E) / downvote (col F) — real GA4-synced vote counts; written as 0 on append,
 //   updated by ENA_Analytics from the ev_news_upvote / ev_news_downvote GA4 events.
 //   clicks (col G) — GA4 click count; written as 0 on append, updated daily by ENA_Analytics.
 //   added_date (col H) — Y-m-d date the row was appended; written by the adapter, never changed.
 //   pub_date (col I) — Y-m-d original publication date (from the source), or '' if unknown.
-//   on_topic (col J) — "yes"/"no" EV-relevance flag from ENA_OpenRouter::analyze(); observation-only.
+//   off_topic (col J) — "yes"/"no" EV-irrelevance flag derived from ENA_OpenRouter::analyze()
+//                       (yes = NOT about EVs, no = on-topic); observation-only.
 //   tags (col K) — comma-separated Bulgarian tags (brand + model + event descriptors).
 //   region (col L) — ISO 3166-1 alpha-2 region the article is about (e.g. "US", "CN,EU"), or ''.
 //   The session date lives in the tab name, not a column.
@@ -21,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 //
 // Backward compat: tabs created before the count/added_date columns are handled by
 // read_data_rows() — missing upvote/downvote/clicks treated as 0, missing added_date=session_date.
-// Missing on_topic/tags/region (older tabs) default to '' — an empty on_topic means "never judged",
+// Missing off_topic/tags/region (older tabs) default to '' — an empty off_topic means "never judged",
 // which consumers should treat as on-topic (don't hide rows we never analyzed).
 //
 // Interface contract (all callers use these):
@@ -33,7 +34,7 @@ class ENA_Sheets {
 
     private const BASE                 = 'https://sheets.googleapis.com/v4/spreadsheets';
     private const SCOPES               = [ 'https://www.googleapis.com/auth/spreadsheets' ];
-    private const COLUMNS              = [ 'title', 'description', 'link', 'author', 'upvote', 'downvote', 'clicks', 'added_date', 'pub_date', 'on_topic', 'tags', 'region' ];
+    private const COLUMNS              = [ 'title', 'description', 'link', 'author', 'upvote', 'downvote', 'clicks', 'added_date', 'pub_date', 'off_topic', 'tags', 'region' ];
     private const SESSION_DATE_PATTERN = '/^\d{2}\.\d{2}\.\d{4}$/';
 
     private ENA_Google_Auth $auth;
@@ -73,7 +74,7 @@ class ENA_Sheets {
             if ( (string) $assoc['downvote'] === '' ) $assoc['downvote'] = 0;
             if ( (string) $assoc['clicks'] === '' )   $assoc['clicks'] = 0;
             if ( (string) $assoc['added_date'] === '' ) $assoc['added_date'] = $date;
-            // on_topic/tags/region: older tabs have none — leave as '' (unjudged), no forced default.
+            // off_topic/tags/region: older tabs have none — leave as '' (unjudged), no forced default.
             $assoc['upvote']       = (int) $assoc['upvote'];
             $assoc['downvote']     = (int) $assoc['downvote'];
             $assoc['clicks']       = (int) $assoc['clicks'];

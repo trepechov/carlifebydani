@@ -91,6 +91,9 @@ class ENA_Podcast {
             $sections[] = [
                 'bg_title'    => $row['title'],
                 'url'         => $row['link'],
+                'off_topic'   => $row['off_topic'] ?? '', // "yes"/"no" off-topic flag (yes = NOT about EVs)
+                'tags'        => $row['tags'] ?? '',    // comma-separated Bulgarian tags from analyze()
+                'region'      => $row['region'] ?? '',  // ISO region code(s) the article is about
                 'description' => $row['description'], // copied verbatim from the sheet
                 'summary'     => $summary,             // longer AI-generated write-up
             ];

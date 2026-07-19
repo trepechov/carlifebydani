@@ -21,7 +21,7 @@ The plugin must not touch the existing `news_csv` post meta path used by all exi
 
 **Session turnover flow (Tuesday after recording):**
 1. The team publishes the recorded episode as a WP post (e.g. "EV News #155").
-2. The team creates a new Sheet tab named `DD.MM.YYYY` for the upcoming session (e.g. `02.07.2026`) with the 8-column header row.
+2. The team creates a new Sheet tab named `DD.MM.YYYY` for the upcoming session (e.g. `02.07.2026`) with the 12-column header row (`title | description | link | author | upvote | downvote | clicks | added_date | pub_date | off_topic | tags | region`).
 3. The team triggers "Run collection now" from the plugin dashboard.
 
 The plugin auto-detects the newest `DD.MM.YYYY` tab as the active session. After the collection run, `ENA_Sync` writes the fresh articles to `ev_news_live_articles` in `wp_options`, and the static `/ev-news-feed/` page (WP ID 8851) immediately reflects the new session's content.
@@ -39,8 +39,8 @@ The team plans to migrate away from Google Sheets as the article database in a f
 - **`class-ena-sheets.php` is a storage adapter, not the source of truth.** All collection, sync, and podcast code calls it through a thin interface (`read_data_rows`, `append_rows`, `delete_rows`). Those callers do not know or care what sits behind the interface.
 - When migrating (e.g. to a WordPress custom post type, a MySQL table, or an external API), implement a new adapter class (`class-ena-db.php`, `class-ena-cpt.php`, etc.) with the same method signatures, update the single binding in `ENA_Plugin::__construct()`, and remove Sheets.
 - **The interface contract** (used throughout the plugin):
-  - `read_data_rows(): array` — returns rows as assoc arrays with keys: `title`, `description`, `link`, `author`, `upvote`, `downvote`, `clicks`, `added_date`, `session_date`. `session_date` (Y-m-d) is derived from the sheet tab name, not a real column. `clicks` is the GA4-sourced integer click count (column G). `added_date` (Y-m-d) is the calendar date the row was appended, stored in column H — used by `ENA_Sync` to distinguish new-today articles from older ones.
-  - `append_rows(array $rows): bool|WP_Error` — each row is an assoc array with the same keys (except `session_date` and `added_date`). The adapter writes today's date into column H automatically. `clicks` defaults to `0`.
+  - `read_data_rows(): array` — returns rows as assoc arrays with keys: `title`, `description`, `link`, `author`, `upvote`, `downvote`, `clicks`, `added_date`, `pub_date`, `off_topic`, `tags`, `region`, `session_date`. `session_date` (Y-m-d) is derived from the sheet tab name, not a real column. `clicks` is the GA4-sourced integer click count (column G). `added_date` (Y-m-d) is the calendar date the row was appended, stored in column H — used by `ENA_Sync` to distinguish new-today articles from older ones. `pub_date` (col I) is the original publication date. `off_topic` (col J, "yes"/"no" — `yes` = NOT about EVs), `tags` (col K, comma-separated Bulgarian), and `region` (col L, ISO alpha-2) come from `ENA_OpenRouter::analyze()` — see [OFF_TOPIC_TAGS_PLAN.md](OFF_TOPIC_TAGS_PLAN.md). Old tabs predating any of these columns default to empty on read.
+  - `append_rows(array $rows): bool|WP_Error` — each row is an assoc array with the same keys (except `session_date` and `added_date`). The adapter writes today's date into column H automatically. `clicks` defaults to `0`; `off_topic`/`tags`/`region` default to empty. Rows are built by the shared `ENA_Collector::build_row()`, used by both the automatic collector and manual submissions.
   - `delete_rows(array $row_indices): bool|WP_Error` — delete by storage-internal indices (adapter translates to whatever the backend needs).
   - `update_clicks(array $url_to_clicks): bool|WP_Error` — given a map of `[url => int]`, update column G for every matching row. Rows not in the map are left unchanged.
   - `update_upvotes(array $url_to_count): bool|WP_Error` — same contract, updates column E.
@@ -109,12 +109,12 @@ plugins/ev-news-automator/
 │   ├── class-ena-google-auth.php      # Service Account JWT (RS256, openssl_sign) → access token cached in wp_options
 │   ├── class-ena-sheets.php           # STORAGE ADAPTER — Google Sheets v4: read, append, delete, update_clicks, existing_urls
 │   ├── class-ena-analytics.php        # GA4 Data API v1: fetch ev_news_click event counts keyed by article_url
-│   ├── class-ena-docs.php             # Google Docs v1 + Drive v3: append sections to a user-supplied doc ID
-│   ├── class-ena-openrouter.php       # OpenRouter chat completions: summarize (→ bg_title, bg_summary), podcast_summary (extended); rate-limit/usage tracking
+│   ├── class-ena-docs.php             # Google Docs v1 + Drive v3: append sections to a user-supplied doc ID (title → link → Тема/Тагове/Регион → description → extended summary)
+│   ├── class-ena-openrouter.php       # OpenRouter chat completions: analyze (→ bg_title, bg_summary, on_topic, topic_reason, tags, region — one call), podcast_summary (extended); dictionary-steered off-topic prompt; rate-limit/usage tracking
 │   ├── class-ena-scraper.php          # fetch_source (RSS / HTML fallback), extract_body (unused by current podcast flow), clean_text
-│   ├── class-ena-collector.php        # Phase 1 orchestrator: scrape → dedupe → summarize → store; stops early on OpenRouter 429/401
+│   ├── class-ena-collector.php        # Phase 1 orchestrator: scrape → dedupe → analyze → store (shared build_row for run + add_manual); stops early on OpenRouter 429/401
 │   ├── class-ena-sync.php             # Phase 2 orchestrator: read storage → engagement-sort → write ev_news_live_articles to wp_options
-│   ├── class-ena-podcast.php          # Phase 4 orchestrator: GA4 refresh + sheet sort (shared with collection) → title/description/extended-summary → Google Doc
+│   ├── class-ena-podcast.php          # Phase 4 orchestrator: GA4 refresh + sheet sort (shared with collection) → title/topic-flag/tags/region/description/extended-summary → Google Doc
 │   ├── class-ena-cron.php             # Schedule registration, custom intervals, run_pipeline() orchestration, refresh_analytics()/sort_sheet() (shared with podcast)
 │   ├── class-ena-ajax.php             # wp_ajax_* handlers for manual trigger buttons in admin dashboard
 │   ├── class-ena-background.php       # Background/async run support for long-running manual triggers
@@ -313,7 +313,7 @@ active_sheet_url(): string|WP_Error     // full edit URL of the active tab (http
 - One Google Spreadsheet, one tab per podcast session.
 - Tab names: `DD.MM.YYYY` format (e.g. `16.06.2026`). The date lives here, not in a column.
 - "Active sheet" = the tab whose name is the most recent valid date.
-- Columns per tab (9 columns, A–I): `title | description | link | author | upvote | downvote | clicks | added_date | pub_date`
+- Columns per tab (12 columns, A–L): `title | description | link | author | upvote | downvote | clicks | added_date | pub_date | off_topic | tags | region`
   - `title` — Bulgarian article headline (generated by OpenRouter)
   - `description` — Bulgarian 2–3 sentence summary (generated by OpenRouter)
   - `link` — original article URL
@@ -323,18 +323,21 @@ active_sheet_url(): string|WP_Error     // full edit URL of the active tab (http
   - `clicks` — integer GA4 click count (`ev_news_click` events); written as `0` on append, synced daily
   - `added_date` — Y-m-d UTC date the row was appended; written once on insert, never changed
   - `pub_date` — Y-m-d publish date from the RSS `<pubDate>` field; used as the primary sort tiebreaker
+  - `off_topic` — `yes`/`no` flag from `ENA_OpenRouter::analyze()` (`yes` = NOT about EVs, `no`/empty = on-topic); observation-only, no frontend consumer yet
+  - `tags` — comma-separated Bulgarian tags (brand + model as proper nouns + event descriptors)
+  - `region` — ISO 3166-1 alpha-2 region the article is about (e.g. `US`, `US,EU`), or empty
 
 **Row assoc keys returned by `read_data_rows()`:**
-`title`, `description`, `link`, `author`, `upvote`, `downvote`, `clicks`, `added_date`, `pub_date`, `session_date` (Y-m-d, parsed from tab name)
+`title`, `description`, `link`, `author`, `upvote`, `downvote`, `clicks`, `added_date`, `pub_date`, `off_topic`, `tags`, `region`, `session_date` (Y-m-d, parsed from tab name)
 
 Sheets v4 endpoints used:
-- Read: `GET /v4/spreadsheets/{id}/values/{sheet}!A:I`
-- Append: `POST /v4/spreadsheets/{id}/values/{sheet}!A:I:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`
+- Read: `GET /v4/spreadsheets/{id}/values/{sheet}!A:L`
+- Append: `POST /v4/spreadsheets/{id}/values/{sheet}!A:L:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`
 - Delete: `POST /v4/spreadsheets/{id}:batchUpdate` with `deleteDimension` requests (sorted descending to avoid index shifting)
 - Update clicks: `POST /v4/spreadsheets/{id}/values:batchUpdate` with `valueInputOption=RAW` and one `ValueRange` per updated row targeting `G{row}`
 - List sheets / resolve sheetId: `GET /v4/spreadsheets/{id}?fields=sheets.properties(sheetId,title)`
 
-**Existing sheets migration:** tabs created before the clicks/added_date columns (A:F only) are handled by `read_data_rows()` — missing G treated as `clicks=0`, missing H as `added_date=session_date` (best-effort fallback). New tabs must be created manually by the team with the 8-column header row.
+**Existing sheets migration:** tabs created before later columns are handled by `read_data_rows()` — missing G treated as `clicks=0`, missing H as `added_date=session_date`, and missing off_topic/tags/region (col J–L) default to empty (best-effort fallback). New tabs must be created manually by the team with the 12-column header row (A–L).
 
 ---
 
@@ -398,7 +401,7 @@ doc_url( string $doc_id ): string
 // move_to_folder( string $doc_id, string $folder_id ): bool|WP_Error
 ```
 
-Each section passed to `append_sections` is `['bg_title'=>, 'url'=>, 'description'=>, 'summary'=>]`.
+Each section passed to `append_sections` is `['bg_title'=>, 'url'=>, 'off_topic'=>, 'tags'=>, 'region'=>, 'description'=>, 'summary'=>]`.
 
 The method fetches the document first to determine the current end position, then builds a single `batchUpdate` request with absolute cursor indices. Content is inserted in this order per call:
 
@@ -409,6 +412,9 @@ Episode header  — "EV News Roundup — Month Day, Year"   → HEADING_1
 Per article (numbered):
   "{n}. {bg_title}"                                      → HEADING_2
   "Read the original article"                            → italic, blue hyperlink to {url}
+  "Тема: по темата | извън тема"                         → "Тема:" bold; off-topic value in red (only if off_topic set)
+  "Тагове: {tags}"                                        → "Тагове:" bold prefix (only if tags present)
+  "Регион: {region}"                                      → "Регион:" bold prefix (only if region present)
   blank line
   "Описание: {description}"                              → italic (original short description, copied verbatim from the sheet)
   "Резюме: {summary}"                                     → "Резюме:" bold prefix (AI-generated extended summary, 8-10 sentences)
@@ -425,7 +431,7 @@ Private helpers used internally: `utf16_len()` (Google Docs counts characters in
 // Calls OpenRouter chat completions for summarization and podcast scripting.
 // Model is configurable in settings (default: anthropic/claude-opus-4-8).
 // Token usage is persisted in the ena_openrouter_usage wp_option.
-summarize( string $original_title, string $excerpt_or_body ): array|WP_Error  // returns ['bg_title'=>, 'bg_summary'=>]
+analyze( string $original_title, string $excerpt_or_body ): array|WP_Error     // one call → ['bg_title'=>, 'bg_summary'=>, 'on_topic'=>bool, 'topic_reason'=>, 'tags'=>[], 'region'=>]. Replaces summarize(); off-topic prompt steered by editable whitelist/blacklist + tag-descriptor vocab from settings.
 podcast_summary( string $bg_title, string $description ): string|WP_Error      // used by podcast run; extended 8-10 sentence summary from Sheet title + description, no scraping
 podcast_script( string $bg_title, string $body_text ): string|WP_Error         // exists; not called by current podcast flow (would need a scraped article body)
 get_key_info(): array|WP_Error            // fetches live key/credit info from OpenRouter API
@@ -437,10 +443,11 @@ private record_usage( array $usage, string $type ): void
 private chat( string $system, string $user, array $opts = [], string $type = 'general' ): string|WP_Error
 ```
 
-**Summarize prompt:**
-- System: `"Bulgarian automotive news editor. Reply ONLY with JSON: {\"title\":\"...\",\"summary\":\"...\"}. Title = concise BG headline. Summary = 2–3 BG sentences. No markdown."`
+**Analyze prompt** (`analyze()` — replaces the old `summarize()`):
+- System: Bulgarian automotive/EV editor. Reply ONLY with one JSON object `{title, summary, on_topic, topic_reason, tags, region}`. Field rules cover: BG title + 2–3 BG sentences; `on_topic` = EV/EV-industry relevance judged broadly (brand/model business news — deliveries, sales, recalls, incidents, pricing — counts, "when unsure prefer true"); `topic_reason` short audit phrase; `tags` short Bulgarian tags (brand/model as proper nouns + event descriptors); `region` ISO alpha-2 or "". The editable whitelist/blacklist + descriptor vocab from `ENA_Settings` are injected as guidance (not a literal keyword filter).
 - User: `"Original title: {title}\n\nArticle excerpt: {excerpt}\n\nProduce JSON."`
-- Temperature: 0.4. On JSON parse failure → fallback to `{original_title, raw_content}`.
+- Temperature: 0.4. Response is fence-stripped before `json_decode`; on parse failure or empty title → `WP_Error('openrouter_parse')`. `on_topic`/`tags`/`region` are normalized (bool coercion, dedupe/cap, uppercase alpha-2). See [OFF_TOPIC_TAGS_PLAN.md](OFF_TOPIC_TAGS_PLAN.md).
+- Configurable via Settings → **Article Analysis**: on-topic whitelist, off-topic blacklist, tag event descriptors.
 
 **Podcast summary prompt** (`podcast_summary()` — the one actually used by `ENA_Podcast::run()`):
 - System: `"Пишеш разширено фактическо резюме на новинарска статия на български, което да разгъне и допълни кратко описание с повече детайли и контекст. Съдържай само фактите от статията — без упоменаване на подкаст, водещи, слушатели или епизоди. Без markdown."`

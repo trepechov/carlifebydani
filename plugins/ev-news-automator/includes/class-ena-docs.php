@@ -145,6 +145,46 @@ class ENA_Docs {
             }
             $cursor += $llen;
 
+            // ── On/off-topic flag (bold label; off-topic value highlighted red) ─
+            // Sheet column is off_topic: "yes" = NOT about EVs, "no"/"" = on-topic.
+            $off_topic = strtolower( trim( (string) ( $s['off_topic'] ?? '' ) ) );
+            if ( $off_topic !== '' ) {
+                $is_off     = $off_topic === 'yes';
+                $label      = 'Тема: ';
+                $value      = $is_off ? 'извън тема' : 'по темата';
+                $topic_text = "{$label}{$value}\n";
+                $tplen      = $this->utf16_len( $topic_text );
+                $requests[] = $this->req_insert( $topic_text, $cursor );
+                $requests[] = $this->req_text_style( $cursor, $cursor + $this->utf16_len( $label ), [
+                    'bold' => true,
+                ], 'bold' );
+                if ( $is_off ) {
+                    // Draw the eye to auto-flagged off-topic articles during the review phase.
+                    $requests[] = $this->req_text_style(
+                        $cursor + $this->utf16_len( $label ),
+                        $cursor + $this->utf16_len( $label . $value ),
+                        [ 'foregroundColor' => [ 'color' => [ 'rgbColor' => [
+                            'red' => 0.80, 'green' => 0.10, 'blue' => 0.10,
+                        ] ] ], 'bold' => true ],
+                        'foregroundColor,bold'
+                    );
+                }
+                $cursor += $tplen;
+            }
+
+            // ── Tags + region (metadata, between title/link and description) ─
+            foreach ( [ 'Тагове: ' => $s['tags'] ?? '', 'Регион: ' => $s['region'] ?? '' ] as $label => $value ) {
+                $value = trim( (string) $value );
+                if ( $value === '' ) continue;
+                $meta_text = "{$label}{$value}\n";
+                $mlen      = $this->utf16_len( $meta_text );
+                $requests[] = $this->req_insert( $meta_text, $cursor );
+                $requests[] = $this->req_text_style( $cursor, $cursor + $this->utf16_len( $label ), [
+                    'bold' => true,
+                ], 'bold' );
+                $cursor += $mlen;
+            }
+
             // blank line before description
             $requests[] = $this->req_insert( "\n", $cursor );
             $cursor += 1;

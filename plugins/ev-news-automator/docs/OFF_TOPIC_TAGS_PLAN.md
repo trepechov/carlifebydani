@@ -1,21 +1,32 @@
 # Off-topic flag + Article tags + Region code — planning notes
 
-Status: **IMPLEMENTED in v1.2.0** (2026-07-18). Written 2026-07-17, expanded 2026-07-18, then built.
-"Country" was renamed **region** during implementation. What shipped:
-`ENA_OpenRouter::analyze()` (replaces `summarize()`) returns `{title, summary, on_topic, tags,
-region}` in one call; `ENA_Collector::build_row()` is the shared row builder for both `run()` and
-`add_manual()`; Sheets extended to 12 cols A–L (J=on_topic "yes"/"no", K=tags, L=region);
-whitelist/blacklist/descriptor dictionaries live in `ENA_Settings` + the admin Settings page under
-"Article Analysis". Observation-only — nothing on the frontend reads the new columns yet. The notes
-below are the original design; kept for rationale.
+Status: **IMPLEMENTED in v1.2.0** (2026-07-18/19). Written 2026-07-17, expanded 2026-07-18, then
+built. "Country" was renamed **region** during implementation. All the work below shipped as a single
+**1.2.0** — the intermediate 1.2.1/1.2.2 bumps made while iterating were never deployed and were
+collapsed back into 1.2.0.
 
-**v1.2.1 tuning (2026-07-19):** first real false positive — a Rivian R2 delivery-cancellation story
-was flagged OFF-TOPIC because the `on_topic` prompt over-emphasized EV *technology*. Broadened the
-definition so news about a specific EV brand/model and its business (deliveries, production, sales,
-recalls, incidents, pricing, legal/business disputes) is on-topic even when it isn't about the tech;
-"when unsure, prefer true". Also added a `topic_reason` field to `analyze()` output, logged per
-article in the run transcript, so future mislabels are auditable during the tuning phase. This is
-prompt tuning, not a schema change — no new Sheets column (reason lives in the log only for now).
+**What shipped in 1.2.0:**
+- `ENA_OpenRouter::analyze()` (replaces `summarize()`) returns `{title, summary, on_topic,
+  topic_reason, tags, region}` in ONE OpenRouter call.
+- `ENA_Collector::build_row()` — shared row builder used by both `run()` (automatic) and
+  `add_manual()` (manual submissions), so every row carries the same signals.
+- Sheets extended to **12 cols A–L**: J=off_topic ("yes"/"no", yes = NOT about EVs), K=tags (comma-separated BG), L=region
+  (ISO alpha-2, e.g. "US"/"US,EU"/"").
+- Off-topic is **dictionary-steered**: editable whitelist/blacklist + Bulgarian tag-descriptor vocab
+  in `ENA_Settings`, surfaced in the admin Settings page under "Article Analysis".
+- **Tags are Bulgarian** (brand/model kept as proper nouns); default descriptor list expanded to ~20
+  event types derived from the live feed (deliveries, charging, partnership, subsidy, tax, rumor,
+  regulation, autonomy, …).
+- **`on_topic` prompt broadened** after the first real false positive (a Rivian R2 delivery-cancel
+  story flagged OFF-TOPIC): brand/model business news — deliveries, production, sales, recalls,
+  incidents, pricing, legal/business disputes — is on-topic even when not about the tech; "when
+  unsure, prefer true". A `topic_reason` field is emitted and logged per article for auditing.
+- **Script doc integration** (`ENA_Docs` + `ENA_Podcast`): the generated podcast-script Google Doc
+  now shows, between the article title/link and the description, a bold `Тема:` line (on/off-topic,
+  off-topic in red), a `Тагове:` line, and a `Регион:` line — each rendered only when present.
+
+Observation-only — nothing on the **frontend** reads the new columns yet. The notes below are the
+original design, kept for rationale.
 
 ## Background
 
