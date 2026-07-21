@@ -195,7 +195,7 @@ class ENA_Collector {
             'title'       => $analysis['bg_title'],
             'description' => $analysis['bg_summary'],
             'link'        => $meta['link'],
-            'author'      => $meta['author'],
+            'author'      => self::normalize_source( (string) $meta['author'] ),
             'upvote'      => 0,
             'downvote'    => 0,
             'clicks'      => 0,
@@ -204,6 +204,15 @@ class ENA_Collector {
             'tags'        => implode( ', ', $analysis['tags'] ?? [] ),
             'region'      => $analysis['region'] ?? '',
         ];
+    }
+
+    /**
+     * Normalize the source host written to column D (author): trim whitespace and strip a leading
+     * "www." so the sheet shows the bare domain (e.g. "www.electrek.co" → "electrek.co"). Harmless
+     * for automatic-collection sources that are already bare hosts or outlet names.
+     */
+    private static function normalize_source( string $author ): string {
+        return preg_replace( '/^www\./i', '', trim( $author ) );
     }
 
     /** Compact one-line summary of an analyze() result for the run transcript. */
