@@ -35,7 +35,7 @@ class ENA_Cron {
 
         try {
             $result = self::run_pipeline( $plugin );
-            $plugin->logger->end_run( array_merge( $result, [ 'duration' => '?' ] ) );
+            $plugin->logger->end_run( $result );
         } catch ( \Throwable $e ) {
             $plugin->logger->log_error( 'collection', 'Uncaught exception: ' . $e->getMessage() );
         }
@@ -56,9 +56,14 @@ class ENA_Cron {
      * in step 1 succeeded. A failed clicks fetch must never skip the sort, or
      * freshly appended articles are stranded, unsorted, at the bottom of the sheet.
      *
-     * @return array{added:int,removed:int,synced:int}
+     * @return array{added:int,removed:int,synced:int,duration:string}
      */
     public static function run_pipeline( ENA_Plugin $plugin ): array {
+        // Wall-clock start used only to report how long the run took. Kept
+        // separate from $run_started_at below (which drives the age cutoff) so
+        // its sub-second precision isn't conflated with the cutoff timestamp.
+        $started = microtime( true );
+
         // Record start time before fetching so the next run's cutoff covers
         // any articles published during this run's execution window.
         $run_started_at = time();
@@ -162,6 +167,8 @@ class ENA_Cron {
         if ( ! is_wp_error( $active_name ) ) {
             update_option( ENA_OPT_LAST_ACTIVE_SHEET, $active_name );
         }
+
+        $result['duration'] = round( microtime( true ) - $started, 1 ) . 's';
 
         return $result;
     }
