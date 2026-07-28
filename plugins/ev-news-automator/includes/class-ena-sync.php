@@ -34,7 +34,15 @@ class ENA_Sync {
     }
 
     public function run(): array {
-        $rows = $this->storage->read_data_rows();
+        // The feed shows the current EPISODE's tab, not the tab the collector is filling.
+        // They differ from the 01:00 collection rollover until the feed switches the next
+        // day (Wed 00:00): the collector (and, after 19:00, the podcast) have moved on to
+        // the next tab, but the feed keeps showing the aired episode's articles overnight.
+        // This also keeps every article clickable for at least FEED_LEAD_HOURS before its
+        // episode and stops the feed going sparse Tuesday morning. Outside that window the
+        // feed tab equals the active/collection tab, so the common case is unchanged.
+        $source = ENA_Cron::feed_display_tab_name();
+        $rows   = $this->storage->read_data_rows( $source );
 
         if ( is_wp_error( $rows ) ) {
             $this->logger->log_error( 'sync', $rows->get_error_message() );
@@ -83,8 +91,10 @@ class ENA_Sync {
         $published_today = count( $recent );
 
         $this->logger->step( 'sync', 'ok', "{$count} articles written to ev_news_live_articles" );
-        $sheet_name = $this->storage->active_sheet_name();
-        $sheet_url  = $this->storage->active_sheet_url();
+        // Report the tab the feed is actually showing (the episode/source tab), so the
+        // admin status doesn't claim the still-hidden collection tab is "live."
+        $sheet_name = $source;
+        $sheet_url  = $this->storage->active_sheet_url( $source );
 
         $this->logger->set_status( ENA_OPT_STATUS_SYNC, [
             'timestamp'       => ( new DateTimeImmutable() )->format( 'c' ),
@@ -92,7 +102,7 @@ class ENA_Sync {
             'published_today' => $published_today,
             'recent_24h'      => count( $recent ),
             'older'           => count( $older ),
-            'sheet_name'      => is_wp_error( $sheet_name ) ? '' : $sheet_name,
+            'sheet_name'      => $sheet_name,
             'sheet_url'       => is_wp_error( $sheet_url ) ? '' : $sheet_url,
         ] );
 

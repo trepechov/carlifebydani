@@ -180,7 +180,8 @@ class ENA_Sheets {
 
         $header = null;
         if ( $copy_header_from !== '' ) {
-            $range         = rawurlencode( "{$copy_header_from}!A1:I1" );
+            // Read the full 12-column header (A:L). A:I would drop off_topic/tags/region.
+            $range         = rawurlencode( "{$copy_header_from}!A1:L1" );
             $read_response = ENA_HTTP::get( self::BASE . "/{$id}/values/{$range}", [
                 'headers' => [ 'Authorization' => "Bearer {$token}" ],
             ] );
@@ -189,7 +190,12 @@ class ENA_Sheets {
                 $header = $read_data['values'][0];
             }
         }
-        if ( $header === null ) $header = self::COLUMNS;
+        // Fall back to the canonical schema if there's no source or the copied header is
+        // short (e.g. copied from an older tab that predates the off_topic/tags/region cols),
+        // so a new tab always starts with the full 12-column header.
+        if ( $header === null || count( $header ) < count( self::COLUMNS ) ) {
+            $header = self::COLUMNS;
+        }
 
         $write_response = ENA_HTTP::post_json( self::BASE . "/{$id}/values:batchUpdate", [
             'valueInputOption' => 'RAW',
@@ -211,7 +217,7 @@ class ENA_Sheets {
         $token = $this->auth->get_access_token( self::SCOPES );
         if ( is_wp_error( $token ) ) return $token;
 
-        $sheet_id = $this->active_sheet_id_numeric();
+        $sheet_id = $this->sheet_id_numeric();
         if ( is_wp_error( $sheet_id ) ) return $sheet_id;
 
         rsort( $row_indices );
@@ -322,8 +328,8 @@ class ENA_Sheets {
      * The header row (row 1) is preserved — sort starts at row index 1.
      * Called after update_upvotes() so the spreadsheet reflects engagement order.
      */
-    public function sort_by_upvotes(): bool|WP_Error {
-        $sheet_id = $this->active_sheet_id_numeric();
+    public function sort_by_upvotes( ?string $sheet_name = null ): bool|WP_Error {
+        $sheet_id = $this->sheet_id_numeric( $sheet_name );
         if ( is_wp_error( $sheet_id ) ) return $sheet_id;
 
         $token = $this->auth->get_access_token( self::SCOPES );
@@ -469,11 +475,11 @@ class ENA_Sheets {
     }
 
     /**
-     * Returns the direct URL to the active session tab including the #gid anchor.
-     * Mirrors active_sheet_name() logic — filters, sorts, then reads 'id' from the
-     * same array element to avoid a secondary title-match lookup that can fail silently.
+     * Returns the direct URL (with #gid anchor) to $sheet_name, or the active tab's
+     * when null. For the active tab this mirrors active_sheet_name()'s sort-then-read
+     * so it can't drift; for a named tab it looks the title up directly.
      */
-    public function active_sheet_url(): string|WP_Error {
+    public function active_sheet_url( ?string $sheet_name = null ): string|WP_Error {
         $sheets = $this->list_sheets();
         if ( is_wp_error( $sheets ) ) return $sheets;
 
@@ -486,13 +492,23 @@ class ENA_Sheets {
             return new WP_Error( 'no_session_sheet', 'No session sheet found — cannot build sheet URL.' );
         }
 
-        usort( $dated, fn ( $a, $b ) =>
-            $this->parse_session_timestamp( $b['title'] ) <=> $this->parse_session_timestamp( $a['title'] )
-        );
+        if ( $sheet_name === null ) {
+            usort( $dated, fn ( $a, $b ) =>
+                $this->parse_session_timestamp( $b['title'] ) <=> $this->parse_session_timestamp( $a['title'] )
+            );
+            $target = $dated[0];
+        } else {
+            $target = null;
+            foreach ( $dated as $s ) {
+                if ( $s['title'] === $sheet_name ) { $target = $s; break; }
+            }
+            if ( $target === null ) {
+                return new WP_Error( 'no_session_sheet', "Session tab not found: {$sheet_name}" );
+            }
+        }
 
-        $active = $dated[0];
-        $id     = $this->settings->get( 'spreadsheet_id' );
-        return "https://docs.google.com/spreadsheets/d/{$id}/edit#gid={$active['id']}";
+        $id = $this->settings->get( 'spreadsheet_id' );
+        return "https://docs.google.com/spreadsheets/d/{$id}/edit#gid={$target['id']}";
     }
 
     // ── Private helpers ──────────────────────────────────────────────────────
@@ -512,8 +528,9 @@ class ENA_Sheets {
         return $data['values'] ?? [];
     }
 
-    private function active_sheet_id_numeric(): int|WP_Error {
-        $sheet_name = $this->active_sheet_name();
+    /** Numeric sheetId for $sheet_name, or the active tab's when null. */
+    private function sheet_id_numeric( ?string $sheet_name = null ): int|WP_Error {
+        $sheet_name ??= $this->active_sheet_name();
         if ( is_wp_error( $sheet_name ) ) return $sheet_name;
 
         $sheets = $this->list_sheets();
