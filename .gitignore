@@ -20,6 +20,14 @@
 .DS_Store
 Thumbs.db
 
+# Local-only MCP server runtime (GSC MCP launcher + vendored package).
+# Personal/local — registered at local scope in ~/.claude.json, never committed.
+/.mcp-local
+
+# Python bytecode
+__pycache__/
+*.pyc
+
 # Credentials (never commit)
 /.credentials
 
