@@ -36,7 +36,7 @@ backlog it feeds is `docs/SEO_EV_NEWS_TODO.md`.
 | Semrush database | `bg` (desktop; there is no `mobile-bg`) |
 | GA4 property id | `427729375` |
 | Site language | `bg-BG` — **verified fixed 2026-08-13** (`<html lang>`, `og:locale`, schema `inLanguage` all correct) |
-| DataForSEO account | `trepechov@gmail.com` — **live, verified 2026-08-13** (`20000 Ok`; it returned `40104` earlier the same day, so activation lags). **Balance $1** — a pilot budget, not a crawl budget. Probe `/v3/appendix/user_data` (free) before planning a run around it (see Step 3c) |
+| DataForSEO account | `trepechov@gmail.com` — **still blocked as of 2026-08-13 21:2x** (`40104` on a real `search_volume/live` call). **`/v3/appendix/user_data` returning `20000 Ok` is NOT proof it works** — that endpoint answers on gated accounts by design; it is the only one that does. Probe with a **data** endpoint, never `user_data`. Balance $1. See Traps |
 | Local data cache | `data/seo-cache/` via `tools/seo_cache.py` — **check it before any paid call** |
 
 ---
@@ -532,6 +532,29 @@ Baseline (GSC, <window>): <impr / clicks / CTR / pos>. Re-check after 2–4 week
   autocomplete carry Step 3c, and the proposal should say so.
 - **`seo-bot` cannot change site settings** (`manage_options` = false). Anything
   in WP Settings needs the user in wp-admin.
+- **Category / tag archives are a different write path entirely.** Yoast stores
+  taxonomy SEO in the `wpseo_taxonomy_meta` **option**, not in term meta, so
+  `GET /wp/v2/categories/<id>` returns `meta: []` and there is **no REST way** to
+  set a term's SEO title or meta description — it needs `manage_options`. Writing
+  the term `description` field is **not** a workaround: verified live on Yoast
+  v28.2 (2026-08-13), it renders visibly on the archive and populates
+  `og:description`, but does **not** emit `<meta name="description">`. For an
+  archive URL, write the term description if you want owned text, and hand the
+  user the exact SEO title + metadesc to paste into wp-admin.
+- **The GSC MCP dumps whole result sets into context.** For a single URL, call the
+  Search Console API directly with a `page` `dimensionFilterGroups` filter instead
+  — vastly cheaper and gives per-query rows for exactly that page:
+  ```bash
+  uv run --with google-auth --with requests python - <<'PY'
+  # creds: .credentials/google-service-account.json, scope webmasters.readonly
+  # POST .../sites/<urlencoded SITE>/searchAnalytics/query
+  # body: {"startDate","endDate","dimensions":["query"],"rowLimit":50,
+  #        "dimensionFilterGroups":[{"filters":[
+  #          {"dimension":"page","operator":"equals","expression":"<url>"}]}]}
+  PY
+  ```
+  Use `operator: "includingRegex"` on `query` to answer "which URL owns this
+  topic?" — that is the cannibalisation check, and it is worth running every time.
 - **Teardown:** when the SEO push ends, remove the standing production write
   credential — `claude mcp remove wordpress`, delete the Keychain entry
   `carlifebydani-wp-mcp`, revoke the app password in the `seo-bot` profile.
