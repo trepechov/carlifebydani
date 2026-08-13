@@ -30,6 +30,44 @@ below. Re-run with a page-filtered query before treating this as exhaustive.
 
 ---
 
+## ✅ Completed so far
+
+Verified 2026-08-13 by reading `_yoast_wpseo_*` live over REST — this table is the
+authoritative record, not the checkboxes scattered through the sections below.
+
+| Date | Target | What was written | Baseline to beat (GSC 90d) | Proposal |
+|---|---|---|---|---|
+| 2026-08-13 | **9248** `evn-161-…tesla-i-spacex` | all 3 Yoast fields | — (too new to have data) | — (done before the skill existed) |
+| 2026-08-13 | **7333** `ev114-…cybertruck-v-blgariya` | all 3 Yoast fields | 542 impr / 22 clicks / 4.06% / pos 7.0 | [7333](../reports/seo-metatags/2026-08-13-7333-cybertruck-bulgaria.md) |
+| 2026-08-13 | **1751** `evn41-tesla-my-juniper-…` | all 3 Yoast fields | 65 impr / 3 clicks / 4.62% / pos 2.7 | [1751](../reports/seo-metatags/2026-08-13-1751-evn41-juniper.md) |
+| 2026-08-13 | **category 1** `/ev-news/` hub | term `description` (bot-side complete) | 96 impr / 2 clicks / 2.08% / pos 9.5 | [hub](../reports/seo-metatags/2026-08-13-hub-ev-news-archive.md) |
+
+**That is 3 posts + 1 archive. Everything else in P1 below still has all three Yoast
+fields empty** — confirmed live, not inferred.
+
+> ⚠️ **The hub row is complete only as far as the bot can go.** Yoast taxonomy SEO is not
+> REST-writable, so `/ev-news/` still has **no `<meta name="description">`**. Finishing it
+> needs one paste in wp-admin — see "P1 — the hub page itself" below.
+
+> **Note on selection:** 1751 and the hub were picked as *skill test* candidates (1751 for
+> the fastest CTR feedback at position 2.7), **not** by traffic. The genuine top 3 by
+> impressions is 7333 → 5240 → 8026, and **5240 and 8026 are still open.**
+
+### Highest-value work still untouched
+
+| Target | Impr | CTR | Pos | Why |
+|---|---|---|---|---|
+| **6165** `/publications/noviyat-tesla-model-y-juniper-2025-…` | **3,927** | **2.06%** | 5.3 | Biggest single CTR loss in the property; owns every Juniper query (`тесла джунипер` pos **1.4**) |
+| **7533** `/ev-review/tesla-cybertruck-…` | 237 | **0.84%** | 6.2 | Owns the Cybertruck spec cluster |
+| **5240** `evn67-novi-spekulaczii-okolo-tesla-model-y…` | 212 | **0.9%** | 10.9 | #2 in the P1 list |
+| **8026** `ev133-izminalata-2025-rekordni-prodazhbi…` | 204 | **0.9%** | 7.4 | #3 in the P1 list |
+
+~4,580 impressions converting at roughly 1%. **6165 alone is worth more than the entire
+P1 list below combined** — and neither it nor 7533 is in that list, because the original
+baseline scan only covered the EV-News category.
+
+---
+
 ## P1 — Meta descriptions for pages already ranking (striking distance)
 
 These rank on or near page 1 and convert almost none of it. Missing `<meta name="description">`
@@ -57,7 +95,7 @@ the `/ev-news-feed/` hub. Each episode should own its distinctive story.
 | [ ] | 7472 | `ev120` | 98 | 4.0% | 8.0 |
 | [ ] | 5673 | `evn79-kia-ev2-niskobyudzhetna-kola-otnovo` | 97 | 2.0% | 8.8 |
 | [ ] | 7367 | `ev117-mercedes-glc-eq-2026-vs-bmw-ix3-2026` | 95 | 2.1% | 6.8 |
-| [ ] | 1751 | `evn41-tesla-my-juniper-se-otlaga-za-nqkolko-meseca` | 65 | 4.6% | **2.7** |
+| [x] | 1751 | `evn41-tesla-my-juniper-se-otlaga-za-nqkolko-meseca` | 65 | 4.6% | **2.7** |
 | [ ] | 5343 | `evn70-hyundai-ioniq-6n-novi-danni` | 65 | 4.6% | 9.3 |
 | [ ] | 8319 | `ev144-byd-veche-e-v-blgariya` | 54 | 1.8% | 7.1 |
 | [ ] | 5574 | `evn75-organizacziyata-na-naj-golyamoto-svetlinno-shou-v-blgariyaevn75` | 52 | 5.7% | 6.8 |
@@ -71,6 +109,10 @@ Notes on individual rows:
   full research in [`reports/seo-metatags/2026-08-13-7333-cybertruck-bulgaria.md`](../reports/seo-metatags/2026-08-13-7333-cybertruck-bulgaria.md).
   90-day baseline to beat: **542 impr / 22 clicks / 4.06% CTR / pos 7.0**. The page still has
   **no text answer to its own title question** (`wordCount: 17`) — that content fix is open.
+- **1751 — DONE 2026-08-13.** Metatags written and verified live; proposal in
+  [`reports/seo-metatags/2026-08-13-1751-evn41-juniper.md`](../reports/seo-metatags/2026-08-13-1751-evn41-juniper.md),
+  backup in [`reports/yoast-meta-backup/1751-2026-08-13.csv`](../reports/yoast-meta-backup/1751-2026-08-13.csv)
+  (all three Yoast fields were empty pre-write). Baseline to beat: **65 impr / 4.6% CTR / pos 2.7**.
 
 ### Missing from this list — a bigger CTR prize than anything above
 
@@ -81,16 +123,57 @@ Notes on individual rows:
       **Re-scan the other categories before working further down the P1 list.**
       It owns the spec/`кибертрак` intent cluster (`тесла cybertruck` pos 5.6,
       `тесла кибертрак` pos 9.4) — do not target `Tesla Cybertruck България` on it; 7333 owns that.
-- **1751** sits at position **2.7** with 4.6% CTR. Position 2–3 should pull 10–15%. Something
-  about how it presents in the SERP is actively costing clicks.
+- **1751** sat at position **2.7** with 4.6% CTR — position 2–3 should pull 10–15%. Addressed
+  2026-08-13 (see note above); watch GSC in 2–4 weeks to see whether the snippet was the cause.
 - **6898** at 0.7% CTR is the worst ratio in the set.
 
 ## P1 — the hub page itself
 
-- [ ] `/ev-news/` category archive: **96 impressions, 2.0% CTR, position 9.5.** It appeared in
-  the GSC data and I nearly missed it because the slug is empty after prefix-stripping. The
-  archive page is a ranking entity in its own right and needs its own Yoast treatment — this
-  is the one place where "EV новини" *is* the right keyphrase.
+- [x] `/ev-news/` category archive — **bot-side complete 2026-08-13**: **96 impressions,
+  2.0% CTR, position 9.5.** Proposal → [`reports/seo-metatags/2026-08-13-hub-ev-news-archive.md`](../reports/seo-metatags/2026-08-13-hub-ev-news-archive.md).
+  Term `description` written and verified live; the archive now has owned prose and an
+  `og:description` for the first time.
+  - [ ] **One manual step remains** (not doable over REST): the Yoast term SEO title +
+    meta description. The archive still has **no `<meta name="description">`.
+  - ~~"this is the one place where 'EV новини' *is* the right keyphrase"~~ — **struck 2026-08-13,
+    the data does not support it.** A property-wide scan for any query containing `новини`
+    returns exactly **one row**: `тесла новини`, 5 impressions, landing on `/tag/tesla/`. There
+    is no measurable "EV новини" demand in this market. All 11 queries this hub actually ranks
+    for are brand/navigational (`carlifebydani`, `carlife by dani`, `evnews`, `clbd`).
+
+### Blockers and gotchas found while doing it
+
+- **Yoast taxonomy SEO is NOT writable over REST.** `GET /wp/v2/categories/1` returns
+  `meta: []` — Yoast stores term SEO in the `wpseo_taxonomy_meta` *option*, which needs
+  `manage_options`; `seo-bot` doesn't have it. Only wp-admin can set a category's SEO title
+  and meta description.
+- **Writing the term `description` is not a workaround.** Tested live on Yoast v28.2: the term
+  description populates `og:description` and renders visibly on the archive page, but does
+  **not** emit `<meta name="description">`. The archive still has no meta description.
+- **To finish the hub**, paste into Posts → Categories → EV News → Yoast box:
+  - SEO title: `EV News – новини за електромобили %%sep%% %%sitename%%` (52 rendered; the
+    current title is the English `EV News - Car Life by Dani`)
+  - Meta description: `EV News е седмичното предаване на Car Life by Dani – новините за електромобили от България и света, обобщени в кратки епизоди всяка седмица.`
+
+## P1 — brand-query dilution (new, found 2026-08-13)
+
+The brand query `clbd` is split across seven-plus URLs. The homepage converts it properly;
+the rest absorb impressions at ~0% CTR:
+
+| URL | Impr | Clicks | Pos |
+|---|---|---|---|
+| `/tag/clbd/` | **418** | **4** | 3.2 |
+| `/` | 269 | **193** | 1.0 |
+| `/clbd-parts/` | 259 | 7 | 1.0 |
+| `/za-nas/` | 215 | 0 | 1.0 |
+| `/publications/` | 207 | 2 | 1.0 |
+| `/promo-kodove/` | 190 | 3 | 1.0 |
+| `/calendar/` | 133 | 0 | 1.0 |
+
+- [ ] **`/tag/clbd/` — 418 brand impressions, 4 clicks.** A thin tag page outranking real pages
+      on the site's own brand name, and the single worst offender. Decide `noindex` on thin tag
+      pages. (Consistent with the competitor-gap finding that `/tag/` pages outrank editorial
+      content here.)
 
 ---
 
