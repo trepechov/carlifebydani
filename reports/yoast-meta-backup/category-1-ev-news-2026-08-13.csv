@@ -1,0 +1,2 @@
+term_id,taxonomy,slug,link,name,description,note
+1,category,ev-news,https://www.carlifebydani.com/ev-news/,EV News,,"description field EMPTY pre-write; Yoast term SEO (wpseo_taxonomy_meta option) NOT readable over REST - meta:[] - so no Yoast title/metadesc captured"
