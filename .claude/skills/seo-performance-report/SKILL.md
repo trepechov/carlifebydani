@@ -1,19 +1,28 @@
 ---
 name: seo-performance-report
-description: Generate the monthly SEO performance snapshot for carlifebydani.com — pulls Core Web Vitals field data (PageSpeed Insights), lab scores, and GTmetrix metrics, writes a dated report to reports/seo-performance/, and compares it against the previous snapshot. Use when the user asks to "generate the SEO report", "run the monthly SEO snapshot", "capture Core Web Vitals", or compare SEO performance month-over-month.
+description: Generate the monthly SEO performance snapshot for carlifebydani.com — pulls Core Web Vitals field data (PageSpeed Insights), Lighthouse lab scores (PSI MCP), GTmetrix metrics, and Search Console search performance; writes a dated report to reports/seo-performance/, appends the trend log, compares against the previous snapshot, and derives on-site SEO action items. Use when the user asks to "generate the SEO report", "run the monthly SEO snapshot", "capture Core Web Vitals", or compare SEO performance month-over-month.
 ---
 
 # SEO Performance Report Generator
 
-Produce one consistent monthly snapshot of Core Web Vitals + page-speed data for
-`carlifebydani.com`, save it as a dated report, and compare it against the prior
-month. **Angle: off-site/technical SEO — maximize Google search ranking.**
+**Goal: track how carlifebydani.com's SEO changes over time and turn each
+snapshot into concrete on-site actions that lift Google ranking.** Every run
+produces one consistent dated snapshot, appends a machine-readable trend row,
+diffs against the prior snapshot, and writes an **action-items** list the next
+run checks off.
 
-Google ranks on **CrUX real-user field data** (real Core Web Vitals), not the
-Lighthouse lab score or GTmetrix grade — so **field data is the primary signal;
-lab + GTmetrix are secondary "why" diagnostics.**
+Two layers, both captured every run:
+- **Technical / off-site** — Core Web Vitals + page speed. Google ranks on
+  **CrUX real-user field data**, not the Lighthouse lab score or GTmetrix grade,
+  so **field data is the primary signal; lab + GTmetrix are secondary "why"
+  diagnostics.**
+- **On-site / content** — Search Console query→page performance. This is where
+  the actionable ranking upside lives (striking-distance keywords, low-CTR
+  pages, thin content). Turn it into a prioritized action list each run.
 
 - **Reports live in:** `reports/seo-performance/YYYY-MM-DD-snapshot.md` (committed).
+- **Trend log (machine-readable):** `reports/seo-performance/history.csv` — one
+  row per snapshot; append every run so trends are greppable without diffing prose.
 - **Methodology / decision rules / change log:** `docs/seo-performance/README.md`.
 - Always compare a new snapshot against the previous one over the same metric
   schema and the same 28-day CrUX window.
@@ -26,42 +35,80 @@ lab + GTmetrix are secondary "why" diagnostics.**
 List `reports/seo-performance/` and read the most recent `*-snapshot.md`. You will
 diff against it at the end. If none exists, this run is the baseline.
 
-### Step 1 — PageSpeed Insights field data (PRIMARY) — via WebFetch
-The `pagespeed.web.dev` analysis page exposes the **CrUX real-user field data** in
-fetchable HTML — the ranking-relevant signal, reads reliably. If the user gave a
-fresh analysis URL, use it; otherwise use
-`https://pagespeed.web.dev/analysis/https-carlifebydani-com/<id>`.
-
-Run **WebFetch on each form factor** (mobile and desktop are separate — note the
-`?form_factor=` param):
-
-```
-WebFetch(url = "<pagespeed analysis URL>?form_factor=mobile",
-  prompt = "Extract from this PageSpeed Insights report: (1) Core Web Vitals
-  Assessment Passed/Failed; (2) the 28-day real-user FIELD DATA for LCP, INP, CLS,
-  FCP, TTFB — each with value, Good/Needs-Improvement/Poor rating, and % Good/NI/
-  Poor distribution; (3) the exact 28-day date range shown; (4) whether it is
-  URL-level or origin-level (falls back to origin) data. Report exact numbers.")
-```
-Repeat with `?form_factor=desktop`. Record: Assessment result, all five metrics +
-distributions, the date range, and origin-vs-URL scope.
-
-### Step 2 — PageSpeed Insights lab scores (SECONDARY, optional) — needs API key
-Lab scores (Performance/Accessibility/Best-Practices/SEO 0–100, TBT, Speed Index)
-render client-side and do **not** come through WebFetch. Capture via the PSI API
-(needs a free Google API key; keyless calls hit a shared quota and 429). If no key
-is available, leave lab blank — do not block the snapshot or guess.
+### Step 1 — PageSpeed Insights field data (PRIMARY) — via the PSI REST API
+The CrUX real-user field data is the ranking-relevant signal. Take it from the
+**PSI REST API's `loadingExperience` block**, which always returns the *current*
+28-day CrUX window:
 
 ```bash
-KEY=<PAGESPEED_API_KEY>
+KEY=$(grep -v '^#' .credentials/pagespeed-api-key | grep -v '^$' | head -1)
+for STRAT in mobile desktop; do
+  curl -s "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://carlifebydani.com/&strategy=$STRAT&category=performance&key=$KEY" \
+    -o "$SCRATCH/psi_$STRAT.json" --max-time 180
+done
+```
+Then read each file with `jq`. Per form factor record:
+- `.loadingExperience.overall_category` — `FAST` = Core Web Vitals **PASSED**.
+- `.loadingExperience.metrics.<M>.percentile` + `.category` + the three
+  `.distributions[].proportion` values, for `LARGEST_CONTENTFUL_PAINT_MS`,
+  `INTERACTION_TO_NEXT_PAINT`, `CUMULATIVE_LAYOUT_SHIFT_SCORE`,
+  `FIRST_CONTENTFUL_PAINT_MS`, `EXPERIMENTAL_TIME_TO_FIRST_BYTE`.
+- `.loadingExperience.origin_fallback` — `true` = **origin-level** data (too
+  little URL-level traffic); `.loadingExperience.id` shows which origin.
+- `.analysisUTCTimestamp` — the 28-day window ends on this date. The API does not
+  return explicit window start/end, so record it as "28-day window ending <date>".
+
+> ⚠️ **Do not use WebFetch on `pagespeed.web.dev/analysis/<id>` for field data.**
+> That URL serves the **stored** analysis for that id, not a fresh one — reusing a
+> previous snapshot's id silently returns month-old field data that looks current.
+> (Hit on 2026-08-07: the July id still reported the Jun 30–Jul 27 window.) The
+> REST call above is the reliable path. Percentile units: CLS is returned ×100
+> (`6` → `0.06`); LCP/FCP/TTFB in ms; INP in ms.
+
+### Step 2 — PageSpeed Insights lab scores (SECONDARY, optional) — via PSI MCP
+Lab scores (Performance/Accessibility/Best-Practices/SEO 0–100, TBT, Speed Index)
+render client-side and do **not** come through WebFetch. Capture via the **PSI
+MCP** — tool `mcp__psi__psi_lighthouse` (local stdio server
+`.mcp-local/psi-mcp.sh`, mirrors the GSC MCP). Call it once per form factor:
+
+```
+mcp__psi__psi_lighthouse(url = "https://carlifebydani.com/", strategy = "mobile")
+mcp__psi__psi_lighthouse(url = "https://carlifebydani.com/", strategy = "desktop")
+```
+Each returns `scores.{performance,accessibility,best_practices,seo}` (0–100) and
+`lab_metrics.{fcp,lcp,tbt,cls,speed_index}` (display strings) for the lab table.
+Key is live and verified (2026-07-29) — the lab section should normally be filled.
+
+> **Key.** The MCP reads `$PAGESPEED_API_KEY` or `.credentials/pagespeed-api-key`
+> (gitignored; `#`-comment and blank lines ignored, first real line is the key).
+> Without a key the tool returns `{"error":"PSI API 429","key_used":false}` — if
+> that happens, **leave the lab section blank** (don't guess) and note the key is
+> missing. New key: Google Cloud Console → enable "PageSpeed Insights API" → API
+> key → paste into `.credentials/pagespeed-api-key`.
+>
+> **Session nuance.** `mcp__psi__psi_lighthouse` only appears after a Claude
+> session restart following registration. If the native tool isn't loaded yet
+> this session, call the same server via the wrapper instead — identical output:
+> ```bash
+> cd .mcp-local && uv run --with 'mcp<2' --with requests python -c \
+>   "import psi_mcp,json;print(json.dumps(psi_mcp.psi_lighthouse('https://carlifebydani.com/','mobile')))"
+> ```
+> (swap `desktop` for the second call).
+
+**Raw REST fallback** (bypasses the MCP entirely; same key):
+```bash
+KEY=$(grep -v '^#' .credentials/pagespeed-api-key | head -1)
 for STRAT in mobile desktop; do
   curl -s "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://carlifebydani.com/&strategy=$STRAT&category=performance&category=accessibility&category=best-practices&category=seo&key=$KEY" \
     -o "psi_$STRAT.json" --max-time 120
 done
 ```
-Extract: `.lighthouseResult.categories.{performance,seo,accessibility,best-practices}.score` (×100);
-`.lighthouseResult.audits.{"largest-contentful-paint","total-blocking-time","cumulative-layout-shift","speed-index","first-contentful-paint"}.displayValue`;
-field data under `.loadingExperience.metrics` / `.originLoadingExperience.metrics`.
+
+> **Read lab in context, not in isolation.** The mobile lab run is throttled
+> (emulated slow-4G, cold cache, single sample) and routinely shows an alarming
+> LCP/FCP that does **not** reflect real users — always sanity-check it against
+> the CrUX field LCP from Step 1 before reporting it as a problem. Lab is a
+> "why/diagnostic" signal for the field data, never a ranking verdict.
 
 ### Step 3 — GTmetrix — via GTmetrix MCP (live, confirmed 2026-07-29)
 The GTmetrix report page is Cloudflare-protected (403 to WebFetch/curl); use the
@@ -122,22 +169,61 @@ when the user wants the standalone report artifact rather than table rows.
 Record: the overview totals, top ~10 queries and top ~10 pages, sitemap/indexing
 status, and the exact date range.
 
+### Step 4b — Mine on-site SEO opportunities from GSC (the actionable layer)
+This is where the report earns its keep. From the GSC query and page rows, pull
+**two extra dimension cuts** and derive concrete on-page actions:
+- `gsc_query(..., dimensions="query,page", row_limit=1000)` — which page ranks
+  for which query. Needed to attribute an opportunity to a specific URL to edit.
+
+Then classify (thresholds in Decision rules below):
+1. **Striking-distance queries** — position **5–20** with **≥300 impressions**
+   and non-brand intent. These are one on-page push from page-1 top-3. Action:
+   improve the target page's title tag / H1 / on-page coverage for that query.
+2. **Low-CTR winners** — position **≤5** but CTR well below the SERP norm for
+   that rank (e.g. <3% at pos ≤5) with high impressions. Action: rewrite
+   title/meta-description to earn the click; the ranking is already there.
+3. **Cannibalisation** — one query whose clicks/impressions are split across
+   ≥2 URLs. Action: consolidate/canonicalise to the stronger page.
+4. **Thin / misconfigured content** — cross-check EV-news feed pages and known
+   risks in `docs/SEO_EV_NEWS_PROPOSALS.md` / `docs/SEO_PROPOSALS.md`.
+
+Exclude brand queries (clbd, carlife by dani, carlifebydani, clbd parts) from
+opportunity mining — they already convert and aren't the growth lever.
+
 ### Step 5 — Write the report
 Create `reports/seo-performance/<today>-snapshot.md` (date = today, `YYYY-MM-DD`)
 using the template below. Fill every section you captured; for any source you
 could not capture, leave the table blank with a one-line reason — never guess.
+Include the **On-site SEO — action items** section: the prioritized list from
+Step 4b, each item as a checkbox with the target URL, the query, current
+position/CTR/impressions, and the specific edit.
 
 ### Step 6 — Historical comparison
 Read the previous snapshot and append a **"Compared to <prev date>"** section to
-the new report: for each field-data metric (mobile + desktop) **and each Search
-Console headline metric** (clicks, impressions, CTR, avg position) show prev → new
-and the delta; flag any field metric that crossed a Good/NI/Poor threshold or
-moved >10%, and any material swing in search clicks/impressions/position; then
-relate movements to deploy dates in the change log
+the new report. Cover **all three metric families**:
+- **Field data** (mobile + desktop): each metric prev → new + delta; flag any
+  Good/NI/Poor threshold crossing or >10% move.
+- **Lab + GTmetrix**: prev → new for lab category scores and the GTmetrix row;
+  remember single-sample lab/GTmetrix variance — corroborate against field data
+  before calling a real regression.
+- **Search Console**: clicks, impressions, CTR, avg position prev → new + delta;
+  flag material swings. **Also carry the previous run's action items forward** —
+  mark each ✅ done / ↔ no change / ⬆️⬇️ moved, using the new GSC positions, so
+  the report shows whether last month's actions worked.
+
+Relate movements to deploy dates in the change log
 (`docs/seo-performance/README.md`). Field data lags deploys by up to ~28 days
 (rolling window), so a mid-month ship only fully lands in the following snapshot.
-Then give the user a short verbal read: what improved, what regressed, what to
-watch, and any recommended action.
+
+### Step 7 — Append the trend log
+Append one row to `reports/seo-performance/history.csv` (create with the header
+if missing) so trends are machine-readable across snapshots. Columns:
+```
+date,crux_window,m_lcp_s,m_inp_ms,m_cls,m_ttfb_s,d_lcp_s,d_inp_ms,d_cls,d_ttfb_s,cwv_pass,lab_perf_m,lab_perf_d,gt_score,gt_grade,gt_page_mb,gsc_clicks,gsc_impr,gsc_ctr,gsc_pos
+```
+Use the same values you put in the report. Leave a field blank (not 0) if a
+source wasn't captured. Then give the user a short verbal read: what improved,
+what regressed, what to watch, and the **top 1–3 on-site actions** to take now.
 
 ---
 
@@ -146,10 +232,10 @@ watch, and any recommended action.
 ```markdown
 # SEO Performance Snapshot — <YYYY-MM-DD>
 
-**Captured:** <date> · **Method:** PageSpeed WebFetch (field) + GTmetrix MCP + PSI API (lab) + Search Console MCP (search outcome)
+**Captured:** <date> · **Method:** PSI REST (field) + PSI MCP (lab) + GTmetrix MCP + Search Console MCP (search outcome + on-site opportunities)
 
 Source URLs used this run:
-- PageSpeed: `<analysis URL>` (`?form_factor=mobile` / `=desktop`)
+- PageSpeed field data: PSI API v5 `runPagespeed` (`loadingExperience`), mobile + desktop, analysed `<analysisUTCTimestamp>`
 - GTmetrix: `<report_url>` (report id `<id>`)
 - Search Console property: `https://www.carlifebydani.com/` · window `<date_from>`–`<date_to>`
 
@@ -195,8 +281,18 @@ Resource summary + top Lighthouse issues: <…>
 
 **Indexing / sitemaps:** <submitted / indexed counts, coverage issues, EV-news feed status>
 
+## On-site SEO — action items (from GSC opportunity mining)
+Prioritized; carried forward and re-scored each run. `[ ]` open · `[x]` done.
+| # | Priority | Target page | Query | Pos | CTR | Impr | Action |
+|---|---|---|---|---|---|---|---|
+| 1 | | | | | | | |
+
 ## Compared to <prev date>
-<per-metric deltas, threshold crossings, links to deploys, watch-items>
+**Field data:** <mobile + desktop per-metric deltas, threshold crossings>
+**Lab + GTmetrix:** <deltas; note lab/GTmetrix single-sample variance vs field>
+**Search Console:** <clicks / impressions / CTR / position deltas>
+**Action-item follow-up:** <last run's items → ✅ done / ↔ flat / ⬆️⬇️ moved, with new positions>
+<links to deploys, watch-items>
 ```
 
 ---
@@ -210,3 +306,13 @@ Resource summary + top Lighthouse issues: <…>
   slow TTFB).
 - Comparisons are only valid across the same CrUX window and same GTmetrix
   location/connection — always record both.
+
+### On-site opportunity thresholds (Search Console)
+- **Striking distance:** avg position **5–20** + **≥300 impressions**, non-brand
+  → on-page optimise (title/H1/coverage) to push into top-3. Highest-leverage bucket.
+- **Low-CTR winner:** position **≤5** but CTR below the rank norm (rough page-1
+  norms: pos 1 ≈25–30%, pos 2–3 ≈10–15%, pos 4–5 ≈5–8%) → rewrite title/meta.
+- **Cannibalisation:** one query split across ≥2 URLs → consolidate/canonicalise.
+- Always exclude **brand** queries from opportunity ranking (they already convert).
+- CTR/position from a 28-day window is noisy for low-impression rows; require the
+  impression floor before actioning.
