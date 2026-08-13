@@ -35,3 +35,8 @@ __pycache__/
 /.claude/settings.local.json
 # Test output (generated files, never commit)
 /plugins/*/tests/output/
+
+# Cached raw API responses — regenerable, and bulky (SERP/GSC JSON blobs).
+# The keyword ledger (data/seo-cache/keywords.csv) IS committed: it is small,
+# greppable, and git history gives search-volume trends for free.
+/data/seo-cache/raw/
