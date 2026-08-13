@@ -9,9 +9,24 @@ carlifebydani/
   theme/                  WordPress theme (carlifebydani)
   plugins/
     ev-news-automator/    Automated EV news collection plugin (in development)
-  docs/
+  docs/                   Methodology, proposals, and reference documentation
     brainstorms/          Requirements and feature planning documents
+    seo-performance/      Monitoring methodology + decision rules
+  reports/                Generated, dated artifacts — outputs, not documentation
+    seo-performance/      Monthly site-wide snapshots + history.csv trend log
+    seo-metatags/         Per-article SEO optimization proposals
+    competitor-gap/       Bulgarian organic competitive landscape
+    yoast-meta-backup/    Pre-write Yoast field snapshots (the only rollback)
+  data/
+    seo-cache/            Cached paid keyword data — check before spending units
+  tools/                  Standalone helper scripts
+  .claude/skills/         Project skills (see below)
+  .mcp-local/             MCP server runtimes — gitignored, local only
+  .credentials/           Service accounts and API keys — gitignored
 ```
+
+**`docs/` vs `reports/`:** `docs/` is written by hand and kept current;
+`reports/` is generated, dated, and never edited after the fact.
 
 ## Local Development Setup (WP Local)
 
@@ -85,6 +100,42 @@ production server:
 rsync -av plugins/ev-news-automator/ user@server:/path/to/wp-content/plugins/ev-news-automator/
 ```
 (or upload via SFTP / wp-admin if rsync is not available)
+
+## SEO Tooling
+
+On-site SEO work runs through two Claude Code skills backed by seven MCP servers.
+Nothing here is committed — the servers are registered per-machine and the
+credentials are gitignored. Full setup, auth and cost for each:
+**[docs/MCP_SERVERS.md](docs/MCP_SERVERS.md)**.
+
+### Skills
+
+| Skill | Invoke with | What it does |
+|---|---|---|
+| [`seo-performance-report`](.claude/skills/seo-performance-report/SKILL.md) | *"generate the SEO performance report"* | Monthly **site-wide** snapshot: CrUX field data, Lighthouse lab, GTmetrix, and Search Console mined into prioritized action items. Appends a trend row to `history.csv`. |
+| [`seo-article-optimize`](.claude/skills/seo-article-optimize/SKILL.md) | *"optimize this article for SEO"* + a URL | **Per-article**: researches real Bulgarian demand, proposes focus keyphrase / SEO title / meta description / on-page edits, writes a dated proposal, backs up existing Yoast meta, and applies the metatags on approval. |
+
+The first finds the pages worth optimizing; the second optimizes one of them. The
+backlog between them is [docs/SEO_EV_NEWS_TODO.md](docs/SEO_EV_NEWS_TODO.md).
+
+### MCP servers
+
+| Server | Gives us |
+|---|---|
+| `google-search-console` | Clicks, impressions, CTR, position per query/page; indexing + sitemaps |
+| `ga4` | Landing-page engagement — what happens *after* the click |
+| `semrush` | BG keyword volume/CPC/difficulty, SERP, competitor + keyword gap |
+| `dataforseo` | Google Ads Keyword Planner volumes, **live google.bg SERPs**, OnPage crawl |
+| `psi` | Lighthouse lab scores |
+| `gtmetrix` | Grade, per-resource weight, top Lighthouse issues |
+| `wordpress` | Read/write posts on production (dedicated `seo-bot` Editor account) |
+
+> **Two of these cost money.** Semrush bills per returned line and DataForSEO per
+> request. **Check [`data/seo-cache/`](data/seo-cache/) before any paid call and
+> write the result back** — see [tools/seo_cache.py](tools/seo_cache.py).
+
+> **A session restart is required** after registering any MCP server before its
+> tools become available. `claude mcp list` showing ✔ Connected is not enough.
 
 ## Editor Setup
 

@@ -1,11 +1,13 @@
 # SEO Performance Monitoring — Methodology & Reference
 
-**Purpose:** capture a consistent monthly snapshot of Core Web Vitals + page-speed
-data for `carlifebydani.com` so month-over-month progress can be compared and
-optimization decisions can be made. **Angle: off-site/technical SEO — maximize
-Google search ranking.** Google ranks on the **CrUX field data** (real-user Core
-Web Vitals), not on the Lighthouse lab score or the GTmetrix grade, so field data
-is the primary signal; lab/GTmetrix are secondary diagnostics.
+**Purpose:** capture a consistent monthly snapshot for `carlifebydani.com` so
+**change is tracked over time and turned into on-site SEO actions**. Two layers:
+**technical/off-site** (Core Web Vitals + page speed — Google ranks on the **CrUX
+field data**, not the Lighthouse lab score or GTmetrix grade, so field is primary
+and lab/GTmetrix are secondary diagnostics) and **on-site/content** (Search
+Console query→page performance, mined each run into a prioritized action list).
+Each run also appends a machine-readable trend row to
+[`reports/seo-performance/history.csv`](../../reports/seo-performance/history.csv).
 
 This file is the **methodology and decision-rules reference**. The step-by-step
 *procedure* for producing a snapshot now lives in a skill, and the generated
@@ -22,63 +24,20 @@ snapshots live in a separate reports folder:
 
 | Source | What it gives | How | Notes |
 |---|---|---|---|
-| **PageSpeed Insights (WebFetch)** | CrUX real-user **field data** (LCP, INP, CLS, FCP, TTFB) — the ranking signal | WebFetch the `pagespeed.web.dev` analysis URL per form factor | **Primary.** Works reliably; mobile & desktop are separate `?form_factor=` URLs |
-| **PageSpeed Insights API** | Lighthouse **lab** scores + field JSON | `curl` PSI v5 with a Google API key | Optional. Keyless calls 429 on a shared quota — use a key |
+| **PageSpeed Insights (REST)** | CrUX real-user **field data** (LCP, INP, CLS, FCP, TTFB) — the ranking signal | `runPagespeed` v5 → `.loadingExperience`, per form factor | **Primary.** ⚠️ Do **not** WebFetch a `pagespeed.web.dev/analysis/<id>` URL — it serves the *stored* analysis for that id, so reusing a prior snapshot's id returns stale field data (hit 2026-08-07). CLS percentile is ×100 |
+| **PageSpeed Insights (PSI MCP)** | Lighthouse **lab** scores (Perf/A11y/BP/SEO + TBT/SI/lab-LCP/CLS) | `mcp__psi__psi_lighthouse` per form factor | **Live — keyed & verified 2026-07-29.** Mobile lab is throttled — sanity-check against field data, never a ranking verdict |
 | **GTmetrix (MCP)** | Grade, Performance/Structure, per-resource weight, top Lighthouse issues | `mcp__gtmetrix__*` tools | **Live — confirmed 2026-07-29.** Report page is Cloudflare-403 to WebFetch, so MCP is the path |
 | **Google Search Console (MCP)** | Actual search **outcome** — clicks, impressions, CTR, avg position (per query/page), indexing & sitemap status | `mcp__google-search-console__*` tools | **Live — confirmed 2026-07-29.** The ranking-outcome signal the other sources only predict |
 
-### GTmetrix MCP — configuration
+### MCP server configuration
 
-Remote HTTP MCP server `https://gtmetrix.com/mcp`, registered in Claude Code at
-**local scope** (project: carlifebydani). Auth = HTTP Basic with the account API
-key (`Authorization: Basic base64(APIKEY:)`); the key is stored only in
-`~/.claude.json`, never committed. Server identifies as `groupone-gtmetrix` and
-exposes MCP tools, resources, and prompts (run tests, read reports, history,
-recommendations).
+Setup, auth, scope and cost for every server above — plus the ones this file does
+not use (Semrush, DataForSEO, GA4, WordPress) — live in a single inventory:
+**[`docs/MCP_SERVERS.md`](../MCP_SERVERS.md)**.
 
-Account is GTmetrix **Basic = 5 API credits** (auto-refill to 5). Each new test
-spends a credit; reading an existing report id is free — the skill runs **one
-deliberate test per monthly snapshot**.
-
-To re-add on a new machine / after key rotation:
-```bash
-HDR="Authorization: Basic $(printf '%s:' '<GTMETRIX_API_KEY>' | base64)"
-claude mcp add --scope local --transport http gtmetrix https://gtmetrix.com/mcp --header "$HDR"
-claude mcp list   # expect: gtmetrix ... ✔ Connected
-```
-> A **session restart** is required after adding before the `mcp__gtmetrix__*`
-> tools appear in-session.
-
-### Google Search Console MCP — configuration
-
-Local stdio MCP server. **Not committed** — registered at **local scope** (in
-`~/.claude.json`, per-user), and its entire runtime lives in the gitignored
-`.mcp-local/` folder: launcher `.mcp-local/gsc-mcp.sh` + the vendored
-`.mcp-local/gsc_mcp/` Python package, run in place via `uv run`. Deps are pulled
-on demand (`mcp<2`, `google-auth`, `requests`, `jinja2`). Copied 2026-07-29 from
-the `CLBD-Marketing` workspace.
-
-> **`mcp<2` is deliberate:** `gsc_mcp/server.py` imports `mcp.server.fastmcp`,
-> which mcp 2.0 removed. The launcher pins `mcp<2` so FastMCP stays where the
-> vendored package expects it.
-
-Auth uses the shared **`carlifebydani` service account**
-(`.credentials/google-service-account.json`, gitignored) — verified to have
-`siteFullUser` read access to the property. **Property is the www URL-prefix
-`https://www.carlifebydani.com/`** (note: not the bare apex used by PSI/GTmetrix).
-No OAuth consent screen, no token expiry — access is governed purely by the SA
-email being a user on the Search Console property.
-
-To re-register on another machine (after copying `.mcp-local/` + the credential):
-```bash
-claude mcp add --scope local google-search-console \
-  "$(pwd)/.mcp-local/gsc-mcp.sh"
-claude mcp list   # expect: google-search-console ... ✔ Connected
-```
-> Requires `uv` on PATH and a **session restart** before `mcp__google-search-console__*`
-> tools appear. Tools: `gsc_sites`, `gsc_site_details`, `gsc_query`,
-> `gsc_performance_overview`, `gsc_indexing_issues`, `gsc_inspect_url`,
-> `gsc_sitemaps`, `gsc_audit`.
+None are committed: all are registered at local or user scope in `~/.claude.json`,
+with the local stdio runtimes in the gitignored `.mcp-local/`. A **session
+restart** is required after registering any of them before their tools appear.
 
 ---
 
@@ -86,10 +45,16 @@ claude mcp list   # expect: google-search-console ... ✔ Connected
 
 - **PageSpeed field data (mobile, then desktop):** `Assessment | LCP | INP | CLS |
   FCP | TTFB` — each value + rating + % distribution.
-- **PageSpeed lab (mobile, then desktop) — if captured:** `Performance |
-  Accessibility | Best-Practices | SEO | TBT | Speed Index`.
+- **PageSpeed lab (mobile, then desktop):** `Performance | Accessibility |
+  Best-Practices | SEO | TBT | Speed Index` (+ lab LCP/CLS).
 - **GTmetrix:** `Score | Grade | Performance % | Structure % | LCP | TBT | CLS |
   FCP | Speed Index | TTI | Page Size | Requests | Fully Loaded`.
+- **Search Console:** `Clicks | Impressions | CTR | Avg position` (headline) +
+  top queries/pages + indexing/sitemap status.
+- **On-site action items:** carried forward each run and re-scored (position/CTR)
+  → ✅ done / ↔ flat / ⬆️⬇️ moved.
+- **Trend log:** one row per snapshot in `history.csv` (see its header for the
+  exact column list) — the fast machine-readable diff across all snapshots.
 
 Always note the **CrUX 28-day date range** and the **GTmetrix test location +
 connection** — comparisons are only valid across the same window/config.
@@ -107,6 +72,15 @@ connection** — comparisons are only valid across the same window/config.
   mid-month only fully shows in the following month's snapshot — record deploy
   dates alongside snapshots.
 
+### On-site opportunity thresholds (Search Console → action items)
+- **Striking distance:** avg position **5–20** + **≥300 impressions**, non-brand
+  → optimise the target page (title/H1/coverage) to push into top-3. Top lever.
+- **Low-CTR winner:** position **≤5** but CTR below the rank norm (pos 1 ≈25–30%,
+  2–3 ≈10–15%, 4–5 ≈5–8%) → rewrite title/meta to earn the click.
+- **Cannibalisation:** one query split across ≥2 URLs → consolidate/canonicalise.
+- Exclude **brand** queries (clbd, carlife by dani, carlifebydani, clbd parts).
+- Enforce the impression floor — 28-day CTR/position on low-impression rows is noise.
+
 ## Change log of what was shipped (context for reading the trend)
 
 - **2026-07-10** — deferred render-blocking JS, lazy-loaded below-fold images,
@@ -115,3 +89,7 @@ connection** — comparisons are only valid across the same window/config.
   through late July / August.)
 - See `docs/SEO_PROPOSALS.md` for the still-pending items (title-tag fix, Review /
   VideoObject / CollectionPage schema).
+- **2026-07-10 → 2026-08-07 — no on-page SEO changes shipped.** Commits in this
+  window were EV-News-plugin and reporting-tooling work only. The 2026-08-07
+  snapshot's flat action-item positions confirm it; read that snapshot's movements
+  as organic, not as the result of any intervention.
