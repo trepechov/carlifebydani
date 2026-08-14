@@ -113,15 +113,19 @@ credentials are gitignored. Full setup, auth and cost for each:
 | Skill | Invoke with | What it does |
 |---|---|---|
 | [`seo-performance-report`](.claude/skills/seo-performance-report/SKILL.md) | *"generate the SEO performance report"* | Monthly **site-wide** snapshot: CrUX field data, Lighthouse lab, GTmetrix, and Search Console mined into prioritized action items. Appends a trend row to `history.csv`. |
-| [`seo-article-optimize`](.claude/skills/seo-article-optimize/SKILL.md) | *"optimize this article for SEO"* + a URL | **Per-article**: researches real Bulgarian demand, proposes focus keyphrase / SEO title / meta description / on-page edits, writes a dated proposal, backs up existing Yoast meta, and applies the metatags on approval. |
+| [`seo-article-optimize`](.claude/skills/seo-article-optimize/SKILL.md) | *"optimize this article for SEO"* + a URL | **Per-article**: researches real Bulgarian demand, proposes focus keyphrase / SEO title / meta description / **tags** / on-page edits, writes a dated proposal, backs up existing Yoast meta, and applies the metatags + tags on approval. |
+| [`ev-news-transcript-content`](.claude/skills/ev-news-transcript-content/SKILL.md) | *"fix the thin content on this EV News post"* | **Per-article, EV News only**: fixes the actual `wordCount: 17` problem — searches the podcast transcript archive (`youtube-rag` MCP) for a grounded answer to the page's own title, drafts 3 paragraphs with timestamp-verified claims, and writes them to `post_content` on approval. |
 
-The first finds the pages worth optimizing; the second optimizes one of them. The
-backlog between them is [docs/SEO_EV_NEWS_TODO.md](docs/SEO_EV_NEWS_TODO.md).
+The first finds the pages worth optimizing; the second researches and tags
+one of them; the third gives EV News posts specifically the owned body text
+that research alone can't invent. The backlog between them is
+[docs/SEO_EV_NEWS_TODO.md](docs/SEO_EV_NEWS_TODO.md).
 
 ### MCP servers
 
 | Server | Gives us |
 |---|---|
+| `youtube-rag` | Grounded quotes/summaries from the podcast transcript archive, deep-linked to the second (needs the `youtube-rag-n8n` stack running) |
 | `google-search-console` | Clicks, impressions, CTR, position per query/page; indexing + sitemaps |
 | `ga4` | Landing-page engagement — what happens *after* the click |
 | `semrush` | BG keyword volume/CPC/difficulty, SERP, competitor + keyword gap |

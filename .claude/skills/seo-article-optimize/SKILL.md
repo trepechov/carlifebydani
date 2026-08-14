@@ -1,6 +1,6 @@
 ---
 name: seo-article-optimize
-description: Optimize a single carlifebydani.com article for search — reads the live page + WP post, researches what people actually search (Search Console, Google autocomplete, Semrush BG, live SERP, GA4), then proposes a focus keyphrase, SEO title, meta description, on-page content edits, image alt text and internal links; writes a dated proposal MD to reports/seo-metatags/, backs up existing Yoast meta, and offers to apply the metatags via the WordPress MCP. Reads paid keyword data from the local cache in data/seo-cache/ before spending API units. Use when the user gives a URL and asks to "optimize this article", "write SEO metatags", "fix the meta description", or "do the SEO for this page".
+description: Optimize a single carlifebydani.com article for search — reads the live page + WP post, researches what people actually search (Search Console, Google autocomplete, Semrush BG, live SERP, GA4), then proposes a focus keyphrase, SEO title, meta description, tags (mapped to the site's existing vocabulary from the same research), on-page content edits, image alt text and internal links; writes a dated proposal MD to reports/seo-metatags/, backs up existing Yoast meta, and offers to apply the metatags + tags via the WordPress MCP. Reads paid keyword data from the local cache in data/seo-cache/ before spending API units. Use when the user gives a URL and asks to "optimize this article", "write SEO metatags", "fix the meta description", "tag this post", or "do the SEO for this page".
 ---
 
 # Article SEO Optimizer
@@ -20,6 +20,14 @@ The output is always **two things**:
 Companion skill: `seo-performance-report` (site-wide monthly snapshot). **That
 skill finds the pages worth optimizing; this skill optimizes one of them.** The
 backlog it feeds is `docs/SEO_EV_NEWS_TODO.md`.
+
+On EV News posts specifically, this skill does **not** write the body-text
+content fix (Step 6 says so) — that is
+`ev-news-transcript-content` (grounded in the transcript archive via the
+`youtube-rag` MCP, not invented). Run this skill first for the keyphrase,
+metatags and tags; run that one after for the content lift. Tags are decided
+**here**, from the same demand research as the keyphrase — not by re-reading
+whatever content ends up on the page.
 
 ---
 
@@ -292,6 +300,41 @@ Exactly **one** focus keyphrase, plus 2–4 secondary phrases. Rules:
   (`/wp/v2/search?search=<phrase>`). If it is, this is a cannibalisation decision,
   not a metatag decision — flag it and stop before writing.
 
+### Step 4b — Map the research to existing tags
+
+Tags come from the **same research as the keyphrase**, not from a fresh read of
+whatever prose ends up on the page — a separate content-analysis pass over the
+finished article would pick up whatever happens to be mentioned (a passing
+brand name, a sponsor) rather than what the article's *demand* actually is.
+
+Candidates are the entities from Step 2 and the keyphrase/secondary phrases
+from Step 3–4: the headline story's brand(s) and model(s), plus one keyword-
+intent term if the story fits an existing pattern — `Премиера` (launch),
+`слух` (rumor/speculation), `Регистрация`, `Зареждане`, `Разход`, `Инцидент` —
+this site already tags EV News posts this way (`Tesla`+`SpaceX`+`слух` on the
+Илон Мъск/SpaceX merger story is the existing pattern to match, not invent).
+
+**Reuse only — do not create speculatively.** Check every candidate against
+what's already there:
+```
+mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/tags",
+  method="GET", params={"search":"<candidate>","_fields":"id,name,slug,count"})
+```
+213 of the site's 365 tags already have ≤1 use — the vocabulary is thin
+already, and every ad-hoc new term makes a new near-empty archive page (the
+mechanism behind the `/tag/clbd/` finding: thin taxonomy pages outranking
+editorial content on the site's own brand queries). If a needed concept has no
+existing term, **skip it** rather than create one — note the gap in the
+proposal so a recurring gap can be batch-created deliberately later, not
+one-off per article.
+
+**Cap it: 1–2 entity tags (the headline story only, not every brand the
+article mentions in passing) + 0–2 keyword-intent tags.** A 20+ story roundup
+page tagged for every brand it links to is exactly the dilution this caps.
+
+Record the chosen tags with their existing `id` and `count` in the proposal —
+`count` is the signal for "this is an established landing page", not a guess.
+
 ### Step 5 — Draft the metatags
 
 **`_yoast_wpseo_title`** — write `"<title body> %%sep%% %%sitename%%"`. Template
@@ -336,8 +379,19 @@ Propose concretely — exact text, exact location — not "add more keywords".
    ```
    Editor role can `POST` `{"alt_text": "..."}` back — **verify on one image
    before proposing a batch.**
-5. **Excerpt** — `post_excerpt` is the single biggest content lever on thin pages
-   (a 100–150 word Bulgarian intro). Propose the actual text.
+5. **Body intro (EV News only — do not draft this yourself).** The single
+   biggest content lever on these pages is a 100–150 word grounded Bulgarian
+   intro appended to `post_content` after the video embed — but hand this off
+   to `ev-news-transcript-content` rather than writing it here. It needs the
+   transcript archive (this skill has no access to it) and inventing episode
+   claims from GSC/Semrush research would be exactly the fabrication risk this
+   skill's decision rules forbid elsewhere.
+   > ⚠️ **Do not propose `post_excerpt`.** Tried and rejected on post 7333
+   > (2026-08-14): the slot renders badly for this template, and Yoast derives
+   > `wordCount` from `post_content` only — text in the excerpt left it stuck
+   > at 17 while the same text in `post_content` moved it to 168. If a
+   > non-EV-News post genuinely needs a short editorial intro, put it in
+   > `post_content`.
 6. **Structured data / slug** — only if genuinely wrong. **Never propose a slug
    change on a URL with GSC impressions** unless a 301 ships with it.
 
@@ -381,18 +435,24 @@ reports/yoast-meta-backup/<id>-<YYYY-MM-DD>.csv
 Header: `id,slug,link,_yoast_wpseo_title,_yoast_wpseo_metadesc,_yoast_wpseo_focuskw`
 with the **current** (pre-write) values, even when they're all empty.
 
-**b) Ask.** Show the before → after for the three fields and ask the user to
-approve applying them via the WordPress MCP. Use `AskUserQuestion`: apply all
-three / apply metadesc only / revise first / don't write. **Never write without
-an explicit yes** — this is production content.
+**b) Ask.** Show the before → after for the three Yoast fields **and** the
+proposed tags (name + existing id + count from Step 4b) together, and ask the
+user to approve. Use `AskUserQuestion`: apply metatags + tags / metatags only /
+tags only / revise first / don't write. **Never write without an explicit
+yes** — this is production content.
 
-**c) Apply** (only the approved fields):
+**c) Apply** (only what was approved — metatags and tags can go in one call):
 ```
 mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/posts/<id>",
-  method="POST", params={"meta":{
-    "_yoast_wpseo_title":"...", "_yoast_wpseo_metadesc":"...",
-    "_yoast_wpseo_focuskw":"..."}})
+  method="POST", params={
+    "tags": [<existing tag ids from Step 4b>],
+    "meta":{
+      "_yoast_wpseo_title":"...", "_yoast_wpseo_metadesc":"...",
+      "_yoast_wpseo_focuskw":"..."}})
 ```
+`tags` on this endpoint **replaces** the post's tag set, not merges — read the
+post's current `tags` array in Step 1 and include it in this list unless a
+current tag is being deliberately dropped.
 
 **d) Be explicit about what is NOT auto-appliable.** Body text, headings,
 excerpt, alt text and internal links are separate, riskier writes. Offer them
@@ -457,6 +517,15 @@ what it is *not* competing with on this site>
 | `_yoast_wpseo_metadesc` | | | |
 | `_yoast_wpseo_focuskw` | | | |
 
+## Proposed tags
+<from Step 4b — existing terms only>
+| Tier | Tag | id | Existing count |
+|---|---|---|---|
+| Entity | | | |
+| Keyword-intent | | | |
+<Gaps: concepts with no existing tag, deliberately not created — note here if
+this gap recurs across articles, so it can be batch-created instead of ad hoc.>
+
 ## On-page changes (need a human)
 - [ ] **H1** — <exact proposed text>
 - [ ] **Opening paragraph** — <exact proposed text>
@@ -494,6 +563,10 @@ Baseline (GSC, <window>): <impr / clicks / CTR / pos>. Re-check after 2–4 week
   ≈5–8%. Materially below the norm for its rank = a snippet worth rewriting.
 - **One keyphrase per page.** If two pages would target the same phrase, that's
   cannibalisation — resolve it first (consolidate or canonicalise).
+- **Tags: reuse only, never invent speculatively.** 213 of the site's 365 tags
+  already sit at ≤1 use. A tag created for one article's convenience is a new
+  thin `/tag/` archive forever — the exact mechanism the competitor-gap report
+  already flags as a sitewide weakness.
 - **Never invent facts** to fill a meta description. Everything in the snippet
   must be in the article.
 - **Bulgarian, always.** Titles and descriptions in Bulgarian, in the phrasing
@@ -558,3 +631,18 @@ Baseline (GSC, <window>): <impr / clicks / CTR / pos>. Re-check after 2–4 week
 - **Teardown:** when the SEO push ends, remove the standing production write
   credential — `claude mcp remove wordpress`, delete the Keychain entry
   `carlifebydani-wp-mcp`, revoke the app password in the `seo-bot` profile.
+- **`post_excerpt` does not move Yoast's `wordCount`.** Proven on 7333,
+  2026-08-14: 154 words written to the excerpt, `wordCount` stayed 17. Yoast
+  reads `post_content` only. Never propose the excerpt field for content —
+  see Step 6.
+- **`POST /wp/v2/posts/<id>` with `tags` replaces the whole tag set, not
+  merges.** Always read the post's current `tags` in Step 1 and carry them
+  forward in Step 9's write unless deliberately dropping one.
+- **The theme auto-links tag names inside `the_content`, up to 5× per tag**
+  ([`theme/functions.php:75`](../../../theme/functions.php#L75),
+  `add_tag_links_to_content`). On post 7333 this put 10 `/tag/` links inside
+  154 words of fresh prose, outnumbering the editorial links 5:1. This mainly
+  bites once `ev-news-transcript-content` has added body prose — if this
+  skill's tag choices land on a page with real body text, re-fetch the
+  rendered page afterward and count `/tag/` links inside the prose before
+  calling the tagging finished.
