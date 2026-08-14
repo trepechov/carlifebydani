@@ -133,10 +133,42 @@ curl -s --max-time 20 -H 'User-Agent: Mozilla/5.0' "<url>" -o "$SCRATCH/page.htm
 > `post_content`**. So the rendered page can look rich while the post the
 > indexer sees is ~17 words. Always state which of the two you are describing.
 
-c) **On EV News posts, also read the episode's news CSV directly** — the `news_csv`
-post meta field holds the URL; fetch and parse it. Don't scrape the rendered
-cards instead: the theme renders only 7 of up to 12 columns, and the CSV is
-already ordered editorially (see Decision rules below for how to read it).
+c) **On EV News posts, also read the episode's news CSV directly** — don't scrape
+the rendered cards instead: the theme renders only 6 of up to 12 columns, and
+the CSV is already ordered editorially (see Decision rules below for how to
+read it).
+
+```
+mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/posts/<id>",
+  method="GET", params={"context":"edit","_fields":"meta"})
+```
+Read `meta.news_csv` — a public Google Sheets CSV-export URL. Fetch it:
+```bash
+curl -sL --max-time 20 -H 'User-Agent: Mozilla/5.0' "<news_csv value>" -o "$SCRATCH/news.csv"
+```
+(needs `-L` — the publish URL 307-redirects — and a UA, or Google serves an
+empty response.) Parse with Python's `csv` module, not manual splitting
+(descriptions contain commas).
+
+**Detect the width before reading anything positionally** — confirmed against
+two real files 2026-08-14, and they differ:
+| | Header | Cols |
+|---|---|---|
+| Back-catalogue (e.g. post 7333, 2025) | `title,description,link,author,upvote,downvote` | 6 |
+| Current (e.g. post 9248, 2026) | `title,description,link,author,upvote,downvote,clicks,added_date,pub_date,off_topic,tags,region` | 12 |
+
+So: **column 3 is `author`** (the source/reporter attribution, e.g. `thedriven.io`
+or a Reddit handle) on every vintage checked — not an image URL, not a date.
+This resolves Open Question 4: there is no image data in this CSV, W4's alt
+text has to come from the media object itself, not here. Read the header row,
+map by position up to whatever width is present, and treat every column past
+`link` (index 2) as optional — `getattr`/`.get`-style access with a default,
+never a bare index that throws on a 6-column file. `off_topic` is a plain
+`yes`/`no` string when present; `tags` is a **free-text, comma-separated
+candidate list** (e.g. `"Volkswagen, ID Polo, ID Cross, премиера, продажби"`)
+— not existing WP tag IDs, and not what the plan doc calls `Тагове`/`Регион`
+(the actual header names are English: `tags`, `region` — no separate topic
+column was found in either sample file).
 
 From the rendered HTML extract and record:
 - `<title>`, `<meta name="description">`, canonical, `og:*`, `<html lang>`
@@ -150,7 +182,8 @@ Then write a 3–5 line factual summary of what the article is actually about:
 the entities (brands, models, people, places), the event, the numbers, the date.
 **This entity list is the seed for Step 3** — do not invent keywords before it.
 On EV News posts, the news CSV's story titles are additional entity seeds —
-often richer than the 17-word `post_content` alone.
+often richer than the 17-word `post_content` alone. Skip rows with
+`off_topic: yes` when pulling seeds, where that column is present.
 
 ### Step 3 — Research what people actually search
 
@@ -309,9 +342,11 @@ intent term if the story fits an existing pattern — `Премиера` (launch
 `слух` (rumor/speculation), `Регистрация`, `Зареждане`, `Разход`, `Инцидент` —
 this site already tags EV News posts this way (`Tesla`+`SpaceX`+`слух` on the
 Илон Мъск/SpaceX merger story is the existing pattern to match, not invent). On
-EV News posts, the news CSV's per-story `Тагове`/`Регион` columns (Step 2c) are
-additional candidates to check against the rule below — not to adopt directly;
-the CSV's classification is a suggestion, not a validated decision.
+EV News posts on modern (12-column) CSVs, each story's `tags` column (Step 2c)
+is a free-text comma-separated candidate list, and `region` is a locale hint
+(`GLOBAL`, etc.) — additional candidates to check against the rule below, not
+to adopt directly; the CSV's classification is a suggestion, not a validated
+decision, and it's absent entirely on back-catalogue (6-column) files.
 
 **Reuse only — do not create speculatively.** Check every candidate against
 what's already there:
@@ -398,3 +433,10 @@ This phase makes **no live writes**. Everything here is research and a report
   autocomplete carry Step 3c, and the report should say so.
 - **Two reports for one post is a bug, not a feature.** Always check Step 0
   before creating a new file.
+- **`news_csv` is not REST-exposed by default.** It's plain legacy postmeta;
+  `theme/functions.php` registers it (`show_in_rest`, editor-gated
+  `auth_callback`) as of 2026-08-14 — if a fetch returns nothing in `meta`,
+  confirm that registration reached the live site (deploy is manual, see
+  `docs/DEPLOYMENT.md`) before assuming the post has no CSV.
+- **The publish CSV URL 307-redirects and Google serves empty without a
+  User-Agent.** `curl -sL -H 'User-Agent: Mozilla/5.0'`, not a bare `curl -s`.

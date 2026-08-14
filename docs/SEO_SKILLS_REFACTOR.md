@@ -17,7 +17,7 @@ if a session was interrupted; this is the resumption point.
 | 3 | W7 — tag auto-link decision | ✅ partial 2026-08-14 — limit 5→1 shipped; noindex deferred, see TODO in §W7 |
 | 4 | W1 + W2 — split + handoff | ✅ done 2026-08-14 — also picked up W12 as a side effect (orchestrator rewrite touched the same lines) and the W11 wording fix (extraction-time, as W11 specified) |
 | 5 | W10 — approval gate | ✅ done 2026-08-14 |
-| 6 | W3 + W11 (rest) — news CSV + tag-band CSV integration | ⏳ not started — wording fix already done in W1 |
+| 6 | W3 + W11 — news CSV + tag-band | ✅ done 2026-08-14 — also resolved Open Question 4 (column 3 = `author`) and registered `news_csv` for REST (needs deploy, see §W3) |
 | 7 | W4 — alt write path | ⏳ not started |
 | 8 | W9 (rest) — docs restructure | ⏳ not started |
 | 9 | W6 — generalise + rescan | ⏳ not started |
@@ -232,7 +232,7 @@ by `reports/seo-metatags/README.md`. The two pre-existing 7333 report files were
 historical record rather than merged — the mechanism now prevents new duplicates, which is
 what this item asked for; retroactively editing a closed report wasn't in scope.
 
-### W3 — Read the episode's news CSV directly · ~1.5h
+### W3 — Read the episode's news CSV directly · ~1.5h · ✅ done 2026-08-14
 
 **Read the CSV, not the rendered cards.** The `news_csv` post meta holds the URL; fetch and
 parse it directly. Scraping card DOM out of the rendered page would be strictly worse — the
@@ -278,6 +278,24 @@ every page load.
 > **The CSV never becomes a content source.** It is third-party derived — that is the whole
 > reason the transcript approach exists. It informs *which stories* to cover and *what to
 > research*; the transcript remains the only source of published *claims*.
+
+**Verified against two real files, 2026-08-14 — this section's guesses were partly wrong:**
+- `news_csv` isn't REST-exposed by default (plain legacy postmeta, no `register_meta` anywhere
+  in the codebase) — had to register it (`theme/functions.php`, editor-gated `show_in_rest`)
+  before it could be fetched at all. Confirmed via wp-admin's Custom Fields panel first, to
+  avoid guessing blind while that registration waits on a manual deploy (`docs/DEPLOYMENT.md`
+  — this repo's theme changes aren't live until someone uploads the zip).
+- **Column 3 is `author`** (source/reporter attribution), not an image — see Open Question 4's
+  resolution below. No featured-image data lives in this CSV.
+- The 12-column vintage's real headers are **English** —
+  `title,description,link,author,upvote,downvote,clicks,added_date,pub_date,off_topic,tags,region`
+  — not the Bulgarian `Тема`/`Тагове`/`Регион` assumed above. There's no separate topic column;
+  `tags` is one free-text comma-separated field.
+- Post 7333's file (2025) has **6 columns only** — `title,description,link,author,upvote,downvote`
+  — confirming the width-detection requirement is real, not theoretical caution.
+
+Implemented in `seo-keyphrase-research/SKILL.md` Step 2c (fetch/parse/width-detect) and Step 4b
+(tag candidates from the `tags` column, validated against the 3–10 band, never adopted directly).
 
 ### W4 — Close the image alt write path · ~1h
 
@@ -427,7 +445,7 @@ their own way.
 - **Prerequisite for W4 and W5.** Both open new write paths; neither ships before the gate
   covering it exists. — satisfied; W4/W5 can now proceed.
 
-### W11 — Tag selection: target the frequency band · ~1h
+### W11 — Tag selection: target the frequency band · ~1h · ✅ done 2026-08-14 (landed with W1 + W3)
 
 Belongs in **Phase A**, alongside the keyphrase — tags come from demand research, not from
 re-reading whatever prose ends up on the page.
@@ -717,8 +735,16 @@ the verification step whenever; the calendar sets the pace, not the backlog.**
 3. **Should Phase A be runnable in bulk?** Triaging 185 unscanned posts one at a time is slow.
    A cheap batch mode — GSC scan only, ranking posts by CTR-loss — would produce the backlog
    that W6 needs, without doing full research on posts that turn out not to be worth it.
-4. **Column 3 of the news CSV** — image, date, source name, or something else. Blocks the
-   image half of W3/W4.
+4. ~~**Column 3 of the news CSV** — image, date, source name, or something else.~~ **Resolved
+   2026-08-14 — `author` (the source/reporter attribution, e.g. `thedriven.io` or a Reddit
+   handle), confirmed on both a 2025 back-catalogue file (post 7333) and a 2026 current one
+   (post 9248).** No image data in this CSV at all — W4's alt text has to come from the media
+   object, the CSV can't help there. Also found while resolving this: the 12-column vintage's
+   real header names are English (`title,description,link,author,upvote,downvote,clicks,
+   added_date,pub_date,off_topic,tags,region`), not the Bulgarian `Тема`/`Тагове`/`Регион`
+   this doc assumed elsewhere — no separate topic column exists, `tags` is free-text
+   comma-separated. The 2025 file has only 6 columns (`title,description,link,author,upvote,
+   downvote`) — confirms the width-detection requirement below is not theoretical.
 5. **DataForSEO is still `40104`-blocked** (diagnosed 2026-08-13, account-side, not code). The
    plan assumes Semrush + autocomplete carry Step 3c. If it clears, bulk `search_volume`
    (1,000 keywords per request) makes W6's 185-post scan dramatically cheaper — worth one
