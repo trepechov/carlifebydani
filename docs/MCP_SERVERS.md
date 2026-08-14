@@ -17,10 +17,12 @@ gives you the docs, not the credentials — follow the per-server setup below.
 
 ## Inventory
 
-Status column verified **2026-08-13** (`claude mcp list` — all 9 ✔ Connected).
+Status column verified **2026-08-13** (`claude mcp list` — all 9 ✔ Connected);
+`youtube-rag` added **2026-08-14**.
 
 | Server | Scope | What it's for | Auth | Cost |
 |---|---|---|---|---|
+| [`youtube-rag`](#youtube-rag) | **project** | Grounded quotes and summaries from the podcast transcript archive, deep-linked to the second | **None** — loopback only | Free |
 | [`google-search-console`](#google-search-console) | local | Actual search outcome: clicks, impressions, CTR, position per query/page; indexing + sitemaps | Service account | Free |
 | [`psi`](#pagespeed-insights-psi) | local | Lighthouse **lab** scores + metrics | Google API key | Free |
 | [`gtmetrix`](#gtmetrix) | local | Grade, per-resource weight, top Lighthouse issues | HTTP Basic (API key) | **5 credits**, auto-refill |
@@ -36,6 +38,7 @@ Status column verified **2026-08-13** (`claude mcp list` — all 9 ✔ Connected
 - **Demand** (what do people search?) — `semrush`, `dataforseo`
 - **Outcome** (what do *we* get?) — `google-search-console`, `ga4`
 - **Diagnosis** (why?) — `psi`, `gtmetrix`
+- **Supply** (what do we actually have to say?) — `youtube-rag`
 - **Action** (change it) — `wordpress`
 
 The two SEO skills consume them: [`seo-performance-report`](../.claude/skills/seo-performance-report/SKILL.md)
@@ -60,6 +63,70 @@ Two of these bill real money, and both are hit by the per-article skill:
 call, and write the result back.** Most articles on this site share the same
 entity vocabulary (Tesla, зареждане, BYD, обхват), so cross-run overlap is large.
 See [`tools/seo_cache.py`](../tools/seo_cache.py).
+
+---
+
+## YouTube-RAG
+
+Registered 2026-08-14 at **project scope** — the only server in this repo's own
+[`.mcp.json`](../.mcp.json) rather than user/local config, because it is useless
+outside this workspace:
+
+```bash
+claude mcp add --transport http --scope project youtube-rag http://localhost:8000/mcp
+```
+
+Served by the **`chat-api` container in `~/Projects/youtube-rag-n8n`**, which must be
+running (`docker compose up -d`) for the tools to answer. Producer-side docs:
+[`docs/mcp-server.md`](../../youtube-rag-n8n/docs/mcp-server.md).
+
+**Why it matters here.** Every other server on this page tells us what the market wants
+or what the site is getting. This one is the only source of **what we actually have to
+say** — 99 ingested episodes, 12,669 chunks, ~14.9 M characters of original Bulgarian
+commentary that exists nowhere else in text. See
+[`SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md).
+
+**Auth: none, by design.** The port is bound to `127.0.0.1` and `MCP_ENABLED=false` in
+the producer's `docker-compose.prod.yml`. There is no credential to rotate and nothing to
+tear down at the end of a push — unlike `wordpress`. Do not expose it on a server.
+
+### Tools
+
+`list_collections` · `capabilities` · `ask` · `search_transcripts` · `summarize_topics` ·
+`trending_topics` · `summarize_episode` · `generate_chapters` · `get_transcript`
+
+Slash commands ship with the server: `/mcp__youtube-rag__discuss_topic`,
+`hottest_topics`, `episode_chapters`, `quote_hunt`.
+
+**The routing rule that matters:** `ask` retrieves the nearest *k* chunks and can never
+count. Anything phrased as *most / hottest / biggest / trending / how often* needs
+`trending_topics`. An `ask` answer to a ranking question is fluent, sourced, and wrong.
+
+### Verified 2026-08-14
+
+Handshake and 6 of 9 tools exercised directly over the wire. Working: `list_collections`,
+`capabilities`, `search_transcripts` (returns `timestamp_url` per chunk), `ask` (coherent
+Bulgarian answers with sources), `generate_chapters` (~5 s for an 86-chunk episode).
+
+**Two live defects — both producer-side, neither fixed here:**
+
+1. **Any tool call with `date_from` / `date_to` fails with a 422.**
+   [`chat-api/services/qdrant.py`](../../youtube-rag-n8n/chat-api/services/qdrant.py)
+   `date_filter()` emits `{"key": "published_at", "datetime_range": {...}}`. Qdrant
+   **1.18.0 has no `datetime_range` condition** — it rejects the body with
+   *"At least one field condition must be specified"*. The correct shape is the ordinary
+   `range` key with RFC-3339 strings against the existing `datetime` payload index;
+   verified working and correctly bounded. Fix is one word: `datetime_range` → `range`
+   (and the docstring claiming `range` is numeric-only is wrong for 1.18).
+   Affects `trending_topics` and every dated `search_transcripts` call.
+2. **`trending_topics` returns nothing useful regardless** — no chunk carries a `topics`
+   payload, so the one-time backfill (`scripts/backfill_topics.py`) has not been run.
+   Proposal F depends on it.
+
+**Quality caveat for Proposal C:** `generate_chapters` runs on the free
+`GENERATION_MODEL`, and the Bulgarian chapter titles come back generic ("Истории за
+събития и електромобили"). Not publishable as H2s without a paid generation model or a
+client-side rewrite.
 
 ---
 
@@ -284,5 +351,6 @@ change.
 
 - **Monitoring methodology and decision rules:** [`docs/seo-performance/README.md`](seo-performance/README.md)
 - **Root-cause diagnosis:** [`docs/SEO_EV_NEWS_PROPOSALS.md`](SEO_EV_NEWS_PROPOSALS.md)
+- **Transcript-archive proposals:** [`docs/SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md)
 - **Action backlog:** [`docs/SEO_EV_NEWS_TODO.md`](SEO_EV_NEWS_TODO.md)
 - **Paid-data cache:** [`data/seo-cache/README.md`](../data/seo-cache/README.md)

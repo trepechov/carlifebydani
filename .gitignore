@@ -40,3 +40,7 @@ __pycache__/
 # The keyword ledger (data/seo-cache/keywords.csv) IS committed: it is small,
 # greppable, and git history gives search-volume trends for free.
 /data/seo-cache/raw/
+
+# tools/resolve_episode.py's local episode index — mirrors youtube-rag-n8n's
+# Qdrant state, which changes on every ingestion run. Not this repo's data.
+/data/seo-cache/episodes-index.json
