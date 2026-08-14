@@ -127,11 +127,16 @@ before scanning the other ~183 unscanned `publications`/`ev-review`/`ev-masters`
 full site-wide baseline re-scan is deferred, not done, as of 2026-08-14 (cost/time tradeoff,
 see `SEO_SKILLS_REFACTOR.md` §W6).
 
-- [ ] **Post 6165** `/publications/noviyat-tesla-model-y-juniper-2025-…` — **3,927 impressions,
-      position 5.3, 2.06% CTR** over the same window. Owns every Juniper query (`тесла джунипер`
-      pos **1.4**) — this is a "the page has nothing to read" problem, not a ranking one. Worth
-      more than the entire P1 list above combined. Never in this backlog because the original
-      baseline scan only covered the EV-News category (this is `/publications/`).
+- [x] **Post 6165** `/publications/noviyat-tesla-model-y-juniper-2025-…` — **DONE 2026-08-14.**
+      Original estimate cited 3,927 impressions/2.06% CTR/pos 5.3; a fresh URL-filtered pull
+      found 90d: 2,200 impr/30 clicks/1.36% CTR, 28d baseline (ledger): 996 impr/23 clicks/
+      2.31% CTR/pos 5.2. Owns `тесла джунипер` at pos 1.5 but only 1.41% CTR — missing metadesc
+      was the clear cause. Metatags + tags + image alt/title applied; proposal + full research
+      in [`reports/seo-metatags/2026-08-14-6165-tesla-model-y-juniper.md`](../reports/seo-metatags/2026-08-14-6165-tesla-model-y-juniper.md).
+      Focus keyphrase `Tesla Model Y Juniper` (striking-distance cluster, pos 7.5–8.3, ~600
+      combined impressions, ~0% CTR). Flagged for the record: post 6294 (`#EV90`, same event,
+      near-identical title) is dormant (1 impression/90d) — do not target this phrase if 6294
+      is ever optimized.
 - [ ] **Post 7533** `/ev-review/tesla-cybertruck-moshh-inovacziya-i-dizajn-bez-graniczi-zvyart-ot-bdeshheto-veche-e-tuk/`
       — **237 impressions, position 6.2, 0.84% CTR, 2 clicks** over 2026-05-15→08-12. Position 6
       should yield 4–6%. It loses more clicks than post 7333 did and was never in this backlog
