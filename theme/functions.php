@@ -86,7 +86,7 @@ function add_tag_links_to_content($content)
                     '/(<((?!a|td|strong|h2|h3|figcaption)[^>]*)>[^<]*?\b)' . preg_quote($tag->name, '/') . '(\b.*?<\/[^>]*>)/iu',
                     '$1' . $tag_link_html . '$3',
                     $content,
-                    5
+                    1 // one link per tag per post, not up to 5 — see docs/SEO_SKILLS_REFACTOR.md §W7
                 );
             }
         }

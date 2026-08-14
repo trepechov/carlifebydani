@@ -14,7 +14,7 @@ if a session was interrupted; this is the resumption point.
 |---|---|---|
 | 1 | W9 (partial) — fix `post_excerpt` contradiction | ✅ done 2026-08-14 |
 | 2 | W8 — commit what exists | ✅ already done — verified 2026-08-14, all 5 items landed in prior commits (7cdb40e, ddb01e8, 3add1f7, 9111a32) |
-| 3 | W7 — tag auto-link decision | ⏳ not started |
+| 3 | W7 — tag auto-link decision | ✅ partial 2026-08-14 — limit 5→1 shipped; noindex deferred, see TODO in §W7 |
 | 4 | W1 + W2 — split + handoff | ⏳ not started |
 | 5 | W10 — approval gate | ⏳ not started |
 | 6 | W3 + W11 — news CSV + tag band | ⏳ not started |
@@ -310,7 +310,7 @@ The skill body is already category-agnostic; the *carve-outs* and the *backlog* 
 - `publications` and `ev-review` posts likely have real body content already, which means
   Phase B is skipped and Phase A's research reads something substantial for once.
 
-### W7 — Resolve the tag auto-link conflict · decision, then ~30m
+### W7 — Resolve the tag auto-link conflict · decision, then ~30m · partial ✅ done 2026-08-14
 
 [`theme/functions.php:74-90`](../theme/functions.php#L74-L90) `add_tag_links_to_content` links
 every post tag inside `the_content`, **up to 5× per tag**. Every post this pipeline optimizes
@@ -322,6 +322,17 @@ Every run makes it worse, so it should land **before** W6 scales the pipeline to
 
 Options: lower the `preg_replace` limit from `5` to `1` (one-character change), `noindex`
 the thin archives, or both. Not a skill change — a theme/SEO-config decision.
+
+**Done:** the `preg_replace` limit dropped `5` → `1` in `theme/functions.php` 2026-08-14 — each
+tag now links at most once per post instead of up to five times.
+
+> 📌 **TODO — noindex decision deferred.** Whether to `noindex` the 268 thin (≤2-use) `/tag/`
+> archives, and how — a self-updating `functions.php` robots filter keyed on live post-count
+> (code-only, no wp-admin, but a blanket rule with no per-tag override) vs. a manual Yoast
+> wp-admin bulk edit (precise, per project memory Yoast taxonomy SEO isn't REST-writable so
+> this needs the UI, but doesn't self-update as tags cross the threshold) — is intentionally
+> left open. User decision 2026-08-14: revisit later with real usage data rather than deciding
+> blind now. Needs its own review before W6 scales the pipeline further.
 
 ### W8 — Commit the uncommitted · ~30m · ✅ done (verified 2026-08-14, landed in prior commits)
 
