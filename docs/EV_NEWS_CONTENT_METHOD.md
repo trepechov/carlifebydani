@@ -194,10 +194,14 @@ title that covers 2, diluting topical focus and spawning the thin `/tag/` archiv
 already has too many of (`/tag/clbd/` absorbs 418 brand impressions at 4 clicks while
 outranking real pages).
 
-**Post tags = only the 1–2 headline stories' entities**, matching the focus keyphrase and ¶1.
-Everything else stays research metadata and never becomes a public tag term — the full rule,
-including the 3–10 use-count band, is `seo-keyphrase-research` Step 4b
-(`SEO_SKILLS_REFACTOR.md` §W11).
+**Post tags = every entity actually named in the owned prose (¶1–¶3), not every card the
+post links to.** The cap that matters is *owned text vs. external cards*, not "headline story
+only" — ¶3 typically names 2–4 stories beyond the headline, and if those words are really in
+`post_content`, they're what the auto-linker (below) can actually connect. **Corrected
+2026-08-14** — an earlier version of this rule capped entity tags at 1–2 and dropped every
+entity ¶3 named; that produced a page whose own written prose mentioned `Model S`, `Ford` and
+`Supercharger` without any of them being tagged or auto-linked. The full rule, including the
+3–10 use-count band, is `seo-keyphrase-research` Step 4b (`SEO_SKILLS_REFACTOR.md` §W11).
 
 **Measured cost of not budgeting for this:** [`theme/functions.php:75`](../theme/functions.php#L75)
 `add_tag_links_to_content` links every post tag wherever its name appears in `the_content`. On

@@ -380,9 +380,32 @@ one at ≤2 uses, **skip it** rather than create or reuse a thin one — note th
 gap in the report so a recurring gap can be batch-created deliberately later,
 not one-off per article.
 
-**Cap it: 1–2 entity tags (the headline story only, not every brand the
-article mentions in passing) + 0–2 keyword-intent tags.** A 20+ story roundup
-page tagged for every brand it links to is exactly the dilution this caps.
+**The line that matters: owned prose vs. external cards, not "headline story
+only."** An EV News episode has 1 headline story and 27–68 external news
+cards; tagging for every card is the dilution to cap. But it is normal for
+the 130–190 word intro (¶1–¶3, once Phase B has run) to substantively name
+several entities — the headline story in ¶1–¶2, and 2–4 more stories in ¶3.
+If an entity is a real word in that owned prose (not just a card link),
+tag it: the theme's auto-linker only fires on text that's actually in
+`post_content`, so an untagged entity that *is* named in the prose is a
+missed, free internal link, and a tagged entity that's *only* in a card is a
+tag nobody's page ever mentions. **Corrected 2026-08-14** on post 7333 — the
+original wording here capped entity tags at 1–2 and dropped `Model S`,
+`Model X`, `Ford`, `Supercharger` even though ¶3 names all four; that was
+wrong. Concretely:
+- Before Phase B runs (post_content still thin): tag only what's confirmed —
+  usually just the headline story's 1–2 entities, since nothing else is
+  written yet to check the "named in prose" test against.
+- After Phase B runs, or on non-EV-News posts with real body text from day
+  one: check **every** entity named in the actual prose against the reuse +
+  band rule, not just the headline one. A post with 5–6 in-band entities
+  genuinely covered in its own text can carry 5–6 entity tags; a post that
+  only names 2 carries 2. The prose length is the natural cap — a 168-word
+  intro cannot name 20 entities, so this self-limits without an arbitrary
+  number.
+- Keyword-intent tags stay capped at **0–2** — those describe the piece as a
+  whole (`Премиера`, `слух`, `Регистрация`), not a per-mention count, so a
+  fixed small cap is still right there.
 
 Record the chosen tags with their existing `id` and `count` in the report.
 

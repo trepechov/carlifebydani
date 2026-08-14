@@ -9,7 +9,8 @@ by re-running the actual `seo-article-optimize` pipeline (Phase A re-research �
 both appended below) once real content existed: metadesc redrafted against the real prose,
 tags trimmed 8→2. Content (Phase B, 2026-08-14) was already correct and untouched.
 **Keyphrase:** `Tesla Cybertruck България` (unchanged throughout)
-**Ledger:** `7333-2026-08-14` (alt text) · `7333-2026-08-14-b` (metadesc + tags correction)
+**Ledger:** `7333-2026-08-14` (alt text) · `7333-2026-08-14-b` (metadesc + tags, wrong-order
+fix) · `7333-2026-08-14-c` (tags, cap-rule fix — 2→6)
 
 ## What this article is about
 
@@ -364,3 +365,27 @@ yet. Not a regression introduced here — the tag trim (8→2) improved the rati
 **Status: applied.** Ledger row `7333-2026-08-14-b` appended (`phase=C`,
 `changed=metadesc|tags`), same 28-day baseline as the alt-text row (190 impr / 7 clicks /
 3.68% CTR / pos 7.2, window 2026-07-17→2026-08-13), `verify_due` 2026-09-11.
+
+### Correction 2026-08-14 (same day) — tags 2 → 6, fixing an over-strict cap
+
+User feedback: ¶3 substantively names `Model S`, `Model X`, `Ford` and `Supercharger` in real
+owned prose, not just as passing mentions — dropping their tags left real content untagged and
+unlinkable by the theme's auto-linker. Correct.
+
+**This was a bug in the Phase A rule itself, not a one-off misjudgment** — fixed in
+`seo-keyphrase-research` Step 4b and `EV_NEWS_CONTENT_METHOD.md`: the cap that matters is
+*owned prose vs. external cards*, not "headline story only." An entity named in the article's
+own written text should be tagged (and therefore auto-linkable); an entity that only appears
+in one of the 27–68 external news cards should not.
+
+**Final tags: `Cybertruck` (41) · `България` (398) · `Model S` (66) · `Model X` (183) ·
+`Ford` (82) · `Supercharger` (134)** — 6, still down from the original 8 (Tesla and
+Регистрация remain dropped, for the separate saturated-hub / below-band reasons already
+recorded above).
+
+**Re-verified live:** 7 `/tag/` auto-links in the 168-word prose (2× `cybertruck`, 1×
+`blgariya`, 1× each of `model-s`/`model-x`/`ford`/`supercharger`) against 2 editorial links.
+Higher count than the 2-tag version, but every one now corresponds to a real, deliberate
+mention — not filler. Pre-write tags backed up to
+`reports/yoast-meta-backup/7333-2026-08-14-tags-correction.csv`. Ledger row
+`7333-2026-08-14-c` (`phase=C`, `changed=tags`).

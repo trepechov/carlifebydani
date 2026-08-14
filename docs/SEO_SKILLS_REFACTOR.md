@@ -516,11 +516,20 @@ saturated: one more post adds no differentiating signal.
 > with a floor and a ceiling — and both ends are wrong for different reasons. Correct the text
 > when W1 extracts Step 4b into Phase A.
 
-Unchanged from today: **reuse only, never create speculatively**, and the 1–2 entity + 0–2
-intent cap. A needed concept with no existing term stays a noted gap in the report, so
-recurring gaps get batch-created deliberately rather than one-off per article. W3's
-Automator-supplied `Тагове` feed this rule as *candidates* — they are checked against the band
-like any other, never adopted because the CSV suggested them.
+Unchanged from today: **reuse only, never create speculatively**, and the 0–2 keyword-intent
+cap. A needed concept with no existing term stays a noted gap in the report, so recurring gaps
+get batch-created deliberately rather than one-off per article. W3's Automator-supplied
+`Тагове` feed this rule as *candidates* — they are checked against the band like any other,
+never adopted because the CSV suggested them.
+
+> ⚠️ **Correction, 2026-08-14 — the "1–2 entity tags" cap above was wrong.** Applied literally
+> to post 7333 during a re-run, it dropped `Model S`, `Model X`, `Ford` and `Supercharger` even
+> though ¶3 names all four in real owned prose — leaving genuine content untagged and
+> unlinkable by the theme's own auto-linker. The line that actually matters is **owned prose
+> vs. external cards**: tag every entity the article's own text names (self-limiting, since a
+> 130–190 word intro can't name 20 things), not just the headline story's 1–2. Fixed in
+> `seo-keyphrase-research` Step 4b and `EV_NEWS_CONTENT_METHOD.md`; this section is left as the
+> historical record of the mistake, not the current rule.
 
 ### W12 — Gate EV News optimization on transcript availability · ~1h · ✅ done 2026-08-14 (landed with W1)
 
