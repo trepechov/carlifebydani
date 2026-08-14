@@ -10,7 +10,7 @@ both appended below) once real content existed: metadesc redrafted against the r
 tags trimmed 8→2. Content (Phase B, 2026-08-14) was already correct and untouched.
 **Keyphrase:** `Tesla Cybertruck България` (unchanged throughout)
 **Ledger:** `7333-2026-08-14` (alt text) · `7333-2026-08-14-b` (metadesc + tags, wrong-order
-fix) · `7333-2026-08-14-c` (tags, cap-rule fix — 2→6)
+fix) · `7333-2026-08-14-c` (tags, cap-rule fix — 2→6) · `7333-2026-08-14-d` (media title)
 
 ## What this article is about
 
@@ -404,5 +404,6 @@ Step 3.4, not a one-off miss on this post. Fixed in the skill (now proposes + wr
 | `title` | `#EVN 114-2` | `Tesla Cybertruck в България – EV News #114` |
 | `alt_text` | *(unchanged, already correct)* | *(unchanged)* |
 
-Backup: `reports/yoast-meta-backup/media-7334-2026-08-14-title.csv`. Attachment `slug` and
+Backup: `reports/yoast-meta-backup/media-7334-2026-08-14-title.csv`. Ledger row
+`7333-2026-08-14-d` (`phase=C`, `changed=media_title`). Attachment `slug` and
 `link` unchanged — WP's `generated_slug` field updated but was never applied to the live slug.

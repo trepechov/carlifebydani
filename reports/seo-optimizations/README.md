@@ -73,12 +73,24 @@ Two problems, one artifact:
 | `regressed` | worse than control, snippet/content confirmed actually live — use `backup` to roll back |
 | `not-shipped` | not re-crawled yet, or Google is serving its own rewritten snippet instead of what was written |
 | `inconclusive` | below the impression floor (~50) — a demand problem, not a copy problem |
+| `not-applicable` | `changed` is `alt` and/or `media_title` only — no web-search metric exists to judge it against; confirms the value shipped and stops there |
 
 **Match the metric to `changed`:** `metadesc`/`title` → page CTR at stable position;
 `focuskw`/`tags` → the keyphrase's own position; `content`/`inbound` → impressions and query
 count (new text ranks for phrases the page couldn't reach before). A metadesc rewrite that
 moves impressions moved nothing — impressions are a ranking signal, the snippet doesn't touch
 ranking.
+
+> ⚠️ **`alt` and `media_title` have no web-search metric to match.** Image alt text and the
+> media library title are an accessibility/image-search lever, not a page-text-ranking one —
+> they don't move `pos` or web-search CTR in a way this ledger's GSC-based check can attribute.
+> For a ledger row whose `changed` is *only* `alt` or `media_title` (no other field in the same
+> row), Step 4a should skip the impression/position pull entirely and write a `checks.csv` row
+> with `verdict=not-applicable`, `note` explaining why, confirming only that the value is still
+> live as written (the "did it ship" check still applies — a value can be overwritten by a
+> later run). Don't force a `flat`/`inconclusive` verdict onto a metric that was never expected
+> to move. If GSC's Search Console ever exposes an Image search type split for this property,
+> that would be the right signal to check instead — not available as of 2026-08-14.
 
 ## Who writes what
 

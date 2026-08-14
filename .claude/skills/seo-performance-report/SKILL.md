@@ -206,16 +206,22 @@ safe in an otherwise-unattended monthly run.
    and CTR is a coin flip — verdict is **`inconclusive`**, never dressed up as `flat`.
 6. **Verdict and write.** Match the metric to `changed` (`title`/`metadesc` → page CTR at
    stable position; `focuskw`/`tags` → keyphrase position; `content`/`inbound` → impressions
-   and query count). A starting band: the change must clear the control by **≥0.5 positions**
-   or **≥0.5pp CTR** to count as `improved` rather than `flat` — but until enough checks have
-   run to see the cohort's real spread, treat that number as a calibration guess and say so in
+   and query count). **If `changed` is `alt` and/or `media_title` only, skip the metric pull
+   entirely** — image alt/media title have no web-search ranking or CTR signal this ledger can
+   attribute (see `reports/seo-optimizations/README.md`). Confirm the value is still live as
+   written (still a "did it ship" check — a later run could have overwritten it) and write
+   verdict `not-applicable`, not a forced `flat`/`inconclusive`. For every other `changed`
+   value, a starting band: the change must clear the control by **≥0.5 positions** or
+   **≥0.5pp CTR** to count as `improved` rather than `flat` — but until enough checks have run
+   to see the cohort's real spread, treat that number as a calibration guess and say so in
    `note`, not as a settled threshold. Write:
    - one `checks.csv` row per due item (append-only — never overwrite a prior checkpoint's row);
    - a dated **Verification** section appended to the post's own report in
      `reports/seo-metatags/` (never a new file — see `_shared/report-template.md` §Verification);
    - a line in this snapshot's own **Verification roll-up** section (Step 5's template) — one
      row per post verified this run, plus a standing *"optimized to date: N posts · verdicts
-     x improved / y flat / z regressed / w not-shipped / v inconclusive"* count.
+     x improved / y flat / z regressed / w not-shipped / v inconclusive / u not-applicable"*
+     count.
 
 ### Step 4b — Mine on-site SEO opportunities from GSC (the actionable layer)
 This is where the report earns its keep. From the GSC query and page rows, pull
@@ -340,7 +346,7 @@ Resource summary + top Lighthouse issues: <…>
 | Post | Phase | Checkpoint | Verdict | Page metric Δ | vs. control | Note |
 |---|---|---|---|---|---|---|
 
-**Optimized to date:** <N> posts · verdicts <x improved / y flat / z regressed / w not-shipped / v inconclusive>
+**Optimized to date:** <N> posts · verdicts <x improved / y flat / z regressed / w not-shipped / v inconclusive / u not-applicable>
 
 ## On-site SEO — action items (from GSC opportunity mining)
 Prioritized; carried forward and re-scored each run. `[ ]` open · `[x]` done.
