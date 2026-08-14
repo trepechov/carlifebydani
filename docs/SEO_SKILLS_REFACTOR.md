@@ -18,7 +18,7 @@ if a session was interrupted; this is the resumption point.
 | 4 | W1 + W2 — split + handoff | ✅ done 2026-08-14 — also picked up W12 as a side effect (orchestrator rewrite touched the same lines) and the W11 wording fix (extraction-time, as W11 specified) |
 | 5 | W10 — approval gate | ✅ done 2026-08-14 |
 | 6 | W3 + W11 — news CSV + tag-band | ✅ done 2026-08-14 — also resolved Open Question 4 (column 3 = `author`) and registered `news_csv` for REST (needs deploy, see §W3) |
-| 7 | W4 — alt write path | ⏳ not started |
+| 7 | W4 — alt write path | ✅ done 2026-08-14 — live-verified on media 7334 |
 | 8 | W9 (rest) — docs restructure | ⏳ not started |
 | 9 | W6 — generalise + rescan | ⏳ not started |
 | 10 | W5 — inbound links | ⏳ not started |
@@ -297,16 +297,22 @@ every page load.
 Implemented in `seo-keyphrase-research/SKILL.md` Step 2c (fetch/parse/width-detect) and Step 4b
 (tag candidates from the `tags` column, validated against the 3–10 band, never adopted directly).
 
-### W4 — Close the image alt write path · ~1h
+### W4 — Close the image alt write path · ~1h · ✅ done 2026-08-14
 
 Step 6.4 already documents the endpoint and correctly says *"verify on one image before
 proposing a batch"* — that verification has never been run.
 
-- Confirm `seo-bot` (Editor) can `POST {"alt_text": …}` to `/wp/v2/media/<id>`.
+- Confirm `seo-bot` (Editor) can `POST {"alt_text": …}` to `/wp/v2/media/<id>`. ✅ — verified
+  live on media 7334 (post 7333's featured image, empty → real Bulgarian alt text), approved
+  through the W10 gate as its own separate ask, backed up first, confirmed rendering on the
+  live page afterward. Addendum in `reports/seo-metatags/2026-08-13-7333-cybertruck-bulgaria.md`.
 - If W3 finds an image column, describe the actual image rather than deriving alt from the
-  keyphrase alone.
-- Add to Phase C behind the same approve-first rule as the metatags.
-- Note: media alt is **not** covered by post revisions — back it up like Yoast meta.
+  keyphrase alone. — moot: W3 found column 3 is `author`, not an image; no image data exists
+  in the news CSV, so this branch never applies.
+- Add to Phase C behind the same approve-first rule as the metatags. ✅ — already landed with
+  W1/W10 (`seo-article-apply` Step 3.4 and Step 6, gated as manifest group 4).
+- Note: media alt is **not** covered by post revisions — back it up like Yoast meta. ✅ —
+  confirmed in practice on this write; backup at `reports/yoast-meta-backup/media-7334-2026-08-14.csv`.
 
 ### W5 — Close the inbound internal-link write path · ~2h
 

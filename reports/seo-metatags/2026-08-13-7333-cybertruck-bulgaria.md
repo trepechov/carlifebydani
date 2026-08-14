@@ -221,3 +221,12 @@ Baseline (GSC, 2026-05-15 → 2026-08-12): **542 impressions · 22 clicks · 4.0
 Target queries to watch: `cybertruck bulgaria` (pos 7.2), `tesla cybertruck българия` (pos 5.8).
 Re-check after 2–4 weeks — Google must re-crawl before the new snippet appears, then GSC needs
 time to accumulate. The `seo-performance-report` skill picks this up on its next monthly run.
+
+## Applied — 2026-08-14 addendum (image alt)
+
+- [x] **Image alt written** — media id 7334 (featured image). Before: `""` (empty). After:
+  `"Tesla Cybertruck, заснет на улица в България — обложка на епизод #EVN114 на EV News с
+  водещите"`. Backup: `reports/yoast-meta-backup/media-7334-2026-08-14.csv`.
+- Doubled as the live verification test for `docs/SEO_SKILLS_REFACTOR.md` §W4 — confirmed
+  `seo-bot` (Editor) can `POST {"alt_text": …}` to `/wp/v2/media/<id>` and it renders on the
+  live page. Not covered by post revisions; recoverable only from the backup CSV above.
