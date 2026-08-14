@@ -28,6 +28,7 @@ snapshots live in a separate reports folder:
 | **PageSpeed Insights (PSI MCP)** | Lighthouse **lab** scores (Perf/A11y/BP/SEO + TBT/SI/lab-LCP/CLS) | `mcp__psi__psi_lighthouse` per form factor | **Live — keyed & verified 2026-07-29.** Mobile lab is throttled — sanity-check against field data, never a ranking verdict |
 | **GTmetrix (MCP)** | Grade, Performance/Structure, per-resource weight, top Lighthouse issues | `mcp__gtmetrix__*` tools | **Live — confirmed 2026-07-29.** Report page is Cloudflare-403 to WebFetch, so MCP is the path |
 | **Google Search Console (MCP)** | Actual search **outcome** — clicks, impressions, CTR, avg position (per query/page), indexing & sitemap status | `mcp__google-search-console__*` tools | **Live — confirmed 2026-07-29.** The ranking-outcome signal the other sources only predict |
+| **Optimization ledger** | Whether a past `seo-article-optimize` change actually shipped and worked | `reports/seo-optimizations/ledger.csv` + `checks.csv` (read-only, no MCP) | **Live — added 2026-08-14.** Closes the loop: this report finds pages worth fixing, the pipeline fixes them, this report's Step 4a verifies whether it worked. See `reports/seo-optimizations/README.md` |
 
 ### MCP server configuration
 

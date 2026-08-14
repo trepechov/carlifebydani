@@ -230,3 +230,6 @@ time to accumulate. The `seo-performance-report` skill picks this up on its next
 - Doubled as the live verification test for `docs/SEO_SKILLS_REFACTOR.md` §W4 — confirmed
   `seo-bot` (Editor) can `POST {"alt_text": …}` to `/wp/v2/media/<id>` and it renders on the
   live page. Not covered by post revisions; recoverable only from the backup CSV above.
+- **Ledger row:** `7333-2026-08-14` in `reports/seo-optimizations/ledger.csv`
+  (`phase=C`, `changed=alt`), baseline GSC 2026-07-17→2026-08-13 this URL: 190 impr / 7 clicks /
+  3.68% CTR / pos 7.2. `verify_due` 2026-09-11.

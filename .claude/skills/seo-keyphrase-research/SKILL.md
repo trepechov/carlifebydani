@@ -90,6 +90,15 @@ id (grep the directory, don't assume by date) — if so, open it, read its
 `Status:` and any declined items, and append to it rather than starting a new
 file (see the report template's header note).
 
+**Also grep `reports/seo-optimizations/ledger.csv` by `post_id`** (this is the
+*optimization* ledger — a different file from the keyword cache above). A
+prior row means this post already went through Phase C or Phase B at least
+once; read `changed` and, if `reports/seo-optimizations/checks.csv` has a
+matching `ledger_id`, the verdict. A `flat` or `regressed` verdict on a
+specific field is a reason to reconsider before re-proposing the same change,
+not a reason to skip the post — a `regressed` metadesc doesn't mean the tags
+were wrong too.
+
 ### Step 1 — Resolve the URL to a WP post
 
 Take the slug (last path segment) and look it up. All content types on this site

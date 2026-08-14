@@ -1,6 +1,9 @@
 # SEO Skills — Refactoring Plan
 
-**Created:** 2026-08-14 · **Status:** in progress — see Progress tracker below
+**Created:** 2026-08-14 · **Status:** ✅ all 12 execution-order items landed 2026-08-14 — see
+Progress tracker below. Two items shipped partial by explicit user decision rather than left
+incomplete: W6's full 313-post GSC scan and W7's `noindex` decision are deferred, documented as
+open TODOs in their own sections, not silently dropped.
 **Companions:** [`SEO_EV_NEWS_TODO.md`](SEO_EV_NEWS_TODO.md) (the live backlog) ·
 [`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md) (the built transcript-content method) ·
 [`SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md) (what's still proposal-only) ·
@@ -24,7 +27,7 @@ if a session was interrupted; this is the resumption point.
 | 9 | W6 — generalise + rescan | ✅ partial 2026-08-14 — audit + backlog entries done; full 313-post GSC scan deferred by user decision, see §W6 |
 | 10 | W5 — inbound links | ✅ done 2026-08-14 — live-verified, 7533→7333 |
 | 11 | ~~W12 — gate on transcript availability~~ | ✅ done 2026-08-14, landed with item 4 |
-| 12 | W13 — ledger + verification step | ⏳ not started |
+| 12 | W13 — ledger + verification step | ✅ done 2026-08-14 — 2 rows backfilled, first verdicts due 2026-09-11 |
 
 **The one-sentence version:** the capabilities are ~85% built and the *sequencing* is wrong —
 two skills document conflicting run orders, and the half of the SEO skill that should run
@@ -546,7 +549,34 @@ but by not starting it at all until it can finish in one:
 - **Depends on W1** so Phase A has a clean entry point to gate, and on transcript coverage
   itself — currently 91/128 EV News posts (producer request #5 covers the rest).
 
-### W13 — The optimization ledger and the verification loop · ~2h
+### W13 — The optimization ledger and the verification loop · ~2h · ✅ done 2026-08-14
+
+**Done:**
+- `reports/seo-optimizations/ledger.csv` and `checks.csv` created with the exact schemas
+  below, plus a `README.md` explaining both (mirrors `reports/seo-metatags/README.md`'s style).
+- `_shared/report-template.md` gained the `Ledger:` header line and a `## Verification`
+  section (appended by the monthly check, never a new file).
+- `seo-keyphrase-research` Step 0 now greps `ledger.csv` by `post_id` before any research.
+- `seo-article-apply` Step 7 and `ev-news-transcript-content` Step 9 each append a ledger row
+  at the same moment as their write (`phase=C` / `phase=B`), from the same approved-changes
+  data — `verify_due` = `+28d` / `+56d` respectively.
+- `seo-performance-report` gained **Step 4a — Verify optimizations that came due**, inserted
+  between the GSC pull (Step 4) and action-item mining (Step 4b) exactly as specified: select
+  due rows, check whether the change actually shipped (not just applied), pull the after
+  window, control for site-wide + cohort tide, apply the impression floor, write verdicts to
+  `checks.csv` + the post's own report + the snapshot's new roll-up section. Entirely
+  read-only, no approval gate needed. Regressed/not-shipped rows now feed into Step 4b's
+  action-item mining as their own priority category.
+- **Backfilled two real rows** rather than leaving the ledger empty at first use: the W4 alt-text
+  write (post 7333) and the W5 inbound-link write (post 7533), both from this session, with
+  real GSC baselines pulled for the 28-day window ending the day before each write. First
+  `checks.csv` verdicts can't exist until `verify_due` (2026-09-11) — genuinely last in
+  wall-clock terms, as the plan itself predicted.
+
+**Not done, deliberately:** no `checks.csv` rows yet (nothing has reached `verify_due`), and
+Open Question 7's control-band threshold (≥0.5 positions / ≥0.5pp CTR) is carried as a
+calibration guess per the plan's own instruction, not resolved with real data — there isn't
+any yet.
 
 Two problems with one artifact between them.
 

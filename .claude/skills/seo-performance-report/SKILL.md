@@ -1,6 +1,6 @@
 ---
 name: seo-performance-report
-description: Generate the monthly SEO performance snapshot for carlifebydani.com — pulls Core Web Vitals field data (PageSpeed Insights), Lighthouse lab scores (PSI MCP), GTmetrix metrics, and Search Console search performance; writes a dated report to reports/seo-performance/, appends the trend log, compares against the previous snapshot, and derives on-site SEO action items. Use when the user asks to "generate the SEO report", "run the monthly SEO snapshot", "capture Core Web Vitals", or compare SEO performance month-over-month.
+description: Generate the monthly SEO performance snapshot for carlifebydani.com — pulls Core Web Vitals field data (PageSpeed Insights), Lighthouse lab scores (PSI MCP), GTmetrix metrics, and Search Console search performance; writes a dated report to reports/seo-performance/, appends the trend log, compares against the previous snapshot, verifies any seo-article-optimize changes that came due (reports/seo-optimizations/), and derives on-site SEO action items. Use when the user asks to "generate the SEO report", "run the monthly SEO snapshot", "capture Core Web Vitals", "check if the SEO changes worked", or compare SEO performance month-over-month.
 ---
 
 # SEO Performance Report Generator
@@ -169,6 +169,54 @@ when the user wants the standalone report artifact rather than table rows.
 Record: the overview totals, top ~10 queries and top ~10 pages, sitemap/indexing
 status, and the exact date range.
 
+### Step 4a — Verify optimizations that came due (read-only, no approval gate needed)
+
+The other half of the loop this report closes: `seo-article-optimize` finds and fixes pages
+(via `seo-keyphrase-research` / `ev-news-transcript-content` / `seo-article-apply`), this step
+checks whether the fix actually worked. Full design:
+[`docs/SEO_SKILLS_REFACTOR.md` §13.3](../../../docs/SEO_SKILLS_REFACTOR.md#133-the-verification-run--a-new-step-in-seo-performance-report).
+This step is **entirely read-only** — no WordPress writes, so it needs no approval gate and is
+safe in an otherwise-unattended monthly run.
+
+1. **Select.** Read `reports/seo-optimizations/ledger.csv`. Rows where `verify_due <= today`
+   **and** no `checks.csv` row exists yet for that `ledger_id` + `checkpoint` are due. If none,
+   write one line in the snapshot — *"no optimizations came due this month"* — and skip to
+   Step 4b.
+2. **Did it actually ship?** For each due row: `gsc_inspect_url` for last-crawl time, and fetch
+   the live page to compare the served `<title>`/`<meta name="description">` against what
+   `changed` says was written. Google rewrites meta descriptions freely — *applied* ≠ *served*.
+   If not re-crawled since `date_applied`, or the served snippet doesn't match, the verdict is
+   **`not-shipped`**: record it, push `verify_due` out (+14 days), and **do not** compute a
+   delta. Measuring CTR against a snippet users never saw is the easiest way to draw a false
+   conclusion here.
+3. **Pull the after window.** GSC page-level for `date_applied+1 … date_applied+28` (or `+56`
+   for `phase=B` rows), plus the `keyphrase` row filtered the same way. Only query rows whose
+   window has fully closed — `today >= win_end + 3` (GSC finalises with a lag); a row that
+   hasn't closed yet stays pending, not `not-shipped`.
+4. **Control for the tide.** Two controls, both required, so the verdict has a counterfactual:
+   - **site-wide** — the same two windows from this run's `gsc_performance_overview` pull
+     (already trended in `history.csv` — no second API call needed).
+   - **cohort** — median delta across un-optimized posts in the same `category` published
+     within ~6 months of the row's post. EV News episodes decay naturally, so a falling
+     year-old episode is baseline behaviour, not a failure; the cohort is what tells the
+     difference apart from the site-wide number alone. If the median cohort member is itself
+     below the impression floor (next step), the cohort control is noise — say so in `note`
+     and fall back to the site-wide control alone.
+5. **Impression floor.** Below ~50 impressions in *either* window, average position is noise
+   and CTR is a coin flip — verdict is **`inconclusive`**, never dressed up as `flat`.
+6. **Verdict and write.** Match the metric to `changed` (`title`/`metadesc` → page CTR at
+   stable position; `focuskw`/`tags` → keyphrase position; `content`/`inbound` → impressions
+   and query count). A starting band: the change must clear the control by **≥0.5 positions**
+   or **≥0.5pp CTR** to count as `improved` rather than `flat` — but until enough checks have
+   run to see the cohort's real spread, treat that number as a calibration guess and say so in
+   `note`, not as a settled threshold. Write:
+   - one `checks.csv` row per due item (append-only — never overwrite a prior checkpoint's row);
+   - a dated **Verification** section appended to the post's own report in
+     `reports/seo-metatags/` (never a new file — see `_shared/report-template.md` §Verification);
+   - a line in this snapshot's own **Verification roll-up** section (Step 5's template) — one
+     row per post verified this run, plus a standing *"optimized to date: N posts · verdicts
+     x improved / y flat / z regressed / w not-shipped / v inconclusive"* count.
+
 ### Step 4b — Mine on-site SEO opportunities from GSC (the actionable layer)
 This is where the report earns its keep. From the GSC query and page rows, pull
 **two extra dimension cuts** and derive concrete on-page actions:
@@ -186,6 +234,12 @@ Then classify (thresholds in Decision rules below):
    ≥2 URLs. Action: consolidate/canonicalise to the stronger page.
 4. **Thin / misconfigured content** — cross-check EV-news feed pages and known
    risks in `docs/SEO_EV_NEWS_PROPOSALS.md` / `docs/SEO_PROPOSALS.md`.
+5. **Regressed or not-shipped from Step 4a** — a `regressed` verdict already has more evidence
+   behind it than anything mined fresh here (a real before/after, control-adjusted); surface it
+   as a top-priority action with the `backup` path from `ledger.csv` for the rollback decision.
+   A `not-shipped` row repeating across two checkpoints is a finding about the *page* (crawl
+   budget, noindex, a caching layer) rather than about the change — flag it as such, not as
+   "redo the optimization."
 
 Exclude brand queries (clbd, carlife by dani, carlifebydani, clbd parts) from
 opportunity mining — they already convert and aren't the growth lever.
@@ -280,6 +334,13 @@ Resource summary + top Lighthouse issues: <…>
 |---|---|---|---|---|
 
 **Indexing / sitemaps:** <submitted / indexed counts, coverage issues, EV-news feed status>
+
+## Optimization verification (from `reports/seo-optimizations/`)
+<"No optimizations came due this month" if Step 4a's Select found nothing.>
+| Post | Phase | Checkpoint | Verdict | Page metric Δ | vs. control | Note |
+|---|---|---|---|---|---|---|
+
+**Optimized to date:** <N> posts · verdicts <x improved / y flat / z regressed / w not-shipped / v inconclusive>
 
 ## On-site SEO — action items (from GSC opportunity mining)
 Prioritized; carried forward and re-scored each run. `[ ]` open · `[x]` done.

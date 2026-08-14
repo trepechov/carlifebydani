@@ -195,9 +195,16 @@ holding the text.
    count in the report.
 3. Set **`Status: content-written`** in the report header.
 4. Tick the row in `docs/SEO_EV_NEWS_TODO.md` and note the `wordCount` delta.
-5. Same measurement plan as Phase C, but on the longer window: re-check GSC in
-   4–8 weeks (new body text needs to be crawled, indexed and start ranking,
-   which doesn't happen in two).
+5. **Append one row to `reports/seo-optimizations/ledger.csv`** at the same
+   moment as the write: `phase=B`, `changed=content`, baseline columns from
+   the 28-day GSC window ending yesterday for this URL (reuse Phase A's pull
+   if fresh), `verify_due = date_applied + 56d` — longer than Phase C's 28,
+   because new body text needs to be crawled, indexed and start ranking
+   before a check would mean anything. Add the row id to the report's
+   `Ledger:` line.
+6. Same measurement plan: re-check GSC in 4–8 weeks (new body text needs to
+   be crawled, indexed and start ranking, which doesn't happen in two) — the
+   `verify_due` above is what actually schedules this, not just a note.
 
 ---
 

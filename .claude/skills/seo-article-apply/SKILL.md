@@ -220,6 +220,16 @@ what catches a wiped video embed before the user does.
 Declined subsection with the reason** (see `_shared/approval-gate.md` §4) —
 so a later run doesn't re-propose something the user already said no to.
 
+**Append one row to `reports/seo-optimizations/ledger.csv`** at the same
+moment, from the same approved-changes data — never as a separate step later,
+or the two drift. `phase=C`, `changed` = the pipe-separated groups actually
+written (`title|metadesc|focuskw|tags|alt|inbound` — whichever subset), and
+the baseline columns are the 28-day GSC window ending yesterday, filtered to
+this URL: reuse Phase A's Step 3a pull if it's from today or yesterday,
+otherwise a fresh cheap pull. `verify_due` = `date_applied + 28d`. Add the
+row id to the report's `Ledger:` line (append with `;` if one already exists
+from an earlier Phase B write on this post).
+
 ### Step 8 — Verify and hand off
 
 1. Re-fetch the rendered page with `curl` and confirm `<title>`,

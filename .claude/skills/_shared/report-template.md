@@ -22,6 +22,8 @@ it past `researched`.
 **Prepared:** <YYYY-MM-DD> (first phase to touch this post)
 **Status:** researched | content-written | applied
 **Keyphrase:** <focus keyphrase — set by Phase A, read by Phase B to front-load ¶1>
+**Ledger:** <row id(s) in `reports/seo-optimizations/ledger.csv` — set by whichever phase first
+writes something; a post touched by both Phase B and Phase C on different days has two ids>
 
 ---
 
@@ -140,5 +142,20 @@ metatags alone can plausibly move this page>
 ### Measurement
 Baseline (GSC, <window>): <impr / clicks / CTR / pos>. Re-check after 2–4 weeks
 (metatags/tags/alt/links) or 4–8 weeks (new body content — needs re-crawl and
-re-indexing time).
+re-indexing time). Ledger row: <id>, `verify_due`: <date>.
+
+---
+
+## Verification
+_Appended by `seo-performance-report`'s monthly verification step, once per checkpoint that
+comes due. Never a new file — see `reports/seo-optimizations/README.md`._
+
+### <YYYY-MM-DD> — checkpoint <28d | 56d | 90d>
+**Shipped?** <re-crawled since date_applied? served snippet matches what was written?>
+**Window measured:** <win_start> – <win_end>
+**Page:** impr <before → after> · clicks <before → after> · CTR <before → after> · pos <before → after>
+**Keyphrase:** impr <before → after> · pos <before → after>
+**Control:** site-wide <delta> · cohort <delta>
+**Verdict:** improved | flat | regressed | not-shipped | inconclusive
+<one paragraph of reasoning — what moved, whether it beats the control, what follows>
 ```
