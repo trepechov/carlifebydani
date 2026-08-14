@@ -138,6 +138,8 @@ see `SEO_SKILLS_REFACTOR.md` §W6).
       because the baseline scan only covered the EV-News category (this is `/ev-review/`).
       It owns the spec/`кибертрак` intent cluster (`тесла cybertruck` pos 5.6,
       `тесла кибертрак` pos 9.4) — do not target `Tesla Cybertruck България` on it; 7333 owns that.
+      **2026-08-14:** now links inbound to 7333 (W5 live verification, `SEO_SKILLS_REFACTOR.md`
+      §W5) — metatags/tags still not run.
 - **1751** sat at position **2.7** with 4.6% CTR — position 2–3 should pull 10–15%. Addressed
   2026-08-13 (see note above); watch GSC in 2–4 weeks to see whether the snippet was the cause.
 - **6898** at 0.7% CTR is the worst ratio in the set.

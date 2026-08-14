@@ -22,7 +22,7 @@ if a session was interrupted; this is the resumption point.
 | 7 | W4 — alt write path | ✅ done 2026-08-14 — live-verified on media 7334 |
 | 8 | W9 (rest) — docs restructure | ✅ done 2026-08-14 |
 | 9 | W6 — generalise + rescan | ✅ partial 2026-08-14 — audit + backlog entries done; full 313-post GSC scan deferred by user decision, see §W6 |
-| 10 | W5 — inbound links | ⏳ not started |
+| 10 | W5 — inbound links | ✅ done 2026-08-14 — live-verified, 7533→7333 |
 | 11 | ~~W12 — gate on transcript availability~~ | ✅ done 2026-08-14, landed with item 4 |
 | 12 | W13 — ledger + verification step | ⏳ not started |
 
@@ -315,18 +315,32 @@ proposing a batch"* — that verification has never been run.
 - Note: media alt is **not** covered by post revisions — back it up like Yoast meta. ✅ —
   confirmed in practice on this write; backup at `reports/yoast-meta-backup/media-7334-2026-08-14.csv`.
 
-### W5 — Close the inbound internal-link write path · ~2h
+### W5 — Close the inbound internal-link write path · ~2h · ✅ done 2026-08-14
 
 The higher-value half and the riskier one: it means editing `post_content` on **other**
 posts. The skill itself calls inbound internal links *"the strongest on-site lever available
 here."*
 
 - Read target post → locate the anchor paragraph → insert the link → write full `content`
-  back (the endpoint **replaces**, never appends — the trap that can wipe a video embed).
-- One post at a time, explicit approval each, never batched.
+  back (the endpoint **replaces**, never appends — the trap that can wipe a video embed). ✅ —
+  `seo-article-apply` Step 4 now has concrete Gutenberg-block mechanics: fetch `content.raw`
+  via `context=edit`, locate one `<!-- wp:paragraph -->` block, edit only its `<p>` text,
+  reassemble the full string, and — new — a mandatory post-write byte-diff check that every
+  other block is untouched.
+- One post at a time, explicit approval each, never batched. ✅ — routed through the W10
+  approval gate as group 5, its own separate ask.
 - `post_content` **is** revision-covered, so this is recoverable — unlike W4 and the Yoast
   fields.
 - Outbound links land inside the prose Phase B writes, so they are cheaper and can ship first.
+
+**Live-verified**, not just documented: added an inbound link from post 7533
+(`/ev-review/…tesla-cybertruck…`) to post 7333 (the "is there a registered Cybertruck in
+Bulgaria" post) — 7533's closing paragraph thanks the Bulgarian owner who lent his own
+Cybertruck for the review, a natural, already-there opening for the link. Approved through the
+gate, applied, then confirmed on the **live rendered page**: the new link present exactly
+once, the video embed present exactly once, all gallery images and the spec table
+byte-unchanged. `post_content` is revision-covered, so this is recoverable if it needs undoing
+(revision history on the post, not a separate CSV backup).
 
 ### W6 — Generalise beyond EV News · ~3h · partial ✅ done 2026-08-14
 

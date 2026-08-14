@@ -120,12 +120,39 @@ Run it for the focus keyphrase and for each main entity, then propose:
   approval.
 - **Outbound links** — 2–3 related posts this article should link **out** to,
   same detail level. Prefer the deep evergreen `/publications/` and `/ev-review/`
-  pages over other news episodes.
+  pages over other news episodes. On EV News posts these are usually already
+  covered by Phase B's own prose (it links out as it writes ¶2/¶3) — check
+  before proposing more.
 - Skip `/tag/` pages as link targets — thin taxonomy pages already outrank real
   editorial content on this site, and linking to them makes it worse.
 
 External links on this site are already correctly `rel="nofollow" target="_blank"`
 — leave them alone.
+
+**Mechanics for writing an inbound link** (the target is Gutenberg block
+markup, not plain HTML — treat it as text to edit surgically, not to
+regenerate):
+
+1. Fetch the target post's **raw** content:
+   `GET /wp/v2/posts/<target-id>?context=edit&_fields=content` — use
+   `content.raw`, not `content.rendered`. `context=edit` is required to get
+   the raw block source rather than the filtered HTML.
+2. **Locate one `<!-- wp:paragraph -->...<!-- /wp:paragraph -->` block** whose
+   existing sentence is topically close to the anchor phrase — the block
+   comments must survive untouched, only the `<p>...</p>` text inside changes.
+   If no existing paragraph is a natural fit, add one short clause to the most
+   relevant paragraph (e.g. *", наличен вече и в България"* linking on
+   *"България"*) rather than inventing an unrelated sentence — the anchor
+   must read as something the author would have written, not a bolted-on link.
+3. Wrap the chosen phrase in `<a href="<this article's URL>">…</a>` inside
+   that one block only. Do not touch any other block — no video embed, no
+   gallery, no other paragraph.
+4. Reassemble: the **full** `content.raw` string with only that one block's
+   text changed, and send it whole (see Step 7 — the endpoint replaces).
+5. Diff the before/after string yourself before writing — the change should
+   be exactly one inserted `<a>` tag (or one short clause plus the tag), byte
+   for byte identical everywhere else. This is the check that catches an
+   accidental block reflow or a wiped embed before it ships.
 
 ### Step 5 — Write the Phase C section
 
@@ -176,10 +203,18 @@ mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/media/<i
   method="POST", params={"alt_text": "..."})
 ```
 
-Inbound links — read the target post's full `content`, insert the link at the
-proposed location, send the **full** content back (the endpoint replaces, not
-appends — never send a partial block). One post, one approval, one write —
-never batched even when several inbound links were approved together.
+Inbound links — follow Step 4's mechanics (locate the block, edit only its
+text, reassemble the full `content.raw`):
+```
+mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/posts/<target-id>",
+  method="POST", params={"content": "<full content.raw, one block's text changed>"})
+```
+Send the **full** content back — the endpoint replaces, not appends, and
+never send a partial block. One post, one approval, one write — never batched
+even when several inbound links were approved together. Immediately after
+writing, re-fetch `content.raw` and confirm every block **except** the one
+you edited is byte-for-byte identical to the pre-write version — this is
+what catches a wiped video embed before the user does.
 
 **Record `Status: applied` in the report, and log any declined items in its
 Declined subsection with the reason** (see `_shared/approval-gate.md` §4) —
