@@ -3,9 +3,10 @@
 **URL:** https://www.carlifebydani.com/ev-review/tesla-cybertruck-moshh-inovacziya-i-dizajn-bez-graniczi-zvyart-ot-bdeshheto-veche-e-tuk/
 **Post ID:** 7533 · **Category:** ev-review
 **Prepared:** 2026-08-14
-**Status:** researched (Phase A complete 2026-08-14; metatags/tags proposed below, not yet applied)
+**Status:** applied
 **Keyphrase:** `Tesla Cybertruck характеристики`
-**Ledger:** `7533-2026-08-14` (inbound link)
+**Ledger:** `7533-2026-08-14` (inbound link) · `7533-2026-08-14-b` (metatags+tags) ·
+`7533-2026-08-14-c` (image alt+title)
 
 ---
 
@@ -139,3 +140,54 @@ Baseline (GSC, 2026-07-17 → 2026-08-13, this URL): 68 impressions · 1 click �
 position 4.8. Ledger row `7533-2026-08-14`, `verify_due` 2026-09-11. Keyword-level baseline not
 pulled in this pass (no keyphrase chosen yet) — Phase A's future run should backfill it if it
 matters for that comparison.
+
+---
+
+## Phase C — Apply (metatags, tags, image alt+title) — 2026-08-14
+
+Run via the actual `seo-article-apply` skill, on top of the earlier ad-hoc inbound-link write.
+
+### Step 1 — Current live state (re-fetched, confirmed unchanged from Phase A)
+All three Yoast fields empty, tags `[383, 41, 4]`, featured image (media 7534) `alt_text`
+empty, `title` the raw camera filename `IMG_1617`. Inbound link to 7333 (from the earlier W5
+test) confirmed still present.
+
+### Metatags — applied
+| Field | Before | After | Chars |
+|---|---|---|---|
+| `_yoast_wpseo_title` | *(empty → falls back to H1, ~89 chars, all-caps)* | `Tesla Cybertruck — пълни характеристики %%sep%% %%sitename%%` | 41 |
+| `_yoast_wpseo_metadesc` | *(absent)* | `Tesla Cybertruck характеристики: 800V архитектура, до 515 км пробег, 0–100 км/ч за 2.6 сек при Cyberbeast. Пълен преглед на версии, интериор и технологии.` | 154 |
+| `_yoast_wpseo_focuskw` | *(empty)* | `Tesla Cybertruck характеристики` | — |
+
+### Tags — applied
+`Cybertruck(41)` · `Tesla(4)` — dropped `Beast(383)` (below reuse band, passing spec-table
+mention only).
+
+### Image alt + title — applied
+Media 7534 (featured image — branded EVREVIEW thumbnail, Cybertruck at night, headlights on):
+| Field | Before | After |
+|---|---|---|
+| `alt_text` | *(empty)* | `Tesla Cybertruck през нощта с включени фарове — обложка на ревюто с характеристики на Car Life by Dani` |
+| `title` | `IMG_1617` (raw camera filename) | `Tesla Cybertruck характеристики — обложка на ревюто` |
+
+### Step 8 — Verify (live, 2026-08-14)
+| Check | Result |
+|---|---|
+| `<title>` live | ✅ `Tesla Cybertruck — пълни характеристики - Car Life by Dani` |
+| `<meta name="description">` live | ✅ matches the new 154-char text |
+| Tag chips | ✅ only `cybertruck`, `tesla` (no `beast`) |
+| Inbound link to 7333 | ✅ still present (unaffected by this write) |
+| Video embed | ✅ still present |
+
+**Status: applied.** Ledger rows `7533-2026-08-14-b` (metatags+tags) and `7533-2026-08-14-c`
+(image alt+title) appended, both backed by the frozen 28-day baseline (2026-07-17→2026-08-13,
+this URL): **68 impressions · 1 click · 1.47% CTR · position 4.8**. `verify_due` 2026-09-11.
+
+### Declined
+None — both manifest groups approved in full.
+
+### Measurement
+Baseline (GSC, 2026-07-17→2026-08-13): 68 impr / 1 click / 1.47% CTR / pos 4.8. Re-check in
+2–4 weeks. Watch specifically: `тесла cybertruck` (pos 5.6, closest to page 1) and `тесла
+кибертрак` (pos 9.4) — both currently earn zero clicks despite real impressions, the cleanest
+signal of whether the new metadesc worked.

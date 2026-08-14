@@ -137,14 +137,16 @@ see `SEO_SKILLS_REFACTOR.md` §W6).
       combined impressions, ~0% CTR). Flagged for the record: post 6294 (`#EV90`, same event,
       near-identical title) is dormant (1 impression/90d) — do not target this phrase if 6294
       is ever optimized.
-- [ ] **Post 7533** `/ev-review/tesla-cybertruck-moshh-inovacziya-i-dizajn-bez-graniczi-zvyart-ot-bdeshheto-veche-e-tuk/`
-      — **237 impressions, position 6.2, 0.84% CTR, 2 clicks** over 2026-05-15→08-12. Position 6
-      should yield 4–6%. It loses more clicks than post 7333 did and was never in this backlog
-      because the baseline scan only covered the EV-News category (this is `/ev-review/`).
-      It owns the spec/`кибертрак` intent cluster (`тесла cybertruck` pos 5.6,
-      `тесла кибертрак` pos 9.4) — do not target `Tesla Cybertruck България` on it; 7333 owns that.
-      **2026-08-14:** now links inbound to 7333 (W5 live verification, `SEO_SKILLS_REFACTOR.md`
-      §W5) — metatags/tags still not run.
+- [x] **Post 7533** `/ev-review/tesla-cybertruck-moshh-inovacziya-i-dizajn-bez-graniczi-zvyart-ot-bdeshheto-veche-e-tuk/`
+      — **DONE 2026-08-14.** Original estimate cited 237 impr/0.84% CTR/pos 6.2; fresh pulls
+      found 28d baseline (ledger): 68 impr/1 click/1.47% CTR/pos 4.8, and 90d query-level:
+      zero clicks across every named query at pos 4.8–9.4 despite real impressions — the
+      clearest presentation-not-ranking case found this session. Inbound link to 7333 (W5,
+      earlier), metatags + tags + image alt/title all applied; full research in
+      [`reports/seo-metatags/2026-08-14-7533-cybertruck-review-inbound-link.md`](../reports/seo-metatags/2026-08-14-7533-cybertruck-review-inbound-link.md).
+      Focus keyphrase `Tesla Cybertruck характеристики` — owns the spec/`кибертрак` intent
+      cluster (`тесла cybertruck` pos 5.6, `тесла кибертрак` pos 9.4); confirmed no overlap
+      with 7333's `Tesla Cybertruck България`.
 - **1751** sat at position **2.7** with 4.6% CTR — position 2–3 should pull 10–15%. Addressed
   2026-08-13 (see note above); watch GSC in 2–4 weeks to see whether the snippet was the cause.
 - **6898** at 0.7% CTR is the worst ratio in the set.
