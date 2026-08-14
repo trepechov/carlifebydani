@@ -41,6 +41,7 @@ authoritative record, not the checkboxes scattered through the sections below.
 | 2026-08-13 | **7333** `ev114-…cybertruck-v-blgariya` | all 3 Yoast fields | 542 impr / 22 clicks / 4.06% / pos 7.0 | [7333](../reports/seo-metatags/2026-08-13-7333-cybertruck-bulgaria.md) |
 | 2026-08-13 | **1751** `evn41-tesla-my-juniper-…` | all 3 Yoast fields | 65 impr / 3 clicks / 4.62% / pos 2.7 | [1751](../reports/seo-metatags/2026-08-13-1751-evn41-juniper.md) |
 | 2026-08-13 | **category 1** `/ev-news/` hub | term `description` (bot-side complete) | 96 impr / 2 clicks / 2.08% / pos 9.5 | [hub](../reports/seo-metatags/2026-08-13-hub-ev-news-archive.md) |
+| 2026-08-14 | **7333** `ev114-…cybertruck-v-blgariya` | **`post_content`** — 154 words of transcript-grounded Bulgarian prose at the bottom + 2 internal links + **8 tags**. `wordCount` **17 → 168**. **First page on the site to answer its own title question.** | 542 impr / 22 clicks / 4.06% / pos 7.0 | [report](../reports/seo-metatags/2026-08-14-7333-excerpt-draft.md) |
 
 **That is 3 posts + 1 archive. Everything else in P1 below still has all three Yoast
 fields empty** — confirmed live, not inferred.
@@ -107,8 +108,11 @@ Notes on individual rows:
 
 - **7333 — DONE 2026-08-13.** Metatags written and verified live; proposal +
   full research in [`reports/seo-metatags/2026-08-13-7333-cybertruck-bulgaria.md`](../reports/seo-metatags/2026-08-13-7333-cybertruck-bulgaria.md).
-  90-day baseline to beat: **542 impr / 22 clicks / 4.06% CTR / pos 7.0**. The page still has
-  **no text answer to its own title question** (`wordCount: 17`) — that content fix is open.
+  90-day baseline to beat: **542 impr / 22 clicks / 4.06% CTR / pos 7.0**.
+- **7333 — content fix DONE 2026-08-14.** 154 words of transcript-grounded Bulgarian prose
+  appended to `post_content` + 8 tags; `wordCount` **17 → 168**. It is now the first page on
+  the site that answers its own title question. Report:
+  [`2026-08-14-7333-excerpt-draft.md`](../reports/seo-metatags/2026-08-14-7333-excerpt-draft.md).
 - **1751 — DONE 2026-08-13.** Metatags written and verified live; proposal in
   [`reports/seo-metatags/2026-08-13-1751-evn41-juniper.md`](../reports/seo-metatags/2026-08-13-1751-evn41-juniper.md),
   backup in [`reports/yoast-meta-backup/1751-2026-08-13.csv`](../reports/yoast-meta-backup/1751-2026-08-13.csv)
@@ -215,8 +219,20 @@ visibility at all.
 - [ ] **Persist AI-translated summaries into `post_content`.** Currently fetched from a remote
       CSV at render time ([theme/single.php:110-115](../theme/single.php#L110-L115)) — fragile
       (empty page if the fetch fails) and invisible to Yoast and to Google's indexer.
-- [ ] **Auto-generate a 100–150 word Bulgarian episode intro** in the EV News Automator
-      pipeline (OpenRouter step), written to `post_excerpt`. Biggest single content lever.
+- [~] **Auto-generate a 100–150 word Bulgarian episode intro** appended to `post_content`.
+      Biggest single content lever. **Method proven on post 7333 (2026-08-14)** — grounded in
+      the transcript archive via the `youtube-rag` MCP rather than composed from the article
+      summaries; see [`SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md).
+      91 of 128 posts have their transcript ingested. Still to decide: per-post skill vs.
+      pipeline automation.
+  - **Use `post_content`, not `post_excerpt`** (settled 2026-08-14). The excerpt slot renders
+    poorly for this post type and Yoast derives `wordCount` from `post_content` only — 154
+    words in the excerpt left it at 17; the same words in the content took it to **168**.
+    Never write both fields (duplicate text on the page).
+  - ⚠️ **Tags auto-link into the prose.** [`theme/functions.php:75`](../theme/functions.php#L75)
+    links each post tag up to **5×** wherever its name appears in `the_content`. 8 tags on 7333
+    injected **10 `/tag/` links into 154 words**. Decide: lower the cap to 1, or `noindex` the
+    thin tag archives (already a P1 item below — this makes it more urgent).
 - [ ] Summaries are hidden in a collapsed accordion (`max-h-0 opacity-0`, "Виж още").
 - [ ] Heading structure jumps H1 → H5.
 - [ ] Card thumbnails ship with empty `src`, JS-hotloaded from the source OG image.
