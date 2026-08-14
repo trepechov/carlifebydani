@@ -1,10 +1,15 @@
 # SEO Optimization — #EV114 – Има ли регистриран Tesla Cybertruck в България
 
 **URL:** https://www.carlifebydani.com/ev-news/ev114-ima-li-registriran-tesla-cybertruck-v-blgariya/
-**Post ID:** 7333 · **Published:** 2025-08-19 · **Prepared:** 2026-08-13
-**Status:** **metatags applied 2026-08-13** (verified live: `<title>`, `<meta name=description>`
-and `og:description` all updated — `og:description` did not exist before). On-page content
-changes below remain open.
+**Post ID:** 7333 · **Category:** ev-news · **Published:** 2025-08-19 · **Prepared:** 2026-08-13
+**Status:** applied — **corrected 2026-08-14.** Original metatags/tags were applied
+2026-08-13, **before** the transcript-grounded content that landed 2026-08-14 — the wrong
+order (`docs/SEO_SKILLS_REFACTOR.md` §2), researched against a 17-word placeholder page. Fixed
+by re-running the actual `seo-article-optimize` pipeline (Phase A re-research → Phase C apply,
+both appended below) once real content existed: metadesc redrafted against the real prose,
+tags trimmed 8→2. Content (Phase B, 2026-08-14) was already correct and untouched.
+**Keyphrase:** `Tesla Cybertruck България` (unchanged throughout)
+**Ledger:** `7333-2026-08-14` (alt text) · `7333-2026-08-14-b` (metadesc + tags correction)
 
 ## What this article is about
 
@@ -233,3 +238,129 @@ time to accumulate. The `seo-performance-report` skill picks this up on its next
 - **Ledger row:** `7333-2026-08-14` in `reports/seo-optimizations/ledger.csv`
   (`phase=C`, `changed=alt`), baseline GSC 2026-07-17→2026-08-13 this URL: 190 impr / 7 clicks /
   3.68% CTR / pos 7.2. `verify_due` 2026-09-11.
+
+---
+
+## Phase A — Re-research (2026-08-14, after the transcript content landed)
+
+Run via the actual `seo-keyphrase-research` skill (Phase A of `seo-article-optimize`), not
+freehand — see `docs/SEO_SKILLS_REFACTOR.md` for why this post specifically needed a re-run.
+
+### Step 0 — What's already banked
+`data/seo-cache/keywords.csv` already has `cybertruck` (1,600, 10d old), `tesla cybertruck`
+(720, 1d old), `сайбъртрък` (140, 1d old), `cybertruck цена` (140, 1d old) — all within the
+90-day TTL, no new Semrush spend needed. `cybertruck българия` / `tesla cybertruck българия`
+confirmed still `NOTHING FOUND` in Semrush's BG index (unchanged from 2026-08-13 — expected,
+Bulgarian long-tail is thin there). `reports/seo-optimizations/ledger.csv` has one prior row
+(`7333-2026-08-14`, alt text) with no verdict yet (`verify_due` 2026-09-11) — nothing to
+reconsider from that.
+
+### Step 2 — What the article is now
+`post_content` is **168 words** (was 17): three grounded paragraphs answering the title
+question, sourced from EVN71 and EV113's transcripts (not EV114's own — the cross-episode
+finding, see `EV_NEWS_CONTENT_METHOD.md`). The news CSV (`meta.news_csv`, 6-column
+back-catalogue vintage — no `tags`/`region` columns) confirms row order: top story is
+*"Tesla Model X и Model S са мъртви в Европа"*, then battery types, then *"Ford разкрива
+революционен процес за по-евтини електрически автомобили"*, then EV charging network growth,
+then Tesla losing its EU sales crown, a festival announcement, then *"BMW iX3 2026 е звяр по
+отношение на ефективността"* — ¶3 of the live prose correctly drew from the top of this list
+(Model S/X, Ford, Supercharger/Alpitronic). **Correction to the 2026-08-13 metadesc reasoning:**
+BMW iX3 genuinely is a real card on this page (row 7 of the CSV) — dropping it from a future
+metadesc isn't required by "was it fabricated," only by "is it still the best 150 characters
+of hook," a judgment call for Phase C, not a factual correction.
+
+### Step 3 — Demand (reused from 2026-08-13, still fresh)
+GSC 90d (2026-05-15→2026-08-12) and autocomplete both within their staleness windows (GSC ≤7d
+rule doesn't strictly apply to a 90-day historical pull the way it does a live snapshot, and
+the query mix on a 542-impression page doesn't meaningfully shift in 24h) — see the original
+`## Demand research` section above for the full table. Confirmed still current via a fresh
+28-day pull done earlier today (2026-07-17→2026-08-13, this URL): **190 impr · 7 clicks ·
+3.68% CTR · pos 7.2** — consistent with the 90-day trend, no material change.
+
+### Step 4 — Focus keyphrase: unchanged
+`Tesla Cybertruck България` still holds: position 5.8 on `tesla cybertruck българия`, 7.2 on
+`cybertruck bulgaria`, uncontested (7533 owns the spec/`кибертрак` Cyrillic cluster — checked
+again via `/wp/v2/search`, still no overlap). No cannibalisation, no reason to move it.
+
+### Step 4b — Tags: re-mapped against the current 3–10 band + cap (the actual point of re-running)
+
+Live tags today (8, applied 2026-08-13 — **before** re-checking counts against the band):
+
+| Tag | Count today | Tier | Verdict |
+|---|---|---|---|
+| `Cybertruck` | 13 | entity (core, headline story) | ✅ keep — established band, unambiguous headline entity |
+| `България` | 4 | entity (headline story's place qualifier) | ✅ keep — in-band, and half of what the headline question actually asks |
+| `Tesla` | 57 | entity | ❌ drop — saturated brand hub (≥20), not differentiating; `Cybertruck` already carries the specificity |
+| `Регистрация` | 2 | keyword-intent (matches the exact story: "is it registered") | ❌ drop, but flagged as a **gap** — below the 3–10 band even though it's thematically the best fit available; no in-band alternative found (checked `внос`/import — no existing tag). Removing it drops its sitewide count to 1. Recurring theme worth a deliberate batch-create if more registration/import stories land, not a one-off reuse-below-band exception. |
+| `Model S` | 10 | entity, ¶3's *other* story | ❌ drop — passing-mention roundup coverage, not the headline story; exactly what the cap excludes |
+| `Model X` | 4 | entity, ¶3's *other* story | ❌ drop — same reason |
+| `Ford` | 5 | entity, ¶3's *other* story | ❌ drop — same reason |
+| `Supercharger` | 5 | entity, ¶3's *other* story | ❌ drop — same reason |
+
+**Proposed: `Cybertruck` (41), `България` (398)** — 2 tags, at the entity cap, 0 keyword-intent
+(no in-band candidate exists). Down from 8. This also shrinks the tag auto-link surface inside
+the 168-word prose from up to 8 (at today's 1×-per-tag cap, post-W7) to at most 2.
+
+### Handoff
+`Status: researched` for this re-research pass. Phase B not re-run — content is already
+grounded and good. Next: Phase C drafts the metadesc against the real prose and applies the
+tag correction, behind the approval gate.
+
+---
+
+## Phase C — Apply (2026-08-14, correcting the wrong-order write)
+
+Run via the actual `seo-article-apply` skill.
+
+### Step 1 — Current live state (re-fetched)
+`_yoast_wpseo_title`: `Има ли Tesla Cybertruck в България? %%sep%% %%sitename%%` (unchanged
+from 2026-08-13 — already good: no `#EV114` prefix, keyphrase near front, 54 chars rendered).
+`_yoast_wpseo_focuskw`: `Tesla Cybertruck България` (unchanged — Phase A re-confirmed it).
+`_yoast_wpseo_metadesc`: the 2026-08-13 version, written against the 17-word placeholder.
+`tags`: the 8 from 2026-08-13 (see Phase A re-research above for the per-tag verdict).
+
+### Step 2 — Metadesc redrafted against the real 168-word prose
+| Field | Before (2026-08-13, against placeholder) | After (against real prose) | Chars |
+|---|---|---|---|
+| `_yoast_wpseo_title` | *(unchanged)* | *(unchanged)* | 54 |
+| `_yoast_wpseo_metadesc` | `Има ли регистриран Tesla Cybertruck в България? Отговорът е във видеото на EV News #114 – заедно с BMW iX3 2026 и Leapmotor B10 под 30 000 евро.` (149) | `Има ли Tesla Cybertruck в България? Да – първите пристигнаха през 2024 г. на щатски номера, внесени частно, защото Tesla не го продава в Европа.` | **144** |
+| `_yoast_wpseo_focuskw` | *(unchanged)* | *(unchanged)* | 25 |
+
+Reasoning: the old description deferred to the video ("Отговорът е във видеото") — no longer
+true or optimal now that ¶1 answers the question in text. The new one states the real answer
+(every fact traced to the transcript source table in the companion report) instead of
+promising it's elsewhere, and drops the BMW iX3/Leapmotor mention — not because it's false
+(Phase A confirmed it's a genuine card on the page), but because the 144-character budget is
+better spent on the keyphrase-matching answer than a secondary story.
+
+### Tags — 8 → 2, per Phase A's re-research
+| Before | After |
+|---|---|
+| Tesla(4) · Cybertruck(41) · Регистрация(327) · България(398) · Model S(66) · Model X(183) · Ford(82) · Supercharger(134) | Cybertruck(41) · България(398) |
+
+### Steps 3–4 — On-page / links: nothing new
+H1 and first-100-words already carry the keyphrase (Phase B's ¶1). Outbound links (7533, 5350)
+already live in the prose. Inbound link from 7533 already applied (W5 live verification,
+2026-08-14). Image alt already applied (W4 live verification, 2026-08-14). No new proposals.
+
+### Step 6 — Backup
+Pre-write values already backed up today: `reports/yoast-meta-backup/7333-2026-08-14.csv`
+(written before this Phase C run started).
+
+### Step 8 — Verify (live, 2026-08-14)
+
+| Check | Result |
+|---|---|
+| `<title>` live | ✅ `Има ли Tesla Cybertruck в България? - Car Life by Dani` |
+| `<meta name="description">` live | ✅ matches the new 144-char text |
+| Tags rendered | ✅ only `Cybertruck` + `България` chips |
+| `/tag/` auto-links inside body prose | **3** (2× `/tag/cybertruck/`, 1× `/tag/blgariya/`) vs **2** editorial links — down from **10** before this pass, purely from the tag trim |
+
+⚠️ **The W7 theme fix (auto-link cap 5→1) is not live** — 2 occurrences of the same tag
+still auto-linked, which only happens under the old `limit=5` code. That fix is committed but,
+per `docs/DEPLOYMENT.md`, theme deploys are manual and this hasn't been pushed to production
+yet. Not a regression introduced here — the tag trim (8→2) improved the ratio regardless.
+
+**Status: applied.** Ledger row `7333-2026-08-14-b` appended (`phase=C`,
+`changed=metadesc|tags`), same 28-day baseline as the alt-text row (190 impr / 7 clicks /
+3.68% CTR / pos 7.2, window 2026-07-17→2026-08-13), `verify_due` 2026-09-11.

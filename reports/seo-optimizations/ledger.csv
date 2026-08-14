@@ -1,3 +1,4 @@
 id,date_applied,post_id,slug,category,phase,changed,report,keyphrase,base_start,base_end,base_impr,base_clicks,base_ctr,base_pos,kw_base_impr,kw_base_pos,backup,verify_due
 7333-2026-08-14,2026-08-14,7333,ev114-ima-li-registriran-tesla-cybertruck-v-blgariya,ev-news,C,alt,2026-08-13-7333-cybertruck-bulgaria.md,Tesla Cybertruck България,2026-07-17,2026-08-13,190,7,0.0368,7.2,,,media-7334-2026-08-14.csv,2026-09-11
 7533-2026-08-14,2026-08-14,7533,tesla-cybertruck-moshh-inovacziya-i-dizajn-bez-graniczi-zvyart-ot-bdeshheto-veche-e-tuk,ev-review,C,inbound,2026-08-14-7533-cybertruck-review-inbound-link.md,,2026-07-17,2026-08-13,68,1,0.0147,4.8,,,,2026-09-11
+7333-2026-08-14-b,2026-08-14,7333,ev114-ima-li-registriran-tesla-cybertruck-v-blgariya,ev-news,C,metadesc|tags,2026-08-13-7333-cybertruck-bulgaria.md,Tesla Cybertruck България,2026-07-17,2026-08-13,190,7,0.0368,7.2,,,7333-2026-08-14.csv,2026-09-11
