@@ -110,7 +110,7 @@ actually approved and written._
 ### On-page changes proposed
 - [ ] **H1** — <exact proposed text, if different from what Phase B wrote>
 - [ ] **Subheadings** — <exact H2/H3s, from question queries>
-- [ ] **Image alt** — <media id → exact alt text>
+- [ ] **Image alt + title** — <media id → exact alt text, exact title>
 
 ### Internal links
 **Inbound — existing posts that should link here:**
@@ -125,7 +125,7 @@ actually approved and written._
 - [ ] Metatags — title / metadesc / focuskw written
 - [ ] Tags written
 - [ ] `post_content` written (Phase B) — wordCount: <before> → <after>
-- [ ] Image alt written — media id(s): <…>
+- [ ] Image alt + title written — media id(s): <…>
 - [ ] Inbound links written — target post(s): <…>
 - [ ] Auto-linked `/tag/` count inside body prose: <N> (editorial links: <N>)
 

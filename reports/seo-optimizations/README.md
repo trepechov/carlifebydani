@@ -36,7 +36,7 @@ Two problems, one artifact:
 | `date_applied` | the write date |
 | `post_id`, `slug`, `category` | which post, which of the 4 categories |
 | `phase` | `C` (metatags/tags/alt/links, via `seo-article-apply`) or `B` (transcript content, via `ev-news-transcript-content`) — they move different metrics, see Verdicts below |
-| `changed` | pipe-separated subset of `title\|metadesc\|focuskw\|tags\|content\|alt\|inbound` — the approval-gate manifest groups from `_shared/approval-gate.md`, so a partial approval is recorded exactly |
+| `changed` | pipe-separated subset of `title\|metadesc\|focuskw\|tags\|content\|alt\|media_title\|inbound` — the approval-gate manifest groups from `_shared/approval-gate.md`, so a partial approval is recorded exactly. `title` is the Yoast SEO title (post-level); `media_title` is the featured image's own library title (media-level) — kept distinct since they're different objects on different endpoints |
 | `report` | filename in `reports/seo-metatags/` — the prose stays there, this ledger never duplicates it |
 | `keyphrase` | the focus keyphrase at time of write |
 | `base_start`, `base_end`, `base_impr`, `base_clicks`, `base_ctr`, `base_pos` | the **frozen** 28-day GSC window ending the day before `date_applied`, for the whole page |

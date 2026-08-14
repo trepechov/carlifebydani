@@ -318,6 +318,14 @@ proposing a batch"* — that verification has never been run.
 - Note: media alt is **not** covered by post revisions — back it up like Yoast meta. ✅ —
   confirmed in practice on this write; backup at `reports/yoast-meta-backup/media-7334-2026-08-14.csv`.
 
+> ⚠️ **Gap found and closed, 2026-08-14 (same day, user caught it):** the media library
+> `title` field was fetched as read-only context in every version of this write path — original
+> build through the refactor — but never actually proposed or written. Post 7333's featured
+> image kept the meaningless auto-generated `#EVN 114-2` title through two full optimization
+> passes. Fixed in `seo-article-apply` Step 3.4 and the approval-gate manifest (group 4 is now
+> `alt_text` **and** `title` together, one call) — and applied to media 7334
+> (`Tesla Cybertruck в България – EV News #114`), backed up first.
+
 ### W5 — Close the inbound internal-link write path · ~2h · ✅ done 2026-08-14
 
 The higher-value half and the riskier one: it means editing `post_content` on **other**

@@ -389,3 +389,20 @@ Higher count than the 2-tag version, but every one now corresponds to a real, de
 mention — not filler. Pre-write tags backed up to
 `reports/yoast-meta-backup/7333-2026-08-14-tags-correction.csv`. Ledger row
 `7333-2026-08-14-c` (`phase=C`, `changed=tags`).
+
+### Correction 2026-08-14 (same day) — media title, a real gap in the skill itself
+
+User caught that the featured image's media-library `title` was never updated across two full
+optimization passes — still the meaningless auto-generated `#EVN 114-2`. Checked the skill's
+full history (original build through the refactor): `title` was fetched as read-only context
+in every version but never actually proposed or written — a real gap in `seo-article-apply`
+Step 3.4, not a one-off miss on this post. Fixed in the skill (now proposes + writes both
+`alt_text` and `title` together, one manifest row, one call) and applied here:
+
+| Field | Before | After |
+|---|---|---|
+| `title` | `#EVN 114-2` | `Tesla Cybertruck в България – EV News #114` |
+| `alt_text` | *(unchanged, already correct)* | *(unchanged)* |
+
+Backup: `reports/yoast-meta-backup/media-7334-2026-08-14-title.csv`. Attachment `slug` and
+`link` unchanged — WP's `generated_slug` field updated but was never applied to the live slug.

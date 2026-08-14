@@ -82,17 +82,25 @@ Propose concretely — exact text, exact location — not "add more keywords".
 3. **Body coverage** — 2–4 secondary phrases and the `phrase_questions` results
    turned into H2/H3 subheadings that the article then answers. Quote the exact
    sentences to add; never say "sprinkle keywords".
-4. **Image alt text** — every `<img>` needs descriptive Bulgarian alt naming the
-   subject; the featured image's alt should include the keyphrase. Alt lives on
-   the media object, not the post:
+4. **Image alt text AND title** — every `<img>` needs descriptive Bulgarian alt
+   naming the subject; the featured image's alt should include the keyphrase.
+   **Propose both fields, not alt alone** — the media library `title` is
+   fetched for read-only context in every version of this skill so far, but
+   never actually proposed or written, which is why post 7333's featured
+   image kept the meaningless auto-generated `#EVN 114-2` title through two
+   full optimization passes (caught 2026-08-14, only because the user
+   explicitly asked). Both fields live on the media object, not the post:
    ```
    mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/media/<id>",
      method="GET", params={"_fields":"id,alt_text,title,source_url"})
    ```
-   Editor role can `POST` `{"alt_text": "..."}` back — **verify on one image
-   before proposing a batch.** Media `alt_text` is **not** covered by post
-   revisions — back up the current value before writing, same discipline as
-   Yoast postmeta.
+   Editor role can `POST` `{"alt_text": "...", "title": "..."}` back —
+   **verify on one image before proposing a batch.** Media `alt_text` and
+   `title` are **not** covered by post revisions — back up both current
+   values before writing, same discipline as Yoast postmeta. Include both
+   fields in the same manifest row (group 4 of the approval gate) and the
+   same write call; don't split them into two approvals, they're the same
+   object.
 5. **Structured data / slug** — only if genuinely wrong. **Never propose a slug
    change on a URL with GSC impressions** unless a 301 ships with it.
 
@@ -197,10 +205,11 @@ mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/posts/<i
 post's current `tags` array in Step 1 and include it in this list unless a
 current tag is being deliberately dropped.
 
-Image alt text — one image at a time, same approve-first rule:
+Image alt text and title — one image at a time, same approve-first rule, both
+fields in the one call:
 ```
 mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/media/<id>",
-  method="POST", params={"alt_text": "..."})
+  method="POST", params={"alt_text": "...", "title": "..."})
 ```
 
 Inbound links — follow Step 4's mechanics (locate the block, edit only its

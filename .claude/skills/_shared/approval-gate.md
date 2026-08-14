@@ -26,7 +26,7 @@ target, because that is also the rollback boundary:
 | 1 | Yoast postmeta (title / metadesc / focuskw) | `POST /wp/v2/posts/<id>` `meta` | ❌ none | CSV to `reports/yoast-meta-backup/` |
 | 2 | Tags (`post_tag`) | `POST /wp/v2/posts/<id>` `tags` | ❌ none | record current `tags` array — the field **replaces** |
 | 3 | This post's `post_content` | `POST /wp/v2/posts/<id>` `content` | ✅ yes | full existing block must be resent |
-| 4 | Media `alt_text` | `POST /wp/v2/media/<id>` | ❌ none | record current alt |
+| 4 | Media `alt_text` **and** `title` | `POST /wp/v2/media/<id>` | ❌ none | record both current values |
 | 5 | **Other** posts' `post_content` (inbound links) | `POST /wp/v2/posts/<other-id>` | ✅ yes | one approval **per post** |
 
 Each row carries before → after verbatim, plus character counts on the two
@@ -42,11 +42,11 @@ the run.
 Mechanically: `AskUserQuestion` with `multiSelect: true` caps at **4 options
 per question**, which is why the manifest groups by write target rather than
 listing every individual field. **Groups 1–3 fit one question.** Groups **4
-and 5 get their own gates** — alt text because it has no revision safety net,
-inbound links because each one edits a different post and deserves its own
-yes. **Never bundle a foreign-post edit into the current post's approval**,
-and never bundle alt text into the metatag/tags question just because there's
-room.
+and 5 get their own gates** — media alt/title because they have no revision
+safety net, inbound links because each one edits a different post and
+deserves its own yes. **Never bundle a foreign-post edit into the current
+post's approval**, and never bundle media alt/title into the metatag/tags
+question just because there's room.
 
 If a manifest genuinely exceeds what one question can hold (e.g. several
 inbound-link candidates), ask sequentially by group — group 5 becomes one
