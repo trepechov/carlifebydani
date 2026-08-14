@@ -14,8 +14,12 @@ orchestration and [`docs/SEO_SKILLS_REFACTOR.md`](../../../docs/SEO_SKILLS_REFAC
 real prose, `wordCount` verification is meaningless against a placeholder
 page, and the tag auto-link check can only run once body text exists).
 
-**Read [`_shared/constants.md`](../_shared/constants.md) before Step 1.** It
-has the site constants table and the traps that apply to every phase.
+**Read [`_shared/constants.md`](../_shared/constants.md) before Step 1, and
+[`_shared/approval-gate.md`](../_shared/approval-gate.md) before Step 6.** The
+first has the site constants table and the traps that apply to every phase;
+the second is the manifest format, question-grouping and revise-loop this
+skill's Steps 6–7 apply — read it rather than re-deriving the gate mechanics
+here.
 
 **Precondition:** a report already exists at
 `reports/seo-metatags/<date>-<id>-<slug>.md` with `Status: researched` (or
@@ -109,8 +113,9 @@ Run it for the focus keyphrase and for each main entity, then propose:
   natural Bulgarian phrase containing the keyphrase — never "тук" / "виж тук"),
   and roughly where in that post it belongs. Inbound internal links from pages
   with existing authority are the strongest on-site lever available here.
-  Writing one **edits a different post's `post_content`** — see Step 6d, this
-  is never bundled into the current post's metatag approval.
+  Writing one **edits a different post's `post_content`** — per the approval
+  gate (Step 6), this is never bundled into the current post's metatag
+  approval.
 - **Outbound links** — 2–3 related posts this article should link **out** to,
   same detail level. Prefer the deep evergreen `/publications/` and `/ev-review/`
   pages over other news episodes.
@@ -127,7 +132,7 @@ Append to the existing report (never start a new file — see
 the drafted metatags, tags carried forward from Phase A, on-page proposals,
 and internal links. Write this **before** touching anything live.
 
-### Step 6 — Back up, then ask before writing
+### Step 6 — Back up, then run the approval gate
 
 **a) Back up first — always.** WordPress revisions do **not** cover postmeta or
 media `alt_text`, so an overwritten value is unrecoverable without this.
@@ -139,20 +144,14 @@ with the **current** (pre-write) values, even when they're all empty. For
 image alt, record the current `alt_text` in the same backup directory before
 writing.
 
-**b) Ask.** Show the before → after for the three Yoast fields **and** the
-proposed tags (name + existing id + count from Phase A) together — these two
-groups can share one `AskUserQuestion` with `multiSelect: true`, since the
-user must be able to approve the metadesc while rejecting the tags without
-losing the rest of the run. **Image alt text and inbound links each get their
-own separate ask** — alt text because it has no revision safety net, inbound
-links because each one edits a different post and deserves its own yes. Never
-bundle a foreign-post edit into the current post's approval.
-
-**Revise is a first-class outcome, not a polite decline.** If the user asks
-for changes, regenerate only the contested items and re-present the full
-manifest before asking again — don't write something the user hasn't seen in
-its final form. **Never write without an explicit yes** — this is production
-content.
+**b) Run [`_shared/approval-gate.md`](../_shared/approval-gate.md)** against
+the five groups this skill can write (rows 1, 2, 4, 5 of its manifest table —
+this skill never writes row 3, `post_content`, that's Phase B): present the
+manifest, group 1+2 (metatags + tags) in one `multiSelect` question, groups 4
+(alt text) and 5 (inbound links, one question per candidate post) each on
+their own. Honor a revise request as described there — regenerate only the
+contested items and re-present the full manifest before asking again. **Never
+write without an explicit yes** — this is production content.
 
 ### Step 7 — Apply (only what was approved)
 
@@ -180,9 +179,9 @@ proposed location, send the **full** content back (the endpoint replaces, not
 appends — never send a partial block). One post, one approval, one write —
 never batched even when several inbound links were approved together.
 
-**Record `Status: applied` in the report, and note any declined items with the
-reason** — so a later run doesn't re-propose something the user already said
-no to.
+**Record `Status: applied` in the report, and log any declined items in its
+Declined subsection with the reason** (see `_shared/approval-gate.md` §4) —
+so a later run doesn't re-propose something the user already said no to.
 
 ### Step 8 — Verify and hand off
 

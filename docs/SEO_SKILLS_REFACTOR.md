@@ -16,7 +16,7 @@ if a session was interrupted; this is the resumption point.
 | 2 | W8 — commit what exists | ✅ already done — verified 2026-08-14, all 5 items landed in prior commits (7cdb40e, ddb01e8, 3add1f7, 9111a32) |
 | 3 | W7 — tag auto-link decision | ✅ partial 2026-08-14 — limit 5→1 shipped; noindex deferred, see TODO in §W7 |
 | 4 | W1 + W2 — split + handoff | ✅ done 2026-08-14 — also picked up W12 as a side effect (orchestrator rewrite touched the same lines) and the W11 wording fix (extraction-time, as W11 specified) |
-| 5 | W10 — approval gate | ⏳ not started |
+| 5 | W10 — approval gate | ✅ done 2026-08-14 |
 | 6 | W3 + W11 (rest) — news CSV + tag-band CSV integration | ⏳ not started — wording fix already done in W1 |
 | 7 | W4 — alt write path | ⏳ not started |
 | 8 | W9 (rest) — docs restructure | ⏳ not started |
@@ -408,19 +408,24 @@ never revisited).
 
 ---
 
-### W10 — Implement the shared approval gate · ~2h
+### W10 — Implement the shared approval gate · ~2h · ✅ done 2026-08-14
 
 Turn §3 into one shared procedure all phases invoke, rather than three skills each wording it
 their own way.
 
 - Write it once (candidate: `.claude/skills/_shared/approval-gate.md`, same question as W1's
-  shared constants — see Open Questions).
+  shared constants — see Open Questions). ✅ — built at that exact path, reusing the pattern
+  Open Question 1 already confirmed works.
 - Replace `seo-article-optimize` Step 9b's four fixed bundles with the manifest + multiSelect
-  + revise loop.
+  + revise loop. ✅ — `seo-article-apply` Step 6 now runs the shared gate instead of embedding
+  its own version of the mechanics.
 - Give W4 (alt text) and W5 (inbound links) their own gates from the start — neither has one.
-- Add the `Status:` / declined-items convention from §3.4 to the W2 report template.
+  ✅ — the gate's groups 4 and 5 are gated separately by construction; W4/W5 still need to build
+  the actual write mechanics (the gate exists ahead of them, as required).
+- Add the `Status:` / declined-items convention from §3.4 to the W2 report template. ✅ — Phase
+  C section of `_shared/report-template.md` now has a `### Declined` subsection.
 - **Prerequisite for W4 and W5.** Both open new write paths; neither ships before the gate
-  covering it exists.
+  covering it exists. — satisfied; W4/W5 can now proceed.
 
 ### W11 — Tag selection: target the frequency band · ~1h
 

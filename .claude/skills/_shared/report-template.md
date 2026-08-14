@@ -127,6 +127,12 @@ actually approved and written._
 - [ ] Inbound links written — target post(s): <…>
 - [ ] Auto-linked `/tag/` count inside body prose: <N> (editorial links: <N>)
 
+### Declined
+_See [`_shared/approval-gate.md`](../_shared/approval-gate.md) §4. One row per
+item the user said no to, so a later run treats it as a decision, not a gap._
+| Group | What was proposed | Reason declined | Date |
+|---|---|---|---|
+
 ### Risks / notes
 <cannibalisation, slug-change warnings, thin-content caveats, whether better
 metatags alone can plausibly move this page>
