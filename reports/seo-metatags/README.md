@@ -5,14 +5,25 @@ showed, the proposed focus keyphrase / SEO title / meta description, and the
 on-page and internal-linking changes that need a human.
 
 These are **generated artifacts and the durable backup of the reasoning** — they
-stand on their own whether or not the metatags were ever applied. Each file
-records its own status (`proposed` / `metatags applied <date>` / `fully applied`).
+stand on their own whether or not the metatags were ever applied. **One file per
+post, always** — every phase appends its own section to the same file rather
+than starting a new one. Each file records its own machine-readable status via
+a `Status:` line advancing `researched → content-written → applied` (see
+[`_shared/report-template.md`](../../.claude/skills/_shared/report-template.md)).
 
 ## Source
 
-Produced by the [`seo-article-optimize`](../../.claude/skills/seo-article-optimize/SKILL.md)
-skill — ask Claude to **"optimize this article for SEO"** with a URL, or
-`/seo-article-optimize <url>`.
+Produced by the three-phase `seo-article-optimize` pipeline — ask Claude to
+**"optimize this article for SEO"** with a URL, or `/seo-article-optimize <url>`.
+The orchestrator ([`seo-article-optimize`](../../.claude/skills/seo-article-optimize/SKILL.md))
+sequences [`seo-keyphrase-research`](../../.claude/skills/seo-keyphrase-research/SKILL.md)
+(Phase A: research → keyphrase, tags),
+[`ev-news-transcript-content`](../../.claude/skills/ev-news-transcript-content/SKILL.md)
+(Phase B: EV News only, grounded body content), and
+[`seo-article-apply`](../../.claude/skills/seo-article-apply/SKILL.md)
+(Phase C: draft + apply metatags, tags, alt text, internal links) — see
+[`docs/SEO_SKILLS_REFACTOR.md`](../../docs/SEO_SKILLS_REFACTOR.md) for why the
+split and the ordering.
 
 Data pulled per run: Search Console (90-day query→page for the URL), Google
 autocomplete (`hl=bg&gl=bg`), keyword metrics (DataForSEO / Semrush BG), a live

@@ -15,14 +15,14 @@ if a session was interrupted; this is the resumption point.
 | 1 | W9 (partial) — fix `post_excerpt` contradiction | ✅ done 2026-08-14 |
 | 2 | W8 — commit what exists | ✅ already done — verified 2026-08-14, all 5 items landed in prior commits (7cdb40e, ddb01e8, 3add1f7, 9111a32) |
 | 3 | W7 — tag auto-link decision | ✅ partial 2026-08-14 — limit 5→1 shipped; noindex deferred, see TODO in §W7 |
-| 4 | W1 + W2 — split + handoff | ⏳ not started |
+| 4 | W1 + W2 — split + handoff | ✅ done 2026-08-14 — also picked up W12 as a side effect (orchestrator rewrite touched the same lines) and the W11 wording fix (extraction-time, as W11 specified) |
 | 5 | W10 — approval gate | ⏳ not started |
-| 6 | W3 + W11 — news CSV + tag band | ⏳ not started |
+| 6 | W3 + W11 (rest) — news CSV + tag-band CSV integration | ⏳ not started — wording fix already done in W1 |
 | 7 | W4 — alt write path | ⏳ not started |
 | 8 | W9 (rest) — docs restructure | ⏳ not started |
 | 9 | W6 — generalise + rescan | ⏳ not started |
 | 10 | W5 — inbound links | ⏳ not started |
-| 11 | W12 — gate on transcript availability | ⏳ not started |
+| 11 | ~~W12 — gate on transcript availability~~ | ✅ done 2026-08-14, landed with item 4 |
 | 12 | W13 — ledger + verification step | ⏳ not started |
 
 **The one-sentence version:** the capabilities are ~85% built and the *sequencing* is wrong —
@@ -206,24 +206,31 @@ and does not helpfully re-propose them.
 
 Ordered by dependency, not by value. Effort is rough.
 
-### W1 — Split `seo-article-optimize` into A / C + orchestrator · ~2h
+### W1 — Split `seo-article-optimize` into A / C + orchestrator · ~2h · ✅ done 2026-08-14
 
-- Extract Steps 0–4b → new `seo-keyphrase-research/SKILL.md`.
-- Extract Steps 5–10 → new `seo-article-apply/SKILL.md`.
+- Extract Steps 0–4b → new `seo-keyphrase-research/SKILL.md`. ✅ — also carries the W11
+  tag-band wording fix, done at extraction time as W11 itself specified.
+- Extract Steps 5–10 → new `seo-article-apply/SKILL.md`. ✅
 - Rewrite `seo-article-optimize/SKILL.md` as a thin orchestrator: detect category, sequence
-  the phases, hand the report path between them.
-- Move the shared **Site constants** table somewhere all three read. Today
-  `ev-news-transcript-content` reaches into `seo-article-optimize`'s table by anchor link —
-  that breaks the moment the file is split. Candidate: `.claude/skills/_shared/constants.md`.
-- Keep both skills' **Known traps** sections with whichever phase can actually trip them.
+  the phases, hand the report path between them. ✅ — also added the W12 transcript-availability
+  precondition check (Step 3) since the orchestrator was being rewritten anyway; §W12 below no
+  longer needs its own pass.
+- Move the shared **Site constants** table somewhere all three read. ✅ —
+  `.claude/skills/_shared/constants.md`, confirmed working (see Open Question 1's resolution).
+- Keep both skills' **Known traps** sections with whichever phase can actually trip them. ✅
 
-### W2 — Formalise the report as the phase handoff · ~30m
+### W2 — Formalise the report as the phase handoff · ~30m · ✅ done 2026-08-14
 
 Single template, one `Status:` line advancing `researched → content-written → applied`, and a
 `Keyphrase:` line Phase B reads. Each phase appends its own section rather than starting a
 new file. Prevents the current situation where post 7333 has *two* separate reports
 (`2026-08-13-7333-cybertruck-bulgaria.md` and `2026-08-14-7333-excerpt-draft.md`) describing
 one post's optimization.
+
+**Done:** `.claude/skills/_shared/report-template.md`, referenced by all three phase skills and
+by `reports/seo-metatags/README.md`. The two pre-existing 7333 report files were left as
+historical record rather than merged — the mechanism now prevents new duplicates, which is
+what this item asked for; retroactively editing a closed report wasn't in scope.
 
 ### W3 — Read the episode's news CSV directly · ~1.5h
 
@@ -454,7 +461,12 @@ recurring gaps get batch-created deliberately rather than one-off per article. W
 Automator-supplied `Тагове` feed this rule as *candidates* — they are checked against the band
 like any other, never adopted because the CSV suggested them.
 
-### W12 — Gate EV News optimization on transcript availability · ~1h
+### W12 — Gate EV News optimization on transcript availability · ~1h · ✅ done 2026-08-14 (landed with W1)
+
+**Done as a side effect of W1.** The orchestrator was being rewritten from scratch anyway, so
+the precondition check landed in the same pass as Step 3 of `seo-article-optimize/SKILL.md`
+rather than waiting for its own turn in the execution order — no reason to touch that file
+twice for two items that both live in the same few lines.
 
 Resolves the open *"per-post skill vs. pipeline automation"* question in
 [`SEO_EV_NEWS_TODO.md`](SEO_EV_NEWS_TODO.md) — **not** by splitting the run into two passes,
@@ -679,10 +691,17 @@ the verification step whenever; the calendar sets the pace, not the backlog.**
 
 ## 6. Open questions
 
-1. **Does `_shared/constants.md` actually work?** Skills are loaded as single documents; a
-   cross-file reference may not resolve the way an inline table does. If not, the constants
-   *and* the §3 approval gate get duplicated across three files and need a staleness
-   convention. This now blocks W10 as well as W1.
+1. ~~**Does `_shared/constants.md` actually work?**~~ **Resolved 2026-08-14 — yes.** Built it at
+   `.claude/skills/_shared/constants.md` and `_shared/report-template.md` (no frontmatter, so
+   they don't register as skills of their own — confirmed against the live skill listing after
+   creating them). A `SKILL.md`'s own body is what's loaded as a document; a markdown link
+   inside it to a path outside it resolves exactly like any other file reference in a
+   conversation — the agent executing the skill opens it with `Read` because the instructions
+   say to ("Read `_shared/constants.md` before Step 0"), not through some special inclusion
+   mechanism. `ev-news-transcript-content` already relied on this before this file existed
+   (anchor-linking into `seo-article-optimize`'s table), which was the working proof it holds.
+   No staleness convention needed — there's exactly one copy now, not three. W10's approval
+   gate can use the same pattern.
 2. **Should the gate ever allow a "yes to all, don't ask again" for a batch run?** W6 points
    the pipeline at ~185 unscanned posts, and a per-item gate on each is slow. The safe answer
    is no — but if bulk triage (Open Q4 below) produces obviously-safe classes of change, a

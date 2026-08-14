@@ -1,6 +1,6 @@
 ---
 name: ev-news-transcript-content
-description: Fix thin content on a carlifebydani.com EV News episode page by writing a grounded 130–190 word Bulgarian intro into post_content, sourced from the youtube-rag MCP's transcript archive rather than invented. Resolves the post to its episode, searches the episode's own transcript for the answer to the page's title question, falls back to the archive when the episode doesn't discuss it, drafts three paragraphs each with a timestamp-verified claim, adds two internal links, and applies after approval. Does not choose keywords or tags — that is seo-article-optimize's job, run first. Use when the user asks to "fix the thin content on this EV News post", "write the intro from the transcript", "answer this episode's title", or names an EV News post after seo-article-optimize has already run on it.
+description: Fix thin content on a carlifebydani.com EV News episode page by writing a grounded 130–190 word Bulgarian intro into post_content, sourced from the youtube-rag MCP's transcript archive rather than invented. Resolves the post to its episode, searches the episode's own transcript for the answer to the page's title question, falls back to the archive when the episode doesn't discuss it, drafts three paragraphs each with a timestamp-verified claim, adds two internal links, and applies after approval. This is Phase B of the seo-article-optimize pipeline — does not choose keywords or tags (Phase A / seo-keyphrase-research's job, runs first) and does not touch Yoast metatags (Phase C / seo-article-apply's job, runs after). Use when the user asks to "fix the thin content on this EV News post", "write the intro from the transcript", "answer this episode's title", or names an EV News post after Phase A has already run on it.
 ---
 
 # EV News Transcript Content
@@ -17,13 +17,16 @@ detailed in
 (Proposal A) — read that doc's "Measured starting position" and "cross-episode
 finding" sections before running this the first time.
 
-**Division of labour with `seo-article-optimize`:** that skill does the
-demand research, picks the keyphrase, and now also picks tags from that same
-research (Step 4b) — **not this skill**. Run it first if the post hasn't been
-optimized yet; this skill doesn't touch Yoast fields or `post_tag` at all.
-Order doesn't have to be strict — 9248 already had metatags before this skill
-existed — but running the keyphrase research first gives ¶1 a phrase to
-front-load.
+**This is Phase B of the `seo-article-optimize` pipeline** — normally invoked
+by that orchestrator between Phase A (`seo-keyphrase-research`, which picks
+the keyphrase and tags) and Phase C (`seo-article-apply`, which writes
+metatags/tags/alt/links). This skill doesn't touch Yoast fields or `post_tag`
+at all; it only writes `post_content`. Run directly only when resuming a
+report that already has `Status: researched` and a `Keyphrase:` line — Phase A
+must run first so ¶1 has a phrase to front-load. The orchestrator also gates
+this phase on transcript availability before starting Phase A at all (see
+`docs/SEO_SKILLS_REFACTOR.md` §W12) — don't invoke this skill standalone on a
+post whose episode isn't ingested yet.
 
 ---
 
@@ -37,8 +40,9 @@ front-load.
 | Episode-title schemes | both `EVN67` and `EV133` appear — match `EVN?\s*[-–]?\s*(\d+)`, never bare `EV\d+` |
 | Episode resolver | `tools/resolve_episode.py` — **stopgap** until the MCP ships its own `resolve_episode` tool (see Requests to the producer side in the proposals doc) |
 
-WordPress constants (site alias, writer account, REST base, WAF trap, etc.)
-are in [`seo-article-optimize`'s table](../seo-article-optimize/SKILL.md#site-constants--do-not-re-derive-these) —
+**Read [`_shared/constants.md`](../_shared/constants.md) before Step 0.** It has
+the site constants table (WP alias, writer account, REST base, WAF trap, the
+report directory) and the traps that apply to every phase of the pipeline —
 not repeated here.
 
 **Known producer-side bugs, still open as of 2026-08-14** (see
@@ -70,9 +74,14 @@ mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/posts/<i
 Confirm `content.raw` is just the video embed (or has room below it — this
 skill **appends**, it does not overwrite). If `post_excerpt` is non-empty,
 flag it for the user: this skill does not use that field, and mixing the two
-duplicates text on the page (see the trap in `seo-article-optimize`).
+duplicates text on the page (see the `post_excerpt` trap in
+`_shared/constants.md`).
 
 ### Step 2 — Resolve the episode
+
+If invoked directly rather than by the `seo-article-optimize` orchestrator,
+this doubles as the orchestrator's own precondition check (§W12) — either
+way, don't skip it.
 
 ```bash
 python3 tools/resolve_episode.py "<episode number or title fragment from the post title>"
@@ -119,7 +128,7 @@ related chunk into an answer, and do not write ¶1 without a real one.
 
 | ¶ | Words | Job |
 |---|---|---|
-| **1** | 40–60 | Answers the page's own headline question, keyphrase near the front if `seo-article-optimize` already chose one. |
+| **1** | 40–60 | Answers the page's own headline question, keyphrase near the front — read the `Keyphrase:` line Phase A wrote to the report. |
 | **2** | 50–70 | What the hosts actually said — first-hand, specific, the uncopyable part. Prefer direct paraphrase over invented color. |
 | **3** | 40–60 | What the episode *itself* actually covers (from Step 3, even if ¶1/¶2 came from elsewhere) — named with real brand/model terms, not "various other topics." |
 
@@ -135,7 +144,7 @@ open fact to confirm with the user.
 
 ### Step 6 — Two internal links
 
-Same technique as `seo-article-optimize` Step 7 — `/wp/v2/search` on the
+Same technique as `seo-article-apply` Step 4 — `/wp/v2/search` on the
 entities involved. Prefer:
 1. Another post that already covers the cross-episode source material (Step
    4's find, if used) — this is the link that costs nothing extra, since the
@@ -145,14 +154,16 @@ entities involved. Prefer:
 
 Link naturally inside the prose (anchor text = a real phrase, never "тук").
 
-### Step 7 — Write the report
+### Step 7 — Append to the existing report
 
-`reports/seo-metatags/<YYYY-MM-DD>-<post-id>-<short-slug>.md` — same
-directory as the metatag proposals; this is still a per-article SEO artifact.
-Include: the resolved episode, whether the answer came from the episode
-itself or the archive (and which episodes), the full source-claim table, the
-draft paragraphs, the paste-ready HTML block, open facts to confirm, and the
-internal links chosen.
+Open the report Phase A already created — `reports/seo-metatags/<YYYY-MM-DD>-
+<post-id>-<short-slug>.md` — and append the § Phase B section from
+[`_shared/report-template.md`](../_shared/report-template.md): the resolved
+episode, whether the answer came from the episode itself or the archive (and
+which episodes), the full source-claim table, the draft paragraphs, and open
+facts to confirm. **Never start a new file** — if no report exists yet for
+this post (this skill run standalone, ahead of Phase A), start one using the
+same template rather than an ad-hoc structure.
 
 ### Step 8 — Ask, then apply
 
@@ -178,41 +189,16 @@ holding the text.
    embed and before the news-card list; no duplicate text in the (now empty)
    excerpt slot; Yoast schema `wordCount` moved off its pre-write value.
 2. **Count `/tag/` links inside the new paragraphs specifically** — the theme
-   auto-links every post tag into `the_content`
-   ([`theme/functions.php:75`](../../../theme/functions.php#L75), up to 5×
-   per tag). If `seo-article-optimize` already assigned tags, they will now
-   auto-link inside this prose. On 7333 this put 10 auto-links into 154 words
-   against 2 editorial ones — note the count in the report; don't silently
-   accept a page where auto-links outnumber editorial links several-to-one.
-3. Tick the row in `docs/SEO_EV_NEWS_TODO.md` and note the `wordCount` delta.
-4. Same measurement plan as the metatag skill: re-check GSC in 2–4 weeks.
-
----
-
-## Report additions (append to the `seo-article-optimize` template if a
-## metatag proposal already exists for this post; otherwise start fresh with
-## just these sections)
-
-```markdown
-## Transcript sourcing
-**Episode resolved:** <video_id> — <title> (<published_at>)
-**Answer found in:** own episode | archive (<other video_id(s)/titles>) | not found
-
-| Claim | Quote / paraphrase | Source episode | Timestamp |
-|---|---|---|---|
-
-## Draft paragraphs
-¶1 (N words): ...
-¶2 (N words): ...
-¶3 (N words): ...
-
-## Facts to confirm before publishing
-- [ ] <anything ASR-ambiguous or not directly quoted>
-
-## Applied
-- [ ] `post_content` written — wordCount: <before> → <after>
-- [ ] Auto-linked `/tag/` count inside new prose: <N> (editorial links: <N>)
-```
+   auto-links post tags into `the_content`
+   ([`theme/functions.php:75`](../../../theme/functions.php#L75); lowered to
+   1× per tag 2026-08-14, see `docs/SEO_SKILLS_REFACTOR.md` §W7). If Phase A
+   already assigned tags, they will now auto-link inside this prose — note the
+   count in the report.
+3. Set **`Status: content-written`** in the report header.
+4. Tick the row in `docs/SEO_EV_NEWS_TODO.md` and note the `wordCount` delta.
+5. Same measurement plan as Phase C, but on the longer window: re-check GSC in
+   4–8 weeks (new body text needs to be crawled, indexed and start ranking,
+   which doesn't happen in two).
 
 ---
 
@@ -223,10 +209,10 @@ holding the text.
 - **No quote, no claim.** Anything not traceable to a transcript passage gets
   cut, not softened into vague plausible prose.
 - **`post_content`, never `post_excerpt`.** Settled by measurement, not
-  preference — see the constants table and `seo-article-optimize`'s trap.
+  preference — see `_shared/constants.md`'s trap.
 - **Don't decide tags here.** If the draft surfaces an entity that seems
-  tag-worthy, mention it in the report for `seo-article-optimize` to
-  evaluate against real demand — don't add it directly.
+  tag-worthy, mention it in the report for `seo-keyphrase-research` (Phase A)
+  to evaluate against real demand next time — don't add it directly.
 - **A blocked episode is a stop, not a workaround.** Never draft from the
   episode description, the news-CSV summaries, or general knowledge of the
   brand/model as a substitute for a missing transcript.
