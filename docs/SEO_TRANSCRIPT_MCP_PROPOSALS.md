@@ -329,7 +329,7 @@ youtube-rag MCP: search_transcripts(query=<that exact query>, video_id=<P's epis
         │
 Claude writes 60–120 words that literally answer it, + updates the meta description
         │
-wordpress MCP (already connected here): write post_excerpt
+wordpress MCP (already connected here): write post_content (not post_excerpt — see Open Q1)
         │
   → GSC CTR delta in 2–4 weeks
 ```
@@ -457,10 +457,15 @@ start the day the MCP server answers a request.
 ## Open questions
 
 1. ~~**Store generated text in `post_excerpt`, `post_content`, or a new meta field?**~~
-   **Resolved 2026-08-14 — `post_excerpt`.** It renders above the video and the card list
-   today, needs no theme change, is REST-writable, and is covered by WP revisions. See
-   Proposal A. Proposals C and D still need block-level structure, so they want
-   `post_content` and a theme change; that decision stands open.
+   **Resolved 2026-08-14 — `post_content`, appended at the end of the post (after the video
+   embed, before the news cards), never `post_excerpt`.** Two reasons: the excerpt slot
+   doesn't render well for this post type (the original feedback that triggered the move on
+   7333), and Yoast's `wordCount` only reads `post_content` — 154 words written to
+   `post_excerpt` left it at 17, the same words in `post_content` took it to 168. It is
+   REST-writable and covered by WP revisions either way. See Proposal A and
+   [`SEO_SKILLS_REFACTOR.md` §W9](SEO_SKILLS_REFACTOR.md#w9--convert-the-proposal-docs-into-documentation--2h).
+   Proposals C and D still need block-level structure, so they also want `post_content` and a
+   theme change; that decision stands open.
 2. **Automate in the EV News Automator pipeline, or run as a Claude Code skill per post?**
    The skill route gives editorial review per page and reuses the existing
    `seo-article-optimize` pattern. The pipeline route covers every future episode with no
