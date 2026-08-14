@@ -1,247 +1,33 @@
-# Using the YouTube-RAG MCP to Fix EV News SEO — Proposals
+# EV News Transcript Content — Further Proposals (B, C, D, F)
 
-**Date:** 2026-08-14
-**Status:** Proposal — nothing built on the site yet. **The MCP itself is live**: registered
-at project scope in [`.mcp.json`](../.mcp.json) and verified 2026-08-14 (9 tools, 4 slash
-commands, 1 resource). Setup, verification results and two open producer-side defects:
-[`MCP_SERVERS.md § YouTube-RAG`](MCP_SERVERS.md#youtube-rag).
+**Date:** 2026-08-14 (retitled and shrunk 2026-08-14, see the note below)
+**Status:** Proposals B, C, D and F below are **not built**. Proposals A (grounded intro) and
+E (query-shaped generation) **are built and shipping** — their rationale, measurements and
+settled decisions moved to [`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md), which is
+documentation, not a proposal. This file previously described A and E as pending, which had
+drifted into being actively wrong (`SEO_SKILLS_REFACTOR.md` §W9) — read the method doc for
+what's actually running, this file for what isn't built yet.
+
+**The MCP itself is live**: registered at project scope in [`.mcp.json`](../.mcp.json) and
+verified 2026-08-14 (9 tools, 4 slash commands, 1 resource). Setup, verification results and
+open producer-side defects: [`MCP_SERVERS.md § YouTube-RAG`](MCP_SERVERS.md#youtube-rag).
 **Producer side:** [`~/Projects/youtube-rag-n8n/docs/mcp-server.md`](../../youtube-rag-n8n/docs/mcp-server.md)
 · [`plan.md`](../../youtube-rag-n8n/plan.md)
-**Consumer side:** this repo — [`SEO_EV_NEWS_PROPOSALS.md`](SEO_EV_NEWS_PROPOSALS.md) (root-cause diagnosis),
+**Consumer side:** this repo — [`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md) (what's
+built), [`SEO_EV_NEWS_PROPOSALS.md`](SEO_EV_NEWS_PROPOSALS.md) (root-cause diagnosis),
 [`SEO_EV_NEWS_TODO.md`](SEO_EV_NEWS_TODO.md) (the live backlog)
 
 ---
 
-## Measured starting position (verified 2026-08-14, not estimated)
+## Proposal A — Grounded episode intro at the bottom of `post_content` — ✅ built
 
-**The corpus (`clbd` in Qdrant, stack up locally):**
+Shipped as the `ev-news-transcript-content` skill (Phase B of the `seo-article-optimize`
+pipeline), proven on post 7333. Full rationale, the `post_content`-vs-`post_excerpt` decision,
+the DOM-offset measurements, the tag auto-link finding and fix, and the three-paragraph
+structure all moved to [`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md).
 
-| | |
-|---|---|
-| Videos ingested | **99** (all from the `EVNews` playlist) |
-| Chunks | 12,669 |
-| Total transcript text | **14.9 M characters ≈ 2.2 M Bulgarian words** |
-| Median episode length | ~185 min |
-| Punctuated transcripts (usable prose) | **65 / 99** |
-| Transcripts carrying `>>` speaker-turn markers | **52 / 99** |
-| By year | 2024: 23 ingested, **0** punctuated · 2025: 46 / 35 · 2026: **30 / 30** |
-
-**The pages that should be built on it:**
-
-| | |
-|---|---|
-| Posts in the EV News category | 128 |
-| …with a YouTube embed in `post_content` | 126 |
-| …that map to an already-ingested episode by episode number | **91** |
-| Median `post_content` word count | **0** (the embed block and nothing else) |
-| Posts with a non-empty `post_excerpt` | **0** — the slot renders on every page and has never been used |
-| Yoast `wordCount` on a live page | **17** (derived from `post_content` only) |
-| External news cards per post | 14–68 (typical 27–28; EV114 has **68**) |
-| Text hidden inside collapsed `max-h-0` accordions, EV114 | **~20,600 chars** |
-| Pages with any search visibility | 28 / 128 |
-
-So the published ratio on a typical page is **17 words of owned visible prose** against ~28
-nofollow outbound links and several thousand characters of collapsed, third-party-derived
-summary.
-
-**And the two sides already line up where it matters:** 13 of the 14 posts in the P1
-backlog have their episode transcript sitting in Qdrant right now. Only EV41 (post 1751)
-is missing.
-
-### The one-sentence version
-
-The site owns **2.2 million words of original Bulgarian spoken commentary that exists
-nowhere else in text form on the internet**, and the 128 pages built on top of it publish
-**zero words of it**. Every page is a title, a video embed, and a wall of nofollow links
-to other people's articles. That is the whole problem, and the MCP is the tool that fixes
-it.
-
----
-
-## First, a correction to the starting plan
-
-> *"generate some text summarizing the youtube video content"*
-
-Directionally right, and it is Proposal A below. But taken literally it is the **weakest**
-thing this corpus can do, for one reason:
-
-**Nobody searches for an episode summary.** There is no query volume for "EV114 обобщение".
-An episode-shaped summary produces episode-shaped text, which competes for episode-shaped
-queries, which are branded and already won. It adds 150 words to the page and changes almost
-nothing about which queries the page can rank for.
-
-What *does* have demand is **the question the episode answers**. Concretely, from this repo's
-own data:
-
-- Post 7333's title asks *"Има ли регистриран Tesla Cybertruck в България?"* The page's body
-  answer is **17 words**, and the answer is not in that episode's transcript either — see
-  the cross-episode finding below. It *is* in the archive, in EV113 and EVN71, deep-linked
-  to the second. Nobody else on the Bulgarian web has that text.
-- Post 6165 sits at **position 1.4** for `тесла джунипер` and converts **2.06%** of 3,927
-  impressions. It is not a ranking problem. It is a "the page has nothing to read" problem.
-
-So the generation should be **query-shaped, not episode-shaped**: GSC says which queries a
-page already gets impressions for, the transcript supplies the hosts' answer to exactly
-those queries, and the page publishes it. That is Proposal E, and it is the highest-value
-item here.
-
-Everything below is ordered by value-per-hour, not by build order.
-
-### 🔑 The cross-episode finding — retrieval must not be scoped to one video
-
-Discovered while drafting post 7333 on 2026-08-14, and it changes how Proposals A and E
-are built.
-
-**A page's title question is often not answered in that page's own episode.** Episode
-titles are picked from the *news CSV* — the roundup of external articles — not from what
-the hosts actually discussed on air. EV114 is titled *"Има ли регистриран Tesla Cybertruck
-в България?"* and the words *Cybertruck* and *сайбър* appear **zero times** in its
-2h16m transcript.
-
-The archive answers it anyway, in two other episodes:
-
-- **EVN71** (2024-09-10, post 5350) — the first Cybertruck unloaded in Bulgaria, on Varna
-  plates, still carrying its US plate.
-- **EV113** (2025-08-12, one week *before* EV114) — the import route, and a first-hand
-  count of the ones they know of in the country.
-
-**Consequences:**
-
-1. **Never scope `search_transcripts` to `video_id` alone.** Search the collection, then
-   prefer the page's own episode when it has material and fall back to the archive when it
-   does not. A video-scoped search on 7333 returns nothing and looks like an empty archive.
-2. **Cross-episode answers are internal links for free** — answering 7333 naturally links
-   to 5350 and to the `/ev-review/` Cybertruck page, which is exactly the internal-graph
-   work the backlog already wants.
-3. **This strengthens Proposal F.** If the answers already live across episodes, the hub
-   pages are the natural home for them and the episode pages are the entry points.
-
----
-
-## Proposal A — Grounded episode intro at the bottom of `post_content`
-
-**The starting idea, tightened and pinned to the actual template.** 130–190 words of
-Bulgarian prose per post, appended to **`post_content`** after the video embed as Gutenberg
-`wp:paragraph` blocks. Settled on post 7333, 2026-08-14 — see the field decision below.
-
-### Where it goes, and why not the excerpt slot
-
-The theme has an unused `post_excerpt` slot at
-[`theme/single.php:100`](../theme/single.php#L100) that renders full-width between the H1 and
-the video — on paper the strongest position on the page, and empty on all 128 posts:
-
-```php
-<div class="lg:mb-0 post-content"><?php echo apply_filters('the_content', $current_post->post_excerpt); ?></div>
-```
-
-**It was tried and rejected.** Two reasons, both established on 7333:
-
-1. **It renders poorly for this post type** — a full-width `col-span-3` row above a 2/3-width
-   column, giving ~180-character lines at `max-w-screen-2xl`.
-2. **Yoast derives `wordCount` from `post_content` only.** 154 words in the excerpt left
-   `wordCount` at **17**; the same words appended to `post_content` took it to **168** and
-   made the prose visible to Yoast's content analysis.
-
-So the copy goes at the **bottom of `post_content`** — after the video, before the news cards.
-Measured DOM order on the live page after the change:
-
-| element | offset |
-|---|---|
-| `<h1 class="title">` | 44,660 |
-| YouTube embed | 47,534 |
-| **the three paragraphs** | **47,798** |
-| first news card | 52,739 |
-
-**Never write both fields** — that duplicates the text on the page. Clear `post_excerpt` when
-moving copy into `post_content`.
-
-> **Trap worth keeping:** the WP REST API reports a 56-word `excerpt.rendered` on 9 of the 128
-> posts, which looks like they already have an excerpt. That is WordPress auto-trimming
-> `post_content`. The template reads the **raw `post_excerpt` field**, so there is no fallback.
-> Do not infer "has an excerpt" from REST.
-
-**Ships with no theme change.** `post_content` is a core field, writable over REST through the
-WordPress MCP, and — unlike postmeta — **covered by WP revisions**, so it does not need the
-`reports/yoast-meta-backup/` ritual that Yoast fields do.
-
-### The three paragraphs
-
-Not "this episode covered X, Y, Z". Each paragraph has a distinct job:
-
-| ¶ | Words | Job |
-|---|---|---|
-| **1** | 40–60 | **Answer the page's own headline question**, with the focus keyphrase verbatim. This is what Yoast turns into the meta description and what Google lifts as the snippet. |
-| **2** | 50–70 | **What the hosts actually said** — the first-hand Bulgarian angle from the transcript. The uncopyable part (see Proposal B). |
-| **3** | 40–60 | **The other 2–3 notable stories**, named with the brand/model terms people search, plus an internal link to an EV Review where one exists. |
-
-130–190 words total: enough for `wordCount` and keyword coverage, short enough not to
-compete with the list for attention.
-
-### ⚠️ Tags auto-link into the prose — budget for it
-
-[`theme/functions.php:75`](../theme/functions.php#L75) `add_tag_links_to_content` links every
-post tag wherever its name appears in `the_content`, **up to 5 occurrences per tag**. On post
-7333, 8 tags injected **10 `/tag/` links into 154 words** — one per 15 words, all pointing at
-thin archives, diluting the 2 editorial links placed deliberately.
-
-Deliberate theme behaviour, not a bug, but it cuts against the backlog's own rule (*"no
-`/tag/` pages as targets"*) and makes the open `noindex`-thin-tags decision more urgent, since
-every optimized post now feeds them ~10 more links. Either lower the per-tag cap to 1, or
-`noindex` the thin archives.
-
-### Tags and keyphrase alignment — use two tiers
-
-The card count is higher than it looks: **68 on EV114**, 27–28 typical. If the Automator
-tags per-article across ~28 stories, the post inherits 28 stories' worth of tags while its
-title covers 2. That dilutes topical focus and spawns exactly the thin tag archives the
-backlog already flags — `/tag/clbd/` absorbs 418 brand impressions at 4 clicks while
-outranking real pages.
-
-**The site's 365-term vocabulary already follows the right pattern** — brands (`Tesla` 56
-uses), models (`Model Y`, `Cybertruck`), and keyword terms (`Зареждане` 12, `Премиера` 6,
-`Разход`, `слух`, `Регистрация`). Reuse it; creating new terms spawns new thin archives.
-
-- **Post tags = only the 1–2 headline stories' entities**, matching the focus keyphrase and ¶1.
-- Everything else stays analysis metadata and never becomes a public tag term.
-- Per the existing backlog rule, keep `EV новини` off episode pages — that head term belongs
-  to the hub.
-
-### Which stories count as "top" is currently unrecorded
-
-Picking the 1–2 headline stories is editorial and lives nowhere machine-readable. But the
-CSV already carries `upvote` / `downvote` / `clicked` per row
-([`single.php:134-136`](../theme/single.php#L134)) — real audience signal on which of the
-~28 stories readers cared about. Usable both for choosing what ¶2 and ¶3 cover and for
-ordering the cards.
-
-### The ratio problem this only half-fixes
-
-EV114 carries ~20,600 characters of summary text inside collapsed `max-h-0` containers
-against 68 nofollow outbound links. The intro fixes the *presence* of owned text; the
-collapsed-by-default summaries are a separate fix — show the first 1–2 sentences per card
-([`SEO_EV_NEWS_PROPOSALS.md §1.3`](SEO_EV_NEWS_PROPOSALS.md)).
-
----
-
-**MCP tools:** `search_transcripts` (raw chunks) → Claude writes. Do **not** route this
-through the server's LLM; see "Where the writing should happen" below.
-
-**Fixes, directly:** a real source for the meta description · keyword-bearing prose in the
-page's strongest position · the owned-text-to-outbound-link ratio that a link roundup lives
-or dies by.
-
-> ⚠️ **Use `post_content`, not `post_excerpt` — settled on post 7333, 2026-08-14.**
-> The excerpt slot renders poorly for this post type, and Yoast derives `wordCount` from
-> `post_content` only, so 154 words in the excerpt left it stuck at **17**. Appending the
-> same three paragraphs to `post_content` after the video embed took it to **168** and made
-> the prose visible to Yoast's analysis. The copy lands after the video and before the news
-> cards. Never write both fields — that duplicates the text on the page.
-
-**Coverage today: 91 / 128 posts.** Ingesting the ~35 missing episodes takes it to ~126.
-
-**Effort:** the research step is already automated by the corpus and the render slot already
-exists. This is the cheapest item on the list and it unblocks the meta-description work
-already in the P1 backlog.
+**Coverage today: 91 / 128 posts.** Ingesting the ~35 missing episodes takes it to ~126 (see
+Requests to the producer side, below).
 
 ---
 
@@ -265,7 +51,7 @@ sitting unpublished in 99 episodes.
 
 **MCP tools:** `extract_opinions` (plan Phase 6). The plan's quote-validation guard
 (every claim must carry a verbatim span that survives a substring check) is **mandatory
-here, not optional** — see the ASR caveat below.
+here, not optional** — see Proposal G's ASR caveat.
 
 **Finding for the producer side:** the plan states *"YouTube auto-captions contain zero
 speaker information"* and budgets Phase 5 (`llm_turns`) accordingly. **That is not true for
@@ -296,6 +82,9 @@ topic transitions in the episode. That single output solves three separate open 
 Every heading deep-links into the video, which is also the strongest internal reason for
 these pages to exist.
 
+**Blocked:** tool ships, but the free `GENERATION_MODEL` returns Bulgarian chapter titles too
+generic to publish as H2s (see Requests to the producer side, item 6).
+
 ---
 
 ## Proposal D — FAQ block from real Q&A turns → `FAQPage`
@@ -305,42 +94,16 @@ something, a guest answers, and that pair is a `FAQPage` entry with a real answe
 an invented one.
 
 Best on the pages whose GSC queries are already question-shaped (`има ли…`, `колко струва…`,
-`къде да заредя…`). Lower priority than A–C, but it is nearly free once B exists, and FAQ
-answers surface as their own SERP feature.
+`къде да заредя…`). Lower priority than B/C, but it is nearly free once B exists, and FAQ
+answers surface as their own SERP feature. **Depends on B.**
 
 ---
 
-## Proposal E — Query-shaped generation: content radar, applied per page ⭐
+## Proposal E — Query-shaped generation: content radar, applied per page — ✅ built
 
-**The highest-value item here, and the only one that needs both MCP servers at once.**
-
-The `content-radar` workflow in the producer plan aims at a content *calendar* — future
-articles. Point the same machinery at **pages that already have impressions**, and the
-feedback loop shortens from months to weeks:
-
-```
-GSC (already connected here)
-  → for post P, the queries it gets impressions for but ~no clicks
-     e.g. 6165: "тесла джунипер" pos 1.4, CTR 2.06%, 3,927 impr
-        │
-youtube-rag MCP: search_transcripts(query=<that exact query>, video_id=<P's episode>)
-        │
-  → the hosts' own answer to the query, at a timestamp
-        │
-Claude writes 60–120 words that literally answer it, + updates the meta description
-        │
-wordpress MCP (already connected here): write post_content (not post_excerpt — see Open Q1)
-        │
-  → GSC CTR delta in 2–4 weeks
-```
-
-Semrush/DataForSEO only enter when a page has **no** impressions yet and the query has to
-be discovered rather than read off GSC — which keeps the paid calls off the common path
-(and the local `data/seo-cache/` rule still applies).
-
-**Start here, on the 13 P1 backlog posts whose transcripts are already ingested.** The
-backlog, the transcripts, and both MCP servers already exist; this proposal is the wiring
-between them.
+Shipped as the `seo-keyphrase-research` → `ev-news-transcript-content` → `seo-article-apply`
+pipeline (`SEO_SKILLS_REFACTOR.md` §2). Full rationale and the diagram moved to
+[`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md) § Query-shaped generation.
 
 ---
 
@@ -366,9 +129,11 @@ Two reasons this matters more than it looks:
 Phase 3 also ships as a payload backfill (`set_payload`, no re-embedding), so it does not
 wait on the Phase 5 re-ingest.
 
+**Blocked:** the `datetime_range` 422 bug (item 1 below) and the topic backfill (item 2 below).
+
 ---
 
-## Proposal G — What *not* to do: publish raw transcripts
+## Proposal G — What *not* to do: publish raw transcripts *(standing decision)*
 
 The tempting move is a `/transcript/` page per episode. 2.2 M words, instantly indexable.
 
@@ -385,25 +150,8 @@ The tempting move is a `/transcript/` page per episode. 2.2 M words, instantly i
    across two URLs.
 
 **The safe form of the same idea:** cleaned, human-checked, structured excerpts — which is
-Proposals B, C and D. Same asset, published in the shape that is defensible.
-
----
-
-## Where the writing should happen (and what it means for plan §8)
-
-Plan §8 flags that `gemma-4-31b-it:free` will not carry Bulgarian SEO copy and budgets a
-paid generation model. **For this consumer, that decision is not on the critical path.**
-
-The SEO workflow runs inside Claude Code, which is already a strong Bulgarian model with
-the site's own GSC data, the competitor-gap report, and the Yoast write path in context.
-The server's job for SEO is to **return grounded raw chunks with timestamps** — not to
-summarise them first. The plan already says this ("letting *it* reason over raw grounded
-chunks usually beats a small server-side model summarising first"); it is worth making it
-the explicit default for the SEO consumer.
-
-Practical consequence: **`search_transcripts` + `get_transcript` + `generate_chapters` are
-enough to start.** The synthesising agents (`seo_brief`, `opinion_digest`) are convenience,
-not prerequisites — which is why Proposals A, C and E can begin the day Phase 1 lands.
+Proposals B, C and D. Same asset, published in the shape that is defensible. This is a
+**permanent** decision, not a proposal awaiting a build slot.
 
 ---
 
@@ -421,18 +169,20 @@ Updated after the 2026-08-14 verification run. Small, and each unblocks somethin
    nothing to rank. `scripts/backfill_topics.py --propose` → curate `collections.yml` →
    backfill for real.
 3. **`resolve_episode(episode_ref)` tool.** Episode number, WP post URL, or slug → `video_id`.
-   The mapping is currently a regex against video titles, done client-side, and it is the
-   first step of every single workflow above. It should live in the server.
-   *(Titles carry two schemes — `EVN67` and `EV133` — so match `EVN?\s*\d+`.)*
+   The mapping is currently a regex against video titles, done client-side
+   (`tools/resolve_episode.py`, a stopgap), and it is the first step of every workflow above.
+   It should live in the server. *(Titles carry two schemes — `EVN67` and `EV133` — so match
+   `EVN?\s*\d+`.)*
 4. ✅ ~~**`timestamp_url` on every returned chunk.**~~ **Shipped** — confirmed present on
    every `search_transcripts` and `ask` source.
 5. **Ingest the ~35 missing episodes.** 91/128 posts are covered; the gap is mostly
-   EVN44–EVN64, plus EV100 and EV121. EV41 blocks a post already in the P1 backlog.
+   EVN44–EVN64, plus EV100 and EV121.
 6. ✅ ~~**Reorder: pull Phase 2 (chapters) ahead.**~~ **Shipped** — `generate_chapters`
    returns in ~5 s. But see the model caveat: on the free `GENERATION_MODEL` the Bulgarian
    chapter titles come back too generic to publish as H2s. **This makes plan §8's
-   generation-model decision a live blocker for Proposal C**, where it is not one for
-   Proposals A and E (which are written client-side by Claude).
+   generation-model decision a live blocker for Proposal C**, where it was not one for the
+   now-built Proposals A and E (written client-side by Claude, not the server's model — see
+   `EV_NEWS_CONTENT_METHOD.md` § Where the writing happens).
 7. **Revisit the Phase 5 estimate** given the `>>` markers finding in Proposal B.
 
 ---
@@ -441,36 +191,28 @@ Updated after the 2026-08-14 verification run. Small, and each unblocks somethin
 
 | # | Proposal | Needs | Effort | Impact |
 |---|---|---|---|---|
-| 1 | **E** — query-shaped text on the 13 P1 posts | ✅ ready — MCP + GSC + WP MCP all live | 30–45 min/post | **Highest** — CTR feedback in 2–4 weeks |
-| 2 | **A** — grounded intro → `post_content` + tags, all 91 covered posts | ✅ ready (**no theme change**) | ~20 min/post | **High** — `wordCount` 17 → 168 on 7333, plus schema `keywords` |
-| 3 | **C** — chapters → H2 outline + `Clip` schema | tool ready; needs a better `GENERATION_MODEL` | 1 day theme + per-post | **High** — no writing required |
-| 4 | **B** — hosts' own claims block | Phase 6 (or 52 clean episodes now) | Medium | **High** — the only uncopyable content |
-| 5 | **F** — cross-episode evergreen hubs | blocked: 422 bug + topic backfill | Medium–High | **Highest ceiling**, slowest |
-| 6 | **D** — FAQ block | after B | Low | Medium |
+| — | ~~**A** — grounded intro~~ | — | — | **✅ Built**, see `EV_NEWS_CONTENT_METHOD.md` |
+| — | ~~**E** — query-shaped text~~ | — | — | **✅ Built**, see `EV_NEWS_CONTENT_METHOD.md` |
+| 1 | **B** — hosts' own claims block | Phase 6 (or 52 clean episodes now) | Medium | **High** — the only uncopyable content |
+| 2 | **C** — chapters → H2 outline + `Clip` schema | tool ready; needs a better `GENERATION_MODEL` | 1 day theme + per-post | **High** — no writing required |
+| 3 | **F** — cross-episode evergreen hubs | blocked: 422 bug + topic backfill | Medium–High | **Highest ceiling**, slowest |
+| 4 | **D** — FAQ block | after B | Low | Medium |
 | — | ~~**G** — raw transcript pages~~ | — | — | **Do not build** |
-
-Items 1 and 2 both run on Phase 1 alone — `search_transcripts` and nothing else. They can
-start the day the MCP server answers a request.
 
 ---
 
 ## Open questions
 
 1. ~~**Store generated text in `post_excerpt`, `post_content`, or a new meta field?**~~
-   **Resolved 2026-08-14 — `post_content`, appended at the end of the post (after the video
-   embed, before the news cards), never `post_excerpt`.** Two reasons: the excerpt slot
-   doesn't render well for this post type (the original feedback that triggered the move on
-   7333), and Yoast's `wordCount` only reads `post_content` — 154 words written to
-   `post_excerpt` left it at 17, the same words in `post_content` took it to 168. It is
-   REST-writable and covered by WP revisions either way. See Proposal A and
-   [`SEO_SKILLS_REFACTOR.md` §W9](SEO_SKILLS_REFACTOR.md#w9--convert-the-proposal-docs-into-documentation--2h).
-   Proposals C and D still need block-level structure, so they also want `post_content` and a
-   theme change; that decision stands open.
+   **Resolved — see [`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md).** Proposals C
+   and D still need block-level structure, so they also want `post_content` and a theme
+   change; that decision stands open.
 2. **Automate in the EV News Automator pipeline, or run as a Claude Code skill per post?**
    The skill route gives editorial review per page and reuses the existing
    `seo-article-optimize` pattern. The pipeline route covers every future episode with no
-   human in the loop. Recommend: skill first for the ~91 back-catalogue posts, pipeline once
-   the prompt has stabilised on real pages.
+   human in the loop. Recommend: skill first for the back-catalogue posts, pipeline once
+   the prompt has stabilised on real pages. **Currently: skill route, per
+   `SEO_SKILLS_REFACTOR.md`.**
 3. **Does published transcript-derived text need a visible disclosure** that it is derived
    from the episode? Editorially cleaner; costs nothing in SEO terms.
 4. **How much human review per page?** Proposal B publishes attributed quotes about named

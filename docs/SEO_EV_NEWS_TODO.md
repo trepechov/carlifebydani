@@ -220,11 +220,12 @@ visibility at all.
       CSV at render time ([theme/single.php:110-115](../theme/single.php#L110-L115)) — fragile
       (empty page if the fetch fails) and invisible to Yoast and to Google's indexer.
 - [~] **Auto-generate a 100–150 word Bulgarian episode intro** appended to `post_content`.
-      Biggest single content lever. **Method proven on post 7333 (2026-08-14)** — grounded in
-      the transcript archive via the `youtube-rag` MCP rather than composed from the article
-      summaries; see [`SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md).
-      91 of 128 posts have their transcript ingested. Still to decide: per-post skill vs.
-      pipeline automation.
+      Biggest single content lever. **Shipped as the `ev-news-transcript-content` skill**,
+      grounded in the transcript archive via the `youtube-rag` MCP rather than composed from
+      the article summaries — proven on post 7333 (2026-08-14); see
+      [`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md).
+      91 of 128 posts have their transcript ingested. **Resolved: per-post skill, gated on
+      transcript availability** (`SEO_SKILLS_REFACTOR.md` §W12) — not a two-phase pipeline.
   - **Use `post_content`, not `post_excerpt`** (settled 2026-08-14). The excerpt slot renders
     poorly for this post type and Yoast derives `wordCount` from `post_content` only — 154
     words in the excerpt left it at 17; the same words in the content took it to **168**.

@@ -84,7 +84,8 @@ running (`docker compose up -d`) for the tools to answer. Producer-side docs:
 or what the site is getting. This one is the only source of **what we actually have to
 say** — 99 ingested episodes, 12,669 chunks, ~14.9 M characters of original Bulgarian
 commentary that exists nowhere else in text. See
-[`SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md).
+[`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md) for what's built on it, and
+[`SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md) for what isn't yet.
 
 **Auth: none, by design.** The port is bound to `127.0.0.1` and `MCP_ENABLED=false` in
 the producer's `docker-compose.prod.yml`. There is no credential to rotate and nothing to
@@ -351,6 +352,7 @@ change.
 
 - **Monitoring methodology and decision rules:** [`docs/seo-performance/README.md`](seo-performance/README.md)
 - **Root-cause diagnosis:** [`docs/SEO_EV_NEWS_PROPOSALS.md`](SEO_EV_NEWS_PROPOSALS.md)
-- **Transcript-archive proposals:** [`docs/SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md)
+- **EV News content method (built):** [`docs/EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md)
+- **Transcript-archive proposals (not yet built):** [`docs/SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md)
 - **Action backlog:** [`docs/SEO_EV_NEWS_TODO.md`](SEO_EV_NEWS_TODO.md)
 - **Paid-data cache:** [`data/seo-cache/README.md`](../data/seo-cache/README.md)

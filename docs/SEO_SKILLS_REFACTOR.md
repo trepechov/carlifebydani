@@ -2,7 +2,8 @@
 
 **Created:** 2026-08-14 · **Status:** in progress — see Progress tracker below
 **Companions:** [`SEO_EV_NEWS_TODO.md`](SEO_EV_NEWS_TODO.md) (the live backlog) ·
-[`SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md) (why the transcript work exists) ·
+[`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md) (the built transcript-content method) ·
+[`SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md) (what's still proposal-only) ·
 [`MCP_SERVERS.md`](MCP_SERVERS.md) (toolchain)
 
 ## Progress tracker
@@ -19,7 +20,7 @@ if a session was interrupted; this is the resumption point.
 | 5 | W10 — approval gate | ✅ done 2026-08-14 |
 | 6 | W3 + W11 — news CSV + tag-band | ✅ done 2026-08-14 — also resolved Open Question 4 (column 3 = `author`) and registered `news_csv` for REST (needs deploy, see §W3) |
 | 7 | W4 — alt write path | ✅ done 2026-08-14 — live-verified on media 7334 |
-| 8 | W9 (rest) — docs restructure | ⏳ not started |
+| 8 | W9 (rest) — docs restructure | ✅ done 2026-08-14 |
 | 9 | W6 — generalise + rescan | ⏳ not started |
 | 10 | W5 — inbound links | ⏳ not started |
 | 11 | ~~W12 — gate on transcript availability~~ | ✅ done 2026-08-14, landed with item 4 |
@@ -377,7 +378,7 @@ Currently untracked and load-bearing:
 - Decide gitignore-vs-commit for `reports/yoast-meta-backup/` (open since 2026-08-13). It holds
   the only recovery path for postmeta, which argues for committing it.
 
-### W9 — Convert the proposal docs into documentation · ~2h · partial ✅ done 2026-08-14 (post_excerpt contradiction fixed in SEO_TRANSCRIPT_MCP_PROPOSALS.md), rest not started
+### W9 — Convert the proposal docs into documentation · ~2h · ✅ done 2026-08-14
 
 Most of [`SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md) describes work
 that now exists, so it reads as a plan for something already built. Worse, it has **drifted
@@ -414,21 +415,24 @@ rejected. Fix this regardless of whether the rest of W9 happens.
 | F | Cross-episode evergreen hubs | 🚫 blocked — producer `datetime_range` 422 + no topic backfill |
 | G | Don't publish raw transcripts | 📌 standing decision — permanently true, never a proposal |
 
-**Proposed split:**
+**Done — the split:**
 
-- **`docs/EV_NEWS_CONTENT_METHOD.md`** (new, documentation) — the measured facts and settled
-  decisions: corpus stats (99 videos / 12,669 chunks / 14.9M chars, 65 punctuated, 52 with
-  `>>` markers), the 91/128 coverage map, the **cross-episode finding** (EV114's own
-  transcript never says "Cybertruck"), the `post_content` decision with its DOM-offset
-  evidence, the tag auto-link measurement, and the `excerpt.rendered` REST trap. All of this
-  is load-bearing for the skills and none of it is a proposal.
-- **`SEO_TRANSCRIPT_MCP_PROPOSALS.md`** (shrinks) — keeps only B, C, D, F, the producer
-  requests, and G as a standing decision. Retitle so it stops implying A and E are pending.
+- **[`docs/EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md)** (new, documentation) — the
+  measured facts and settled decisions: corpus stats (99 videos / 12,669 chunks / 14.9M chars,
+  65 punctuated, 52 with `>>` markers), the 91/128 coverage map, the **cross-episode finding**
+  (EV114's own transcript never says "Cybertruck"), the `post_content` decision with its
+  DOM-offset evidence, the tag auto-link measurement, and the `excerpt.rendered` REST trap.
+  All of this is load-bearing for the skills and none of it is a proposal.
+- **`SEO_TRANSCRIPT_MCP_PROPOSALS.md`** — shrunk to keep only B, C, D, F, the producer
+  requests, and G as a standing decision. Retitled *"Further Proposals (B, C, D, F)"* so it
+  stops implying A and E are pending.
 
-Two neighbouring docs are drifting the same way and should be checked in the same pass:
-[`SEO_EV_NEWS_PROPOSALS.md`](SEO_EV_NEWS_PROPOSALS.md) (2026-07-28 — its P0 locale bug is
-**fixed**, verified 2026-08-13) and [`SEO_PROPOSALS.md`](SEO_PROPOSALS.md) (2026-06-24, 34 KB,
-never revisited).
+Two neighbouring docs were checked for drift in the same pass, lightly (a header caveat, not a
+full rewrite — out of scope for this item):
+[`SEO_EV_NEWS_PROPOSALS.md`](SEO_EV_NEWS_PROPOSALS.md) (2026-07-28 — its P0 locale bug is now
+flagged **✅ RESOLVED** inline rather than reading as open) and
+[`SEO_PROPOSALS.md`](SEO_PROPOSALS.md) (2026-06-18, 34 KB — flagged as not re-reviewed since,
+pointing at the newer docs for current ground).
 
 ---
 

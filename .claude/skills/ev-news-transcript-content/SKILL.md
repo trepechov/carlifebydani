@@ -12,10 +12,9 @@ Every factual claim in the output must trace to a transcript timestamp.
 
 This is the fix for the root cause diagnosed in
 [`docs/SEO_EV_NEWS_PROPOSALS.md`](../../../docs/SEO_EV_NEWS_PROPOSALS.md) and
-detailed in
-[`docs/SEO_TRANSCRIPT_MCP_PROPOSALS.md`](../../../docs/SEO_TRANSCRIPT_MCP_PROPOSALS.md)
-(Proposal A) — read that doc's "Measured starting position" and "cross-episode
-finding" sections before running this the first time.
+implemented per [`docs/EV_NEWS_CONTENT_METHOD.md`](../../../docs/EV_NEWS_CONTENT_METHOD.md)
+— read that doc's "The corpus", "Coverage map" and "The cross-episode finding"
+sections before running this the first time.
 
 **This is Phase B of the `seo-article-optimize` pipeline** — normally invoked
 by that orchestrator between Phase A (`seo-keyphrase-research`, which picks

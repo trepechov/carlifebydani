@@ -1,6 +1,11 @@
 # EV News Pages — SEO Deep-Dive & Proposals
 
-**Analysis date:** 2026-07-28
+**Analysis date:** 2026-07-28 · **Status check 2026-08-14:** Priority 0 below is **fixed and
+verified** (2026-08-13) — the language/locale mismatch it describes no longer exists. See the
+note at that section rather than treating it as open. Priority 1's grounded-content proposal
+is now **built**, see [`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md). The rest of
+this doc (thin `/tag/` archives, collapsed-card ratio, internal linking) has not been
+re-verified against current state — treat as directionally current, not re-measured.
 **Scope:** The `/ev-news/` archive and the individual EV News post pages (the site's
 highest-traffic section — the AI-translated podcast news roundups).
 **Companion doc:** [SEO_PROPOSALS.md](SEO_PROPOSALS.md) covers the whole site; this doc
@@ -37,6 +42,10 @@ That's the problem to solve. Below, ordered by impact-to-effort.
 ---
 
 ## 🔴 Priority 0 — The bug that's capping everything: pages are served as English
+
+> ✅ **RESOLVED 2026-08-13.** Site Language is now Bulgarian; `<html lang>`, `og:locale` and
+> Yoast's `inLanguage` all verified `bg`/`bg-BG` live. The section below is kept for the
+> diagnosis, not as an open item.
 
 **Finding.** Every EV News page declares itself English while the content is Bulgarian:
 

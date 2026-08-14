@@ -1,7 +1,12 @@
 # On-Site SEO Improvement Proposals — carlifebydani.com
 
-**Analysis date:** 2026-06-18  
-**Overall readiness score:** 6.5 / 10  
+**Analysis date:** 2026-06-18 · **Not re-reviewed since** — checked only for drift on
+2026-08-14 (`SEO_SKILLS_REFACTOR.md` §W9), not re-verified line by line. Newer, more current
+docs for overlapping ground: [`SEO_EV_NEWS_PROPOSALS.md`](SEO_EV_NEWS_PROPOSALS.md) (EV News
+specifically, 2026-07-28), [`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md) (what's
+actually built), [`docs/seo-performance/`](seo-performance/README.md) (the live monthly
+snapshot — the numbers below are two months stale by comparison).
+**Overall readiness score:** 6.5 / 10 (as of the analysis date, not current)
 **Language:** Bulgarian / bg-BG  
 **Live data source:** Google Analytics 4 + Search Console (last 28 days: May 21 – Jun 17, 2026)
 
