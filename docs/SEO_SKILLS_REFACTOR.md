@@ -21,7 +21,7 @@ if a session was interrupted; this is the resumption point.
 | 6 | W3 + W11 — news CSV + tag-band | ✅ done 2026-08-14 — also resolved Open Question 4 (column 3 = `author`) and registered `news_csv` for REST (needs deploy, see §W3) |
 | 7 | W4 — alt write path | ✅ done 2026-08-14 — live-verified on media 7334 |
 | 8 | W9 (rest) — docs restructure | ✅ done 2026-08-14 |
-| 9 | W6 — generalise + rescan | ⏳ not started |
+| 9 | W6 — generalise + rescan | ✅ partial 2026-08-14 — audit + backlog entries done; full 313-post GSC scan deferred by user decision, see §W6 |
 | 10 | W5 — inbound links | ⏳ not started |
 | 11 | ~~W12 — gate on transcript availability~~ | ✅ done 2026-08-14, landed with item 4 |
 | 12 | W13 — ledger + verification step | ⏳ not started |
@@ -328,19 +328,30 @@ here."*
   fields.
 - Outbound links land inside the prose Phase B writes, so they are cheaper and can ship first.
 
-### W6 — Generalise beyond EV News · ~3h
+### W6 — Generalise beyond EV News · ~3h · partial ✅ done 2026-08-14
 
 The skill body is already category-agnostic; the *carve-outs* and the *backlog* are not.
 
 - Re-run the GSC baseline scan across all four categories and extend
   `SEO_EV_NEWS_TODO.md` — or split a general backlog out of it, since the name will stop
-  fitting.
+  fitting. — **deferred by user decision 2026-08-14**: a 313-post scan is a large API/token
+  spend for one pass; do it as its own dedicated run rather than folded into this refactor.
 - Audit the EV-News-specific assumptions and gate them on category rather than assuming:
   the `post_content` ≠ rendered-page warning, the `#EV160` prefix stripping, the
-  *"never target EV новини"* rule, the Phase B hand-off.
-- **Start with 6165 and 7533** — both already identified, both bigger than anything in P1.
+  *"never target EV новини"* rule, the Phase B hand-off. ✅ — audited all four; three were
+  already correctly gated from the W1 rewrite, `#EV160` stripping wasn't explicitly scoped to
+  EV News and now is (`seo-article-apply` Step 2). Also found and closed a real gap while
+  auditing: the orchestrator's category detection had no concrete id mapping — added a
+  **Category IDs** table to `_shared/constants.md`, verified against `/wp/v2/categories`
+  (`ev-news`=1/128 posts, `publications`=6/121, `ev-review`=3/41, `ev-masters`=45/23 — 313
+  total, matching this doc's own audit numbers).
+- **Start with 6165 and 7533** — both already identified, both bigger than anything in P1. ✅ —
+  both promoted from prose mentions to real `- [ ]` backlog items in `SEO_EV_NEWS_TODO.md`
+  ("Missing from this list" section). Not yet run through the pipeline — that's separate work
+  from making sure they're trackable.
 - `publications` and `ev-review` posts likely have real body content already, which means
-  Phase B is skipped and Phase A's research reads something substantial for once.
+  Phase B is skipped and Phase A's research reads something substantial for once. — confirmed
+  by the category-id audit above; unverified by an actual pipeline run (deferred with the scan).
 
 ### W7 — Resolve the tag auto-link conflict · decision, then ~30m · partial ✅ done 2026-08-14
 

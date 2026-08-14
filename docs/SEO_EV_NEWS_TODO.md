@@ -120,11 +120,22 @@ Notes on individual rows:
 
 ### Missing from this list — a bigger CTR prize than anything above
 
+Neither of these two has run through `seo-article-optimize` yet. Per `SEO_SKILLS_REFACTOR.md`
+§W6, both categories (`publications`, `ev-review`) already have real body content, so the
+pipeline runs Phase A → Phase C only — no transcript gate, no Phase B. **Start with these two
+before scanning the other ~183 unscanned `publications`/`ev-review`/`ev-masters` posts** — a
+full site-wide baseline re-scan is deferred, not done, as of 2026-08-14 (cost/time tradeoff,
+see `SEO_SKILLS_REFACTOR.md` §W6).
+
+- [ ] **Post 6165** `/publications/noviyat-tesla-model-y-juniper-2025-…` — **3,927 impressions,
+      position 5.3, 2.06% CTR** over the same window. Owns every Juniper query (`тесла джунипер`
+      pos **1.4**) — this is a "the page has nothing to read" problem, not a ranking one. Worth
+      more than the entire P1 list above combined. Never in this backlog because the original
+      baseline scan only covered the EV-News category (this is `/publications/`).
 - [ ] **Post 7533** `/ev-review/tesla-cybertruck-moshh-inovacziya-i-dizajn-bez-graniczi-zvyart-ot-bdeshheto-veche-e-tuk/`
       — **237 impressions, position 6.2, 0.84% CTR, 2 clicks** over 2026-05-15→08-12. Position 6
       should yield 4–6%. It loses more clicks than post 7333 did and was never in this backlog
       because the baseline scan only covered the EV-News category (this is `/ev-review/`).
-      **Re-scan the other categories before working further down the P1 list.**
       It owns the spec/`кибертрак` intent cluster (`тесла cybertruck` pos 5.6,
       `тесла кибертрак` pos 9.4) — do not target `Tesla Cybertruck България` on it; 7333 owns that.
 - **1751** sat at position **2.7** with 4.6% CTR — position 2–3 should pull 10–15%. Addressed

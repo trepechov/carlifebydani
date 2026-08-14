@@ -11,6 +11,10 @@ This skill does no research and no writing itself — it detects what the post
 needs, runs the phase skills in sequence, and hands the same report path
 between them.
 
+**Read [`_shared/constants.md`](../_shared/constants.md) before Step 1** —
+it has the category-id mapping this step needs, plus the site constants and
+traps shared across all three phases.
+
 ## Why three phases, in this order
 
 Read [`docs/SEO_SKILLS_REFACTOR.md`](../../../docs/SEO_SKILLS_REFACTOR.md) §2
@@ -46,8 +50,9 @@ Never let a phase start a second file for a post that already has one.
 mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/posts",
   method="GET", params={"slug":"<slug>", "_fields":"id,slug,categories"})
 ```
-Map `categories` to one of: `ev-news`, `publications`, `ev-review`,
-`ev-masters`. This decides whether Phase B runs at all.
+Map the `categories` id to one of the four in `_shared/constants.md`'s Category IDs table —
+`1` = `ev-news`, `6` = `publications`, `3` = `ev-review`, `45` = `ev-masters`. This decides
+whether Phase B runs at all: only `ev-news` does.
 
 ### Step 2 — Check for an existing report
 

@@ -47,8 +47,10 @@ mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/posts/<i
 variables render correctly; use them rather than hardcoding the brand.
 - Body budget: **35–45 chars** (the suffix eats 19; hard cap ~60 total).
 - Focus keyphrase in the **first 30 characters**.
-- Strip the `#EV160` episode prefix — it wastes the highest-value characters of
-  the SERP title. (Post 9248 is the reference implementation.)
+- On EV News posts, strip the `#EV160`-style episode prefix from the title —
+  it wastes the highest-value characters of the SERP title. (Post 9248 is the
+  reference implementation.) Other categories don't carry this prefix; nothing
+  to strip.
 
 **`_yoast_wpseo_metadesc`** — **140–155 characters.**
 - Front-load the focus keyphrase; add the 2–3 concrete specifics that make the

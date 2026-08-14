@@ -42,6 +42,22 @@ same table.
 | Reports directory | `reports/seo-metatags/<YYYY-MM-DD>-<post-id>-<short-slug>.md` — one file per post, all phases append to it (see [`report-template.md`](report-template.md)) |
 | Yoast postmeta backup | `reports/yoast-meta-backup/<id>-<YYYY-MM-DD>.csv` — postmeta has no WP revisions, this is the only recovery path |
 
+## Category IDs (verified 2026-08-14, `/wp/v2/categories`)
+
+The four content categories the pipeline runs across — `seo-article-optimize` Step 1 maps a
+post's `categories` array to one of these to decide whether Phase B runs and whether the
+transcript-availability gate applies:
+
+| `id` | slug | name | post count | Phase B applies? |
+|---|---|---|---|---|
+| 1 | `ev-news` | EV News | 128 | ✅ yes — the only category with near-empty `post_content` |
+| 6 | `publications` | Публикации | 121 | ❌ no — real body content already |
+| 3 | `ev-review` | EV Ревюта | 41 | ❌ no — real body content already |
+| 45 | `ev-masters` | EV Masters | 23 | ❌ no — real body content already |
+
+313 posts total. Only `ev-news` (category id 1) triggers Phase B and the W12
+transcript-availability precondition; the other three skip straight from Phase A to Phase C.
+
 ---
 
 ## Site-wide known traps (apply to every phase)
