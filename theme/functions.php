@@ -72,6 +72,24 @@ function j0e_remove_large_image_sizes()
 
 
 
+/**
+ * Expose the `news_csv` post meta (the episode's news-story sheet URL) to the
+ * REST API for authenticated editors. Plain legacy postmeta otherwise has no
+ * REST presence at all — this is read-only for the SEO pipeline
+ * (seo-keyphrase-research Phase A), gated so it never becomes public.
+ * See docs/SEO_SKILLS_REFACTOR.md §W3.
+ */
+add_action('init', function () {
+    register_post_meta('post', 'news_csv', [
+        'show_in_rest'  => true,
+        'single'        => true,
+        'type'          => 'string',
+        'auth_callback' => function () {
+            return current_user_can('edit_posts');
+        },
+    ]);
+});
+
 function add_tag_links_to_content($content)
 {
 
