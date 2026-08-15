@@ -47,16 +47,20 @@ the file by hand.
 | `review_date` | the date this row's reading was taken |
 | `keyword`, `category` | the tracked phrase and a free-text grouping (e.g. `renault`, `charging`) |
 | `months_tracked` | count of real reviews for this keyword so far — `0` on the bootstrap placeholder row |
-| `signal_source` | `` (bootstrap placeholder) \| `gsc` \| `semrush_manual` — trend only compares rows sharing the same source |
+| `signal_source` | `` (bootstrap/retire placeholder) \| `gsc` \| `semrush_manual` — trend only compares rows sharing the same source |
 | `position`, `impressions` | this reading's raw values |
-| `trend` | `new` \| `flat` \| `rising` \| `falling` \| `no-footprint` — see `docs/seo-performance/README.md` for the exact thresholds |
-| `status` | `tracking` \| `candidate-for-swap` |
+| `trend` | `` (bootstrap/retire) \| `new` \| `flat` \| `rising` \| `falling` \| `no-footprint` — see `docs/seo-performance/README.md` for the exact thresholds |
+| `status` | `tracking` \| `candidate-for-swap` \| `retired` |
 | `note` | free text |
 
 **Who writes what:** `seo-performance-report`'s Step 4c appends one row per
 tracked keyword every run, via `python3 tools/keyword_tracking.py append`.
 The very first run seeds the roster with `python3 tools/keyword_tracking.py
-bootstrap` instead, since no history exists yet. Nothing else writes to this
+bootstrap` instead, since no history exists yet — `bootstrap` also works
+later, to add a replacement keyword. Once a suggested swap is actually
+applied in Semrush, `python3 tools/keyword_tracking.py retire "<keyword>"`
+appends a final `status=retired` row rather than deleting anything — history
+stays intact. Nothing else writes to this
 file, and nothing in this repo writes to Semrush itself — every suggested
 swap is a manual action the user applies in Semrush's web UI.
 

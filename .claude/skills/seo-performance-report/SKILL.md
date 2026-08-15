@@ -1,6 +1,6 @@
 ---
 name: seo-performance-report
-description: Generate the monthly SEO performance snapshot for carlifebydani.com — pulls Core Web Vitals field data (PageSpeed Insights), Lighthouse lab scores (PSI MCP), GTmetrix metrics, and Search Console search performance; writes a dated report to reports/seo-performance/, appends the trend log, compares against the previous snapshot, verifies any seo-article-optimize changes that came due (reports/seo-optimizations/), and derives on-site SEO action items. Use when the user asks to "generate the SEO report", "run the monthly SEO snapshot", "capture Core Web Vitals", "check if the SEO changes worked", or compare SEO performance month-over-month.
+description: Generate the monthly SEO performance snapshot for carlifebydani.com — pulls Core Web Vitals field data (PageSpeed Insights), Lighthouse lab scores (PSI MCP), GTmetrix metrics, and Search Console search performance; writes a dated report to reports/seo-performance/, appends the trend log, compares against the previous snapshot, verifies any seo-article-optimize changes that came due (reports/seo-optimizations/), derives on-site SEO action items, and reviews the 10 keywords tracked in Semrush's free-tier rank tracker for staleness (reports/seo-performance/tracked-keywords.csv). Use when the user asks to "generate the SEO report", "run the monthly SEO snapshot", "capture Core Web Vitals", "check if the SEO changes worked", "review tracked keywords", "check the Semrush tracker", or compare SEO performance month-over-month.
 ---
 
 # SEO Performance Report Generator
@@ -269,7 +269,18 @@ replacement candidates instead of a second GSC pull.
    TSV
    ```
    and skip straight to Step 5 — no keyword has enough history yet to flag a
-   candidate.
+   candidate. `bootstrap` also works mid-stream, not just on the very first
+   run — use it any time a replacement keyword needs adding to the roster
+   (e.g. right after retiring one, per step 4 below).
+
+   Composing the tab-delimited heredocs below as a tool call, not typing them
+   at a real terminal, is the one place this step is easy to get subtly
+   wrong — a lost tab silently turns a whole line into one garbled keyword.
+   `latest` printing the row you just wrote back out is the cheap way to
+   confirm the fields landed correctly; `append`/`bootstrap` also warn to
+   stderr and skip the line outright if it doesn't have the expected number
+   of tab-separated fields, so a lost tab fails loud rather than quietly
+   corrupting the roster.
 
 2. **Pull each tracked keyword's own position.** Do **not** reuse Step 4's
    top-query rows for this — that pull is clicks-sorted and keeps only the
@@ -295,14 +306,24 @@ replacement candidates instead of a second GSC pull.
    <keyword>	<category>	<gsc|semrush_manual>	<position>	<impressions>
    TSV
    ```
-   Watch stderr for `CANDIDATES=...` — the keywords the script just flagged
-   `candidate-for-swap` this run.
+   Watch stderr for two things: `CANDIDATES=...` — the keywords the script
+   just flagged `candidate-for-swap` this run — and any `WARN` line
+   (category drift, a non-numeric position/impressions value, or a
+   duplicate row for a keyword already recorded today). A `WARN` isn't
+   fatal, but surface it to the user rather than silently continuing.
 
 4. **Pair each candidate with one replacement.** Pick a single replacement
    from this run's Step 4b striking-distance list — prefer a same-category
    opportunity when one exists — excluding anything already tracked. If
    nothing in this run's list qualifies, say so explicitly rather than
-   forcing a weak pick.
+   forcing a weak pick. Once the user later confirms a suggested swap was
+   actually applied in Semrush (a later run, not this one), retire the old
+   keyword rather than leaving it silently accumulating no further readings:
+   ```bash
+   python3 tools/keyword_tracking.py retire "<old keyword>" --replacement "<new keyword>"
+   ```
+   then `bootstrap` the replacement. History is never deleted — a retired
+   keyword's rows stay in the file with `status=retired`.
 
 5. **Remind, don't assume.** This file has no way to detect drift from the
    live Semrush tracker (a keyword swapped there but not here, or vice

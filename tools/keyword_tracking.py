@@ -10,9 +10,9 @@ distinct keyword.
     review_date,keyword,category,months_tracked,signal_source,position,
     impressions,trend,status,note
 
-  signal_source  "" (bootstrap placeholder) | gsc | semrush_manual
-  trend          new | flat | rising | falling | no-footprint
-  status         tracking | candidate-for-swap
+  signal_source  "" (bootstrap/retire placeholder) | gsc | semrush_manual
+  trend          "" (bootstrap/retire) | new | flat | rising | falling | no-footprint
+  status         tracking | candidate-for-swap | retired
 
 Typical use, from seo-performance-report's Step 4c:
 
@@ -31,19 +31,31 @@ Typical use, from seo-performance-report's Step 4c:
     зарядна станция	charging	gsc	4.2	310
     TSV
 
-Trend is computed against the keyword's own prior rows, comparing only
-rows that share the same signal_source (GSC's blended position and a
-pasted-in Semrush number aren't the same measurement — mixing them across
-a comparison would read as movement that never happened). A signal-source
-switch resets the trend to "new" for that row, which also breaks any
-flat/no-footprint streak in progress. "Impressions below ~50" always reads
-as no-footprint regardless of the position number, mirroring the
-impression floor seo-performance-report's own Step 4a already uses.
+    # 4. once a suggested swap is actually applied in Semrush — retire the
+    #    old keyword so it stops accumulating readings. Bootstrap its
+    #    replacement separately.
+    python3 tools/keyword_tracking.py retire "рено 5" --replacement "zeekr 7x"
 
-A keyword becomes a swap candidate only once it has 3 consecutive
-flat/no-footprint reviews *and* those three reviews span at least 75 days
-— the day floor stops an irregular reporting cadence (a skipped month, or
-two runs in one month) from mis-triggering the count.
+Trend is computed against the keyword's own prior real rows (rows with a
+signal_source — bootstrap and retire rows carry none and are never compared
+against), comparing only rows that share the same signal_source (GSC's
+blended position and a pasted-in Semrush number aren't the same measurement
+— mixing them across a comparison would read as movement that never
+happened). A signal-source switch resets the trend to "new" for that row,
+which also breaks any flat/no-footprint streak in progress. "Impressions
+below ~50" always reads as no-footprint regardless of the position number,
+mirroring the impression floor seo-performance-report's own Step 4a already
+uses — except on a keyword's very first real reading, which always reads
+"new" (there's nothing yet to compare against, so no-footprint's "still
+weak" signal doesn't apply).
+
+A keyword becomes a swap candidate once its most recent STALE_REVIEW_COUNT
+real reviews *all* read flat/no-footprint *and* they span at least
+STALE_MIN_SPAN_DAYS days — the day floor stops an irregular reporting
+cadence (a skipped month, or two runs in one month) from mis-triggering the
+count. Every review in that window is checked, not just the most recent
+one — a real rank jump two reviews ago still counts as "not flat" even if
+the two reviews since have been flat again.
 
 Stdlib only. Exit codes: 0 = ok, 1 = error, 2 = nothing to report (roster
 empty on `latest`).
@@ -53,6 +65,7 @@ import argparse
 import csv
 import os
 import sys
+import unicodedata
 from datetime import date, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -67,6 +80,7 @@ IMPRESSION_FLOOR = 50          # same floor seo-performance-report's Step 4a use
 FLAT_THRESHOLD = 1.0           # position delta under this counts as flat
 STALE_REVIEW_COUNT = 3         # consecutive flat/no-footprint reviews to flag
 STALE_MIN_SPAN_DAYS = 75       # and they must span at least this many days
+APPEND_FIELD_COUNT = 5         # keyword, category, signal_source, position, impressions
 
 
 def today():
@@ -74,7 +88,20 @@ def today():
 
 
 def norm(kw):
-    return " ".join((kw or "").strip().split()).lower()
+    """Normalize a keyword for comparison: Unicode-canonicalize (NFC), lowercase,
+    collapse whitespace. Cyrillic text pasted from different sources can carry
+    NFC or NFD encodings of the same visual string — without canonicalizing
+    first, those would be treated as two different keywords."""
+    kw = unicodedata.normalize("NFC", kw or "")
+    return " ".join(kw.strip().split()).lower()
+
+
+def parses_as_float(value):
+    try:
+        float(value)
+        return True
+    except (TypeError, ValueError):
+        return False
 
 
 # --------------------------------------------------------------------- store
@@ -114,7 +141,9 @@ def latest_row(rows, keyword):
 
 
 def current_roster(rows):
-    """Most recent row per distinct keyword, in first-seen order."""
+    """Most recent row per distinct keyword, in first-seen order. Includes
+    retired keywords — their status column says so; history is never hidden,
+    only ever appended to."""
     seen, roster = [], {}
     for r in rows:
         key = norm(r.get("keyword"))
@@ -129,19 +158,17 @@ def current_roster(rows):
 
 def classify(prior_real_rows, signal_source, position, impressions):
     """Return (trend, months_tracked) for a new row given this keyword's
-    prior *real* rows (signal_source set, i.e. not a bootstrap placeholder),
-    oldest first."""
+    prior *real* rows (signal_source set, i.e. not a bootstrap/retire
+    placeholder), oldest first."""
     months_tracked = len(prior_real_rows) + 1
 
-    try:
-        impr = float(impressions)
-    except (TypeError, ValueError):
-        impr = 0.0
-    if impr < IMPRESSION_FLOOR:
-        return "no-footprint", months_tracked
-
     if not prior_real_rows:
+        # First-ever real reading — nothing to compare against, regardless
+        # of how weak the impressions are.
         return "new", months_tracked
+
+    if not parses_as_float(impressions) or float(impressions) < IMPRESSION_FLOOR:
+        return "no-footprint", months_tracked
 
     prev = prior_real_rows[-1]
     if prev.get("signal_source") != signal_source:
@@ -149,13 +176,10 @@ def classify(prior_real_rows, signal_source, position, impressions):
         # fresh baseline rather than guessing at a delta.
         return "new", months_tracked
 
-    try:
-        prev_pos = float(prev.get("position"))
-        new_pos = float(position)
-    except (TypeError, ValueError):
+    if not parses_as_float(prev.get("position")) or not parses_as_float(position):
         return "new", months_tracked
 
-    delta = prev_pos - new_pos  # positive = moved toward #1
+    delta = float(prev.get("position")) - float(position)  # positive = moved toward #1
     if abs(delta) < FLAT_THRESHOLD:
         return "flat", months_tracked
     return "rising" if delta > 0 else "falling", months_tracked
@@ -165,15 +189,19 @@ def is_stale(prior_real_rows, this_row):
     """Would this row, plus the STALE_REVIEW_COUNT-1 real rows before it,
     span a qualifying flat/no-footprint streak over enough days?
 
-    The earliest row in that span only anchors the date floor — its own
-    trend is always "new" (nothing preceded it to compare against), so
-    only the *later* STALE_REVIEW_COUNT-1 trend values are required to
-    read flat/no-footprint.
+    Every row in that window must itself read flat/no-footprint — including
+    the earliest one, once there's enough history that it isn't the
+    keyword's first-ever real row. Only when the window's earliest row *is*
+    the first-ever real row is it exempt (its trend is unavoidably "new",
+    since nothing preceded it to compare against — that's expected, not a
+    break in the streak).
     """
     span = prior_real_rows[-(STALE_REVIEW_COUNT - 1):] + [this_row]
     if len(span) < STALE_REVIEW_COUNT:
         return False
-    if any(r.get("trend") not in ("flat", "no-footprint") for r in span[1:]):
+    earliest_is_first_ever = len(prior_real_rows) == STALE_REVIEW_COUNT - 1
+    trend_rows = span[1:] if earliest_is_first_ever else span
+    if any(r.get("trend") not in ("flat", "no-footprint") for r in trend_rows):
         return False
     try:
         start = date.fromisoformat(span[0]["review_date"])
@@ -253,18 +281,33 @@ def cmd_append(args):
         return 1
 
     review_date = args.date or today()
-    written, candidates = 0, []
+    written, skipped, candidates = 0, 0, []
     for line in csv.reader(text.splitlines(), delimiter="\t"):
         if not line or not line[0].strip():
             continue
         keyword = line[0].strip()
         if norm(keyword) == "keyword":
             continue
-        cells = (line + [""] * 5)[:5]
-        category, signal_source, position, impressions = cells[1:5]
-        category, signal_source = category.strip(), signal_source.strip()
+        if len(line) < APPEND_FIELD_COUNT:
+            print(
+                f"WARN skipping malformed line — expected {APPEND_FIELD_COUNT} "
+                f"tab-separated fields, got {len(line)} (a lost tab turns the "
+                f"whole line into one keyword): {line!r}",
+                file=sys.stderr,
+            )
+            skipped += 1
+            continue
+        category, signal_source, position, impressions = (c.strip() for c in line[1:5])
 
         prior = rows_for(rows, keyword)
+        if any(r.get("review_date") == review_date for r in prior):
+            print(
+                f"WARN skip — {keyword!r} already has a row for {review_date} "
+                f"(re-running append the same day would duplicate it)",
+                file=sys.stderr,
+            )
+            skipped += 1
+            continue
         prior_real = [r for r in prior if r.get("signal_source")]
 
         prior_category = prior[-1].get("category") if prior else ""
@@ -272,6 +315,13 @@ def cmd_append(args):
             print(
                 f"WARN category drift for {keyword!r}: "
                 f"{prior_category!r} -> {category!r} (kept new value)",
+                file=sys.stderr,
+            )
+        if not parses_as_float(position) or not parses_as_float(impressions):
+            print(
+                f"WARN non-numeric position/impressions for {keyword!r}: "
+                f"position={position!r} impressions={impressions!r} "
+                f"(row still recorded as-is)",
                 file=sys.stderr,
             )
 
@@ -282,8 +332,8 @@ def cmd_append(args):
             "category": category or prior_category,
             "months_tracked": str(months_tracked),
             "signal_source": signal_source,
-            "position": position.strip(),
-            "impressions": impressions.strip(),
+            "position": position,
+            "impressions": impressions,
             "trend": trend,
             "status": "tracking",
             "note": "",
@@ -296,9 +346,40 @@ def cmd_append(args):
         written += 1
 
     save_rows(rows)
-    print(f"appended {written} row(s) -> {os.path.relpath(STORE, ROOT)}")
+    print(f"appended {written} row(s), skipped {skipped} -> {os.path.relpath(STORE, ROOT)}")
     if candidates:
         print(f"CANDIDATES={';'.join(candidates)}", file=sys.stderr)
+    return 0
+
+
+def cmd_retire(args):
+    """Mark a tracked keyword retired — call once its suggested swap has
+    actually been applied in Semrush. Appends a final row; never deletes
+    history. Bootstrap the replacement keyword separately."""
+    rows = load_rows()
+    prior = latest_row(rows, args.keyword)
+    if prior is None:
+        print(f"not tracked: {args.keyword!r}", file=sys.stderr)
+        return 1
+    if prior.get("status") == "retired":
+        print(f"already retired: {args.keyword!r}", file=sys.stderr)
+        return 1
+
+    note = f"retired — replaced by {args.replacement}" if args.replacement else "retired"
+    rows.append({
+        "review_date": args.date or today(),
+        "keyword": prior.get("keyword"),
+        "category": prior.get("category", ""),
+        "months_tracked": prior.get("months_tracked", "0"),
+        "signal_source": "",
+        "position": "",
+        "impressions": "",
+        "trend": "",
+        "status": "retired",
+        "note": note,
+    })
+    save_rows(rows)
+    print(f"retired {args.keyword!r} -> {os.path.relpath(STORE, ROOT)}")
     return 0
 
 
@@ -321,6 +402,12 @@ def main():
     )
     ap.add_argument("--date", default=None, help="override review_date (YYYY-MM-DD)")
     ap.set_defaults(func=cmd_append)
+
+    rp = sub.add_parser("retire", help="mark a tracked keyword retired after its swap ships")
+    rp.add_argument("keyword")
+    rp.add_argument("--replacement", default=None, help="the keyword that replaced it, for the note")
+    rp.add_argument("--date", default=None, help="override review_date (YYYY-MM-DD)")
+    rp.set_defaults(func=cmd_retire)
 
     args = parser.parse_args()
     sys.exit(args.func(args))

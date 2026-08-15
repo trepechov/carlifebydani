@@ -93,12 +93,18 @@ connection** — comparisons are only valid across the same window/config.
   Step 4a uses) — position is noise below it regardless of the number.
 - **Swap candidate:** the flat/no-footprint streak must be **3 consecutive
   real reviews** *and* span **≥75 days** — the day floor stops a skipped or
-  doubled-up report run from mis-triggering the count.
+  doubled-up report run from mis-triggering the count. Every review in that
+  window is checked, not just the most recent one — a real rank change two
+  reviews ago still counts as "not flat" even if the two reviews since have
+  been flat again.
 - Replacement candidates come from **this same run's Step 4b opportunity
   list** — no separate GSC pull for them.
 - Keyword-to-query matching is **exact string** (case-insensitive,
-  whitespace-normalised). Traffic under a near-variant phrasing (word order,
-  spelling) won't be picked up — a known limitation, not a bug.
+  whitespace- and Unicode-normalised). Traffic under a near-variant phrasing
+  (word order, spelling) won't be picked up — a known limitation, not a bug.
+- Once a suggested swap is applied in Semrush, the old keyword is **retired**
+  (`python3 tools/keyword_tracking.py retire`) rather than deleted — its rows
+  stay in `tracked-keywords.csv` with `status=retired` for history.
 
 ## Change log of what was shipped (context for reading the trend)
 
