@@ -250,6 +250,65 @@ Then classify (thresholds in Decision rules below):
 Exclude brand queries (clbd, carlife by dani, carlifebydani, clbd parts) from
 opportunity mining — they already convert and aren't the growth lever.
 
+### Step 4c — Keyword tracking review (Semrush's free-tier rank tracker)
+Semrush's free plan tracks 10 keywords and can't be read or written via MCP —
+`reports/seo-performance/tracked-keywords.csv` is the only place that record
+exists. Runs after Step 4b so it can reuse this run's opportunity list for
+replacement candidates instead of a second GSC pull.
+
+1. **Load the roster.**
+   ```bash
+   python3 tools/keyword_tracking.py latest
+   ```
+   If it prints "no tracked keywords yet", this is the very first run — ask
+   the user for the 10 keywords currently live in Semrush's tracker (with a
+   category each), then:
+   ```bash
+   python3 tools/keyword_tracking.py bootstrap <<'TSV'
+   <keyword>	<category>
+   TSV
+   ```
+   and skip straight to Step 5 — no keyword has enough history yet to flag a
+   candidate.
+
+2. **Pull each tracked keyword's own position.** Do **not** reuse Step 4's
+   top-query rows for this — that pull is clicks-sorted and keeps only the
+   highest-traffic rows, so a keyword that's actually gone stale (by
+   definition, low-click) is exactly the one most likely to be missing from
+   it. Instead issue one filtered call per tracked keyword (still free, no
+   quota concern):
+   ```
+   gsc_query(site_url, date_from, date_to, dimensions="query",
+             dimensionFilterGroups=[{"filters": [{"dimension": "query",
+               "operator": "equals", "expression": "<tracked keyword>"}]}])
+   ```
+   Match is **exact string** (case-insensitive, whitespace-normalised) —
+   near-variant phrasing (word order, spelling) won't be picked up; that's a
+   known limitation, not a bug, and is documented as one.
+   If the user has pasted this month's actual Semrush position for a keyword
+   into the conversation, use that number instead and record it as
+   `semrush_manual` — it's the more precise signal when available.
+
+3. **Record this run's reading.**
+   ```bash
+   python3 tools/keyword_tracking.py append <<'TSV'
+   <keyword>	<category>	<gsc|semrush_manual>	<position>	<impressions>
+   TSV
+   ```
+   Watch stderr for `CANDIDATES=...` — the keywords the script just flagged
+   `candidate-for-swap` this run.
+
+4. **Pair each candidate with one replacement.** Pick a single replacement
+   from this run's Step 4b striking-distance list — prefer a same-category
+   opportunity when one exists — excluding anything already tracked. If
+   nothing in this run's list qualifies, say so explicitly rather than
+   forcing a weak pick.
+
+5. **Remind, don't assume.** This file has no way to detect drift from the
+   live Semrush tracker (a keyword swapped there but not here, or vice
+   versa). Close the step with a one-line reminder to confirm the roster
+   still matches Semrush before trusting the trend.
+
 ### Step 5 — Write the report
 Create `reports/seo-performance/<today>-snapshot.md` (date = today, `YYYY-MM-DD`)
 using the template below. Fill every section you captured; for any source you
@@ -283,7 +342,8 @@ date,crux_window,m_lcp_s,m_inp_ms,m_cls,m_ttfb_s,d_lcp_s,d_inp_ms,d_cls,d_ttfb_s
 ```
 Use the same values you put in the report. Leave a field blank (not 0) if a
 source wasn't captured. Then give the user a short verbal read: what improved,
-what regressed, what to watch, and the **top 1–3 on-site actions** to take now.
+what regressed, what to watch, the **top 1–3 on-site actions** to take now,
+and — when Step 4c flagged one — the keyword swap suggestion alongside them.
 
 ---
 
@@ -353,6 +413,18 @@ Prioritized; carried forward and re-scored each run. `[ ]` open · `[x]` done.
 | # | Priority | Target page | Query | Pos | CTR | Impr | Action |
 |---|---|---|---|---|---|---|---|
 | 1 | | | | | | | |
+
+## Keyword tracking review (Semrush's 10-keyword free-tier tracker)
+| Keyword | Category | Months tracked | Signal | Pos | Trend | Status |
+|---|---|---|---|---|---|---|
+
+**Suggested swaps (manual — apply in Semrush):** <one line per candidate: "swap
+<keyword> for <replacement>, pos <n>/<impr> impr this run" — or "no qualifying
+replacement this run" — omit this subsection entirely when no keyword is
+`candidate-for-swap`.>
+
+Reminder: confirm this roster still matches what's live in Semrush's tracker —
+this file has no way to detect drift on its own.
 
 ## Compared to <prev date>
 **Field data:** <mobile + desktop per-metric deltas, threshold crossings>
