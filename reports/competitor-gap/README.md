@@ -17,6 +17,10 @@ plan limits.
 ## Files
 
 - `YYYY-MM-DD-semrush-competitor-gap.md` — one dated competitor/gap analysis per pull.
+- `YYYY-MM-DD-onsite-crawl-comparison.md` — dated qualitative crawl comparing
+  carlifebydani.com's page structure/format against the same competitor set
+  (used when Semrush data is unavailable or to add a structural read alongside
+  the keyword-gap numbers).
 
 ## Related
 
