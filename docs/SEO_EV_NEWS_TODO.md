@@ -208,7 +208,13 @@ Verified present in the post list as live posts alongside their originals:
 - [ ] `clone-ev155-216-rst-kakvo-se-sluchva-s-ev-pazara-v-blgariya` (8824) vs `ev154-...` (8812)
 - [ ] `clone-ev140-kak-mina-clbd-coffee-day-1-2026` (8187)
 - [ ] `clone-ev106-bez-sinya-i-zelena-zona-v-sofiya` (7013) vs `ev106-...` (7007)
-- [ ] `ev122` (7584) and `ev122-zeekr-v-blgariya` (7577) — two posts, same episode number
+- [x] `ev122` (7584) and `ev122-zeekr-v-blgariya` (7577) — two posts, same episode number —
+      **RESOLVED, verified 2026-08-15.** 7584 is no longer an EV122 duplicate: its live slug is
+      now `ev123-imame-nova-sluzhebna-kola-...` (title `#EV123`, published 2025-10-21, a week
+      after 7577). A site search for `ev122` now returns only 7577 (slug
+      `ev122-zeekr-v-balgariya`). No action taken by this pipeline — already fixed upstream
+      before this check; noting so 7577 is clear to run through `/seo-article-optimize` without
+      a cannibalization blocker.
 - [ ] `ev80-rivian-i-vw-obedinyavat-sili-za-po-dobro-badeshte` (5742) and
       `ev80-audi-startira-nova-marka-v-kitai-zaedno-sys-saic` (5691) — same number, different stories
 - [ ] `ev90-tesla-model-y-juniper-2025-be-predstaven-v-evropa` (6294) and
