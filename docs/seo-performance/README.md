@@ -29,6 +29,7 @@ snapshots live in a separate reports folder:
 | **GTmetrix (MCP)** | Grade, Performance/Structure, per-resource weight, top Lighthouse issues | `mcp__gtmetrix__*` tools | **Live — confirmed 2026-07-29.** Report page is Cloudflare-403 to WebFetch, so MCP is the path |
 | **Google Search Console (MCP)** | Actual search **outcome** — clicks, impressions, CTR, avg position (per query/page), indexing & sitemap status | `mcp__google-search-console__*` tools | **Live — confirmed 2026-07-29.** The ranking-outcome signal the other sources only predict |
 | **Optimization ledger** | Whether a past `seo-article-optimize` change actually shipped and worked | `reports/seo-optimizations/ledger.csv` + `checks.csv` (read-only, no MCP) | **Live — added 2026-08-14.** Closes the loop: this report finds pages worth fixing, the pipeline fixes them, this report's Step 4a verifies whether it worked. See `reports/seo-optimizations/README.md` |
+| **Tracked-keyword store** | Trend/status for the 10 keywords tracked in Semrush's free-tier rank tracker — Semrush itself can't be read or written via MCP on this plan | `reports/seo-performance/tracked-keywords.csv` + `tools/keyword_tracking.py` (no MCP, no live Semrush call) | **Live — added 2026-08-15.** GSC-derived by default, since it's the only live position signal this report can reach. See `reports/seo-performance/README.md` |
 
 ### MCP server configuration
 
@@ -81,6 +82,23 @@ connection** — comparisons are only valid across the same window/config.
 - **Cannibalisation:** one query split across ≥2 URLs → consolidate/canonicalise.
 - Exclude **brand** queries (clbd, carlife by dani, carlifebydani, clbd parts).
 - Enforce the impression floor — 28-day CTR/position on low-impression rows is noise.
+
+### Tracked-keyword staleness thresholds (Step 4c)
+- **Trend** compares a tracked keyword's position only against its own prior
+  reading **from the same signal source** (`gsc` vs `semrush_manual`) — GSC's
+  blended position and a pasted-in Semrush number aren't the same measurement,
+  so a source switch resets to `new` instead of reading as movement.
+- **Flat:** position moves less than **1.0** since the last same-source
+  reading. **No footprint:** impressions below the **~50** floor (same floor
+  Step 4a uses) — position is noise below it regardless of the number.
+- **Swap candidate:** the flat/no-footprint streak must be **3 consecutive
+  real reviews** *and* span **≥75 days** — the day floor stops a skipped or
+  doubled-up report run from mis-triggering the count.
+- Replacement candidates come from **this same run's Step 4b opportunity
+  list** — no separate GSC pull for them.
+- Keyword-to-query matching is **exact string** (case-insensitive,
+  whitespace-normalised). Traffic under a near-variant phrasing (word order,
+  spelling) won't be picked up — a known limitation, not a bug.
 
 ## Change log of what was shipped (context for reading the trend)
 
