@@ -126,11 +126,41 @@ Run it for the focus keyphrase and for each main entity, then propose:
   Writing one **edits a different post's `post_content`** — per the approval
   gate (Step 6), this is never bundled into the current post's metatag
   approval.
+  **The candidate's `date` must be earlier than the current post's `date`** —
+  check both before proposing, not just relevance. Pull `date` in the same
+  `/wp/v2/search` (or a follow-up `/wp/v2/posts?include=<id>&_fields=date`)
+  call; a search hit that's relevant but newer than the current post is not a
+  candidate, full stop — don't propose it even as a lower-priority option.
+  Rationale: an inbound link is one older post pointing forward to a newer
+  one it genuinely predates, mirroring how a reader would actually encounter
+  the site's own timeline — not a newer post retroactively wired back into an
+  older one just because it currently has more traffic. On EV News posts
+  especially, don't default to whichever post already has the most GSC
+  traffic — that pull is exactly what produces a same-topic *newer* page as
+  the tempting but wrong candidate. If no existing post predates the one
+  being optimized, say so in the report and propose zero inbound links rather
+  than reaching for the nearest topical match regardless of date.
 - **Outbound links** — 2–3 related posts this article should link **out** to,
   same detail level. Prefer the deep evergreen `/publications/` and `/ev-review/`
   pages over other news episodes. On EV News posts these are usually already
   covered by Phase B's own prose (it links out as it writes ¶2/¶3) — check
   before proposing more.
+  **Exception — same-story sequels are not ordinary outbound links.** If the
+  outbound target and the current post both narrate the *same continuing news
+  event* at two different points in time (an announcement and its later
+  confirmation, part 1 and part 2 of a developing story — not just a shared
+  brand or model), the citation must run **new → old**, same direction as an
+  inbound link, never the reverse. An older post narrating "X is happening"
+  should not link forward to a newer post as if citing settled fact about its
+  own still-open story — that reads as an anachronism, not a reference. If the
+  older post is the one being optimized and the natural sequel is newer,
+  either skip the link entirely or (if the newer post is also being touched
+  right now) add the citation there instead, pointing back. This is narrower
+  than the general **outbound rule below**, which stays unrestricted by date —
+  a genuine "further reading on a different subtopic" link (e.g. an older post
+  mentioning a battery in passing, linking out to a newer post's full
+  technical deep-dive on that battery) is not a same-story sequel and needs no
+  date check.
 - Skip `/tag/` pages as link targets — thin taxonomy pages already outrank real
   editorial content on this site, and linking to them makes it worse.
 
@@ -265,6 +295,16 @@ from an earlier Phase B write on this post).
   exactly the approved subset; record declined items with reason.
 - **Never bundle a foreign-post edit into this post's approval.** Every
   inbound-link write gets its own explicit yes.
+- **Inbound links only flow forward in time.** The source post's `date` must
+  predate the target's. Never propose a newer post as an inbound-link source
+  just because it ranks higher or is more topically on-point — check the date
+  before relevance decides anything.
+- **Same-story sequels cite new → old, never old → new.** When two posts
+  narrate the same continuing event, the older one should not link forward to
+  the newer one as if the newer post's facts were already settled at the
+  older post's own publish time — put the citation on the newer post instead,
+  pointing back. This is distinct from an ordinary outbound "further reading"
+  link to a different subtopic, which stays unrestricted by date (see Step 4).
 - **Never invent facts** to fill a meta description. Everything in the snippet
   must be in the article.
 - **Don't propose slug changes** on URLs with impressions unless a 301 ships too.
@@ -282,3 +322,27 @@ from an earlier Phase B write on this post).
   pass finished.
 - **Category / tag archive SEO needs wp-admin**, not this endpoint — see
   `_shared/constants.md` traps.
+- **Picking an inbound-link source by traffic/relevance alone, without checking
+  `date`, silently produces a backwards-in-time link.** Happened on post 8659
+  (2026-08-15): the two proposed and approved sources (9099, 8913) were both
+  *newer* than 8659 by 32–51 days, found via the highest-traffic Zeekr search
+  hits with no date check. Caught by the user after the write, not before —
+  whether to revert those two specific links is a separate decision from this
+  fix. An older, correctly-dated candidate
+  (post 7577, ~7 months earlier, same topic) existed but was never
+  considered because the search wasn't filtered by date at all. Always pull
+  `date` alongside relevance and discard any hit newer than the current post
+  before it reaches the proposal stage.
+- **An old post narrating a newer post's outcome, via an "unrestricted"
+  outbound link, is the same bug in the other direction.** Happened on post
+  7577 (2026-08-15): Phase B added an outbound link from 7577 (2025-10-14, the
+  original Zeekr-Bulgaria market-entry announcement) forward to 8659
+  (2026-05-19, the confirmed-entry follow-up seven months later) — technically
+  permitted by the old "outbound is unrestricted" wording, but wrong, because
+  both posts narrate the *same continuing story*, not two different subtopics.
+  Caught by the user, not before writing. Fixed by reverting the 7577 link and
+  adding the citation to 8659 instead, pointing back at 7577. This is what the
+  same-story-sequel exception above now exists to prevent — check whether an
+  outbound target is a genuine subtopic reference (date-unrestricted, fine
+  either direction) or a sequel narrating the same event (new → old only)
+  before writing it, not after.
