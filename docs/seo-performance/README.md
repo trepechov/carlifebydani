@@ -118,3 +118,15 @@ connection** — comparisons are only valid across the same window/config.
   window were EV-News-plugin and reporting-tooling work only. The 2026-08-07
   snapshot's flat action-item positions confirm it; read that snapshot's movements
   as organic, not as the result of any intervention.
+- **2026-08-14 → 2026-09-05 — first real on-page SEO sprint.** 65 commits, ~35
+  posts run through `seo-article-optimize` (Zeekr cluster, Renault cluster,
+  Cybertruck/Tesla posts, Porsche cluster, several EV News episodes, the
+  home-charging guide), plus the Step 4c keyword-tracking tooling. Five of the
+  eight 2026-08-13 action items shipped or resolved in this window (see that
+  section of the 2026-09-05 snapshot). None of the ledger rows have reached
+  their `verify_due` date yet as of 2026-09-05 — earliest is 2026-09-11 — so
+  the 2026-09-05 snapshot's small positive CTR move (2.53% → 2.56%, the first
+  upward move since tracking began) is directional, not yet attributed. The
+  2026-09-05 lab scores also dropped on both form factors (mobile Perf
+  60→43, desktop 71→59) with field data unaffected — flagged as a watch item,
+  not linked to this deploy (content/metadata only, no theme/asset changes).
