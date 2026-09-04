@@ -172,6 +172,16 @@ later) — caught by the user after publish, fixed by reverting it and citing
 
 Link naturally inside the prose (anchor text = a real phrase, never "тук").
 
+**After linking, check whether the target has been optimized yet** — see
+`_shared/constants.md`'s "Backlink-target tracking" trap for the exact
+mechanism (resolve the href to a post id, check
+`reports/seo-optimizations/ledger.csv`, update
+`docs/SEO_BACKLINK_TARGETS_TODO.md` if it's not there yet). Both of this
+step's links are outbound from the current post's own prose, so both
+qualify — don't skip this because it feels like Phase C's job; the check
+takes one lookup per link and this is the phase that most often introduces
+these links in the first place.
+
 ### Step 7 — Append to the existing report
 
 Open the report Phase A already created — `reports/seo-metatags/<YYYY-MM-DD>-

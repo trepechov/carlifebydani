@@ -41,6 +41,7 @@ same table.
 | Local data cache | `data/seo-cache/` via `tools/seo_cache.py` — **check it before any paid call** |
 | Reports directory | `reports/seo-metatags/<YYYY-MM-DD>-<post-id>-<short-slug>.md` — one file per post, all phases append to it (see [`report-template.md`](report-template.md)) |
 | Yoast postmeta backup | `reports/yoast-meta-backup/<id>-<YYYY-MM-DD>.csv` — postmeta has no WP revisions, this is the only recovery path |
+| Backlink-target backlog | `docs/SEO_BACKLINK_TARGETS_TODO.md` — link-equity-driven backlog (as opposed to `docs/SEO_EV_NEWS_TODO.md`, which is traffic-driven); updated per the "Backlink-target tracking" trap below |
 
 ## Category IDs (verified 2026-08-14, `/wp/v2/categories`)
 
@@ -110,3 +111,31 @@ transcript-availability precondition; the other three skip straight from Phase A
 - **Teardown:** when a sustained SEO push ends, remove the standing production
   write credential — `claude mcp remove wordpress`, delete the Keychain entry
   `carlifebydani-wp-mcp`, revoke the app password in the `seo-bot` profile.
+- **Backlink-target tracking.** Every internal link either phase writes points
+  at another post — and that post may not have been through this pipeline
+  yet. This applies to two distinct write shapes:
+  - **Outbound**: a link inside the *current* post's own new/edited prose
+    (Phase B's ¶2/¶3, or a Phase C outbound proposal) pointing at another
+    post. The **target** of that link is the thing to check.
+  - **Inbound-link edit**: Phase C editing an *older* post to add a link
+    forward to the current post (`seo-article-apply` Step 4's "inbound
+    links" mechanics). Here the current post is the target, and it's about
+    to become optimized by the end of this same run — nothing to log. The
+    post being *edited* (the source) doesn't need checking either; it isn't
+    gaining a link, it's giving one.
+  So in practice: after writing an outbound link (in either phase), resolve
+  the href to a post id (`/wp/v2/posts?slug=<slug>`) and check whether that
+  id already has a row in `reports/seo-optimizations/ledger.csv`. If it
+  doesn't, add or refresh a row for it in
+  [`docs/SEO_BACKLINK_TARGETS_TODO.md`](../../../docs/SEO_BACKLINK_TARGETS_TODO.md)
+  — post id, title, category, the current post as the backlink source, and a
+  quick page-level GSC pull (90d, this URL) for priority ordering. If a row
+  for that post id already exists there (from an earlier link), just append
+  the new source rather than duplicating the row. This is how 9099, 1227,
+  4115, and the rest of that file's backlog were actually found — the
+  alternative is the same discovery work getting silently redone (or missed
+  entirely) on every future audit.
+  **Skip this check** for: links to non-post pages (`/clbd-parts/`, tag
+  archives, external URLs — already excluded elsewhere), and for a target
+  post id that's the same as the post currently being optimized (a rare
+  self-link).

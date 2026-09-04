@@ -167,6 +167,15 @@ Run it for the focus keyphrase and for each main entity, then propose:
 External links on this site are already correctly `rel="nofollow" target="_blank"`
 — leave them alone.
 
+**After writing an outbound link, check whether its target has been
+optimized yet** — see `_shared/constants.md`'s "Backlink-target tracking"
+trap for the exact mechanism (resolve the href to a post id, check
+`reports/seo-optimizations/ledger.csv`, update
+`docs/SEO_BACKLINK_TARGETS_TODO.md` if it's missing). This applies to
+outbound links only — an inbound-link edit's target is the post currently
+being optimized, which is about to get its own ledger row by the end of
+this phase, so there's nothing to log for that direction.
+
 **Mechanics for writing an inbound link** (the target is Gutenberg block
 markup, not plain HTML — treat it as text to edit surgically, not to
 regenerate):

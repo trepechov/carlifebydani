@@ -113,7 +113,16 @@ measurement plan from Phase C's Step 8.
 
 `seo-performance-report` (site-wide monthly snapshot). **That skill finds the
 pages worth optimizing; this pipeline optimizes one of them.** The backlog it
-feeds is `docs/SEO_EV_NEWS_TODO.md`.
+feeds is `docs/SEO_EV_NEWS_TODO.md` (traffic-driven).
+
+There's a second backlog, populated a different way: **`docs/SEO_BACKLINK_TARGETS_TODO.md`**
+(link-equity-driven) — Phase B and Phase C both check, after writing any
+outbound internal link, whether the target post has already been through
+this pipeline, and add it there if not (see `_shared/constants.md`'s
+"Backlink-target tracking" trap). Worth checking before reaching for
+`SEO_EV_NEWS_TODO.md` alone — a post with fresh inbound link equity from an
+already-optimized page is often a better next target than the next
+highest-impressions row.
 
 ## Known traps
 
