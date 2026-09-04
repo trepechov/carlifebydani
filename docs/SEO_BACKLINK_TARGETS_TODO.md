@@ -39,8 +39,7 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 | `[ ]` | 8836 | Renault 4 Plein Sud – Хронология на отворения покрив | publications | 8968 (outbound) | 149 / 6 / 4.03% / 5.1 | — |
 | `[ ]` | 7631 | Hyundai Concept 3 – за първи път в България | publications | 9383 (inbound-edit) | 95 / 1 / 1.05% / 7.0 | — |
 | `[ ]` | 3032 | MG 9 EV – Китайско чудо прикрито като Британска класика | publications | 4115 (outbound) | 91 / 1 / 1.10% / 5.1 | — |
-| `[ ]` | 5350 | #EVN71 – Tesla Cybertruck в България, Light Show във Велико Търново | ev-news | 7333 (outbound) | 28 / 0 / 0% / 8.6 | — |
-| `[ ]` | 4129 | #EVN51 – Защо Xiaomi SU7 катастрофира толкова често? | ev-news | 9348 (outbound) | 14 / 0 / 0% / 7.1 | — |
+| `[ ]` | 7351 | Tesla Lightshow – Ihtiman Airport LBHT | publications | 5350 (outbound) | 80 / 5 / 6.25% / 6.3 | — |
 | `[ ]` | 1509 | Защо спряха автобусите в Осло? Какво ново около Tesla Model Y Juniper? | ev-news | 5240 (outbound) | 0 / 0 / — / — (no impressions in window) | — |
 
 GSC window: 2026-06-06 → 2026-09-03, page-dimension pull filtered to each
@@ -56,7 +55,8 @@ exists; here, it's a known TODO for a future edit). Listed so it isn't lost.
 
 | Status | Post ID | Title | Category | What's owed | Source report |
 |---|---|---|---|---|---|
-| `[ ]` | 8227 | BYD вече е в България: глобалният електрически гигант стъпва официално на нашия пазар | publications | Should link back to 4115 (same-story sequel: 4115 anticipated BYD's EU ambitions in 2024, 8227 is the 2026-03-26 confirmed-entry follow-up) — new→old direction, so the edit belongs on 8227, not 4115 | [2026-09-04-4115-kitajskite-elektromobili.md](../reports/seo-metatags/2026-09-04-4115-kitajskite-elektromobili.md) |
+
+_(none pending)_
 
 ---
 
@@ -70,6 +70,9 @@ completed rows, they're what makes this file useful as an audit trail.
 | `[x]` | 9099 | ZEEKR 7X – батерия, зареждане, шофиране и цени 2026 | ev-review | 8913, 8968, 9178 (outbound) | 4,446 / 70 / 1.57% / 6.4 (2026-05-15→08-13) | [2026-08-14-9099-zeekr-7x.md](../reports/seo-metatags/2026-08-14-9099-zeekr-7x.md) |
 | `[x]` | 1227 | Как се намират авточасти за Tesla в България? Има ли „монопол“ и какви са алтернативите? | ev-masters | 5240 (outbound + inbound-edit) | 295 / 6 / 2.03% / 8.2 | [2026-09-04-1227-avtochasti-tesla-monopol.md](../reports/seo-metatags/2026-09-04-1227-avtochasti-tesla-monopol.md) |
 | `[x]` | 4115 | Китайските електромобили са тук, за да останат | publications | 9383, 9348 (outbound) | 22 / 0 / 0% / 8.4 | [2026-09-04-4115-kitajskite-elektromobili.md](../reports/seo-metatags/2026-09-04-4115-kitajskite-elektromobili.md) |
+| `[x]` | 8227 | BYD вече е в България: глобалният електрически гигант стъпва официално на нашия пазар | publications | 4115 (outbound, same-story-sequel citation, new→old) | 227 / 0 / 0% / 10.6 (2026-06-06→09-03) | [2026-09-04-8227-byd-vece-e-v-blgariya.md](../reports/seo-metatags/2026-09-04-8227-byd-vece-e-v-blgariya.md) |
+| `[x]` | 5350 | #EVN71 – Tesla Cybertruck в България, Light Show във Велико Търново | ev-news | 7333 (outbound) | 28 / 0 / 0% / 8.6 (2026-06-06→09-03) | [2026-09-04-5350-cybertruck-veliko-tarnovo.md](../reports/seo-metatags/2026-09-04-5350-cybertruck-veliko-tarnovo.md) |
+| `[x]` | 4129 | #EVN51 – Защо Xiaomi SU7 катастрофира толкова често? | ev-news | 9348 (outbound) | 14 / 0 / 0% / 7.1 (2026-06-06→09-03) | [2026-09-04-4129-xiaomi-su7-katastrofi.md](../reports/seo-metatags/2026-09-04-4129-xiaomi-su7-katastrofi.md) |
 
 ---
 

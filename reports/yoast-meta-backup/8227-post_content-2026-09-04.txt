@@ -1,0 +1,223 @@
+<!-- wp:image {"id":8257,"sizeSlug":"full","linkDestination":"media"} -->
+<figure class="wp-block-image size-full"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3459.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3459.jpeg" alt="" class="wp-image-8257"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>След години на агресивна експанзия и технологично развитие, BYD официално навлиза в България. Това не е просто още един нов бранд на пазара, а идването на един от най-големите и най-бързо растящи производители на електромобили в света, който вече пренарежда глобалната автомобилна индустрия.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":8229,"sizeSlug":"full","linkDestination":"media"} -->
+<figure class="wp-block-image size-full"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3385.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3385.jpeg" alt="" class="wp-image-8229"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading"><strong>Стратегическо стъпване на българския пазар</strong></h2>
+<!-- /wp:heading -->
+
+<!-- wp:gallery {"linkTo":"media"} -->
+<figure class="wp-block-gallery has-nested-images columns-default is-cropped"><!-- wp:image {"id":8233,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3396.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3396.jpeg" alt="" class="wp-image-8233"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8230,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3397.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3397.jpeg" alt="" class="wp-image-8230"/></a></figure>
+<!-- /wp:image --></figure>
+<!-- /wp:gallery -->
+
+<!-- wp:paragraph -->
+<p>Навлизането на BYD у нас е внимателно планирано и ясно структурирано. Начело на операциите стои Maggie Zhou, а зад разпространението стоят утвърдени партньори като Eurohold и Дару Кар, заедно с още няколко дилъра.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Още от самото начало BYD влиза с ясно заявено присъствие и сериозни амбиции. Марката стартира с шест модела в България, като основният акцент е върху електромобилите – четири от тях са изцяло електрически, докато два са хибриди. До края на годината се очаква гамата да се разшири допълнително с още три модела, което показва, че това е дългосрочен ангажимент, а не тестов пазар.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading"><strong>Моделната гама: ясен фокус върху електрическото бъдеще</strong></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Още при старта си BYD предлага добре структурирана гама, която покрива ключови сегменти. В основата са електромобилите от т.нар. Ocean серия – модели като Seal, Sealion, Atto 3 и Dolphin (включително Dolphin Surf), които адресират различни нужди – от градска мобилност до по-динамично и семейно ориентирано шофиране.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Seal се позиционира като спортен седан с амбиции да се конкурира с утвърдени модели в сегмента, докато Sealion играе ролята на технологичен SUV с по-висока функционалност. Atto 3 е по-достъпният и практичен избор, а Dolphin и неговите вариации са насочени към градската среда и по-компактния клас.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading"><strong>Част от глобална експанзия</strong></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Присъствието на BYD в България е част от много по-голяма картина. Компанията вече оперира в над 36 държави и разполага с повече от 1000 шоурума по света. Това я поставя сред най-агресивно разширяващите се автомобилни производители в момента.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:gallery {"linkTo":"media"} -->
+<figure class="wp-block-gallery has-nested-images columns-default is-cropped"><!-- wp:image {"id":8236,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3400-1.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3400-1.jpeg" alt="" class="wp-image-8236"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8237,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3401-1.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3401-1.jpeg" alt="" class="wp-image-8237"/></a></figure>
+<!-- /wp:image --></figure>
+<!-- /wp:gallery -->
+
+<!-- wp:paragraph -->
+<p>Европа е ключов пазар в тази стратегия, а България е логична стъпка в разширяването към Централна и Източна Европа.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading"><strong>Производство в Европа: следващата фаза</strong></h2>
+<!-- /wp:heading -->
+
+<!-- wp:gallery {"linkTo":"media"} -->
+<figure class="wp-block-gallery has-nested-images columns-default is-cropped"><!-- wp:image {"id":8235,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3402.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3402.jpeg" alt="" class="wp-image-8235"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8234,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3403.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3403.jpeg" alt="" class="wp-image-8234"/></a></figure>
+<!-- /wp:image --></figure>
+<!-- /wp:gallery -->
+
+<!-- wp:paragraph -->
+<p>Един от най-важните елементи в стратегията на BYD е локализацията на производството. Компанията вече изгражда завод в Зептер Унгария, като производството се очаква да започне през второто тримесечие.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Първите модели, които ще се сглобяват в Европа, са Dolphin и Atto 3, като плановете включват добавяне на още модели в близко бъдеще. Това ще позволи не само по-бързи доставки, но и по-добра ценова конкурентоспособност на европейските пазари, включително и в България.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading"><strong>Технологията зад BYD</strong></h2>
+<!-- /wp:heading -->
+
+<!-- wp:gallery {"linkTo":"media"} -->
+<figure class="wp-block-gallery has-nested-images columns-default is-cropped"><!-- wp:image {"id":8239,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3403-1.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3403-1.jpeg" alt="" class="wp-image-8239"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8238,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3405.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3405.jpeg" alt="" class="wp-image-8238"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8240,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3406.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3406.jpeg" alt="" class="wp-image-8240"/></a></figure>
+<!-- /wp:image --></figure>
+<!-- /wp:gallery -->
+
+<!-- wp:paragraph -->
+<p>Това, което отличава BYD от много други производители, е фактът, че компанията е преди всичко инженерна. С над 120 000 души, работещи в развойна дейност, тя разработва ключовите си технологии вътрешно – от батерии до електрически задвижвания и софтуер.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:gallery {"linkTo":"media"} -->
+<figure class="wp-block-gallery has-nested-images columns-default is-cropped"><!-- wp:image {"id":8241,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3407.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3407.jpeg" alt="" class="wp-image-8241"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8242,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3411.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3411.jpeg" alt="" class="wp-image-8242"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8243,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3413.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3413.jpeg" alt="" class="wp-image-8243"/></a></figure>
+<!-- /wp:image --></figure>
+<!-- /wp:gallery -->
+
+<!-- wp:paragraph -->
+<p>Както обяснява Andrei Pana, основата на новото поколение модели е e-Platform 3.0 – архитектура, създадена изцяло за електромобили. Тя позволява по-добра ефективност, оптимизирано разпределение на компонентите и поддръжка на бързо зареждане до 230 kW и 380 A.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:gallery {"linkTo":"media"} -->
+<figure class="wp-block-gallery has-nested-images columns-default is-cropped"><!-- wp:image {"id":8246,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3422.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3422.jpeg" alt="" class="wp-image-8246"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8245,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3423.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3423.jpeg" alt="" class="wp-image-8245"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8244,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3424.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3424.jpeg" alt="" class="wp-image-8244"/></a></figure>
+<!-- /wp:image --></figure>
+<!-- /wp:gallery -->
+
+<!-- wp:paragraph -->
+<p>Съществена част от предимството на BYD идва и от Blade Battery – LFP батерия, която се отличава с висока безопасност и устойчивост. В комбинация с концепции като cell-to-pack и cell-to-body, тя се превръща в структурен елемент на автомобила, подобрявайки както здравината, така и пространството в купето.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:gallery {"linkTo":"media"} -->
+<figure class="wp-block-gallery has-nested-images columns-default is-cropped"><!-- wp:image {"id":8248,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3425.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3425.jpeg" alt="" class="wp-image-8248"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8249,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3426.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3426.jpeg" alt="" class="wp-image-8249"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8247,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3428.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3428.jpeg" alt="" class="wp-image-8247"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8250,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3431.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3431.jpeg" alt="" class="wp-image-8250"/></a></figure>
+<!-- /wp:image --></figure>
+<!-- /wp:gallery -->
+
+<!-- wp:paragraph -->
+<p>Допълнително, компанията разработва високоефективни електромотори, достигащи до 23 000 оборота в минута, както и системи като iTAC при Sealion, които оптимизират сцеплението и поведението на пътя. Погледът към бъдещето включва и технологии като ултра-бързо зареждане, способно да добавя стотици километри пробег в рамките на минути.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading"><strong>Какво означава това за България</strong></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Навлизането на BYD у нас не е просто разширяване на пазарното разнообразие. Това е сигнал за нов етап в развитието на автомобилния сектор, в който конкуренцията се засилва, а технологиите навлизат по-бързо.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:gallery {"linkTo":"media"} -->
+<figure class="wp-block-gallery has-nested-images columns-default is-cropped"><!-- wp:image {"id":8253,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3434.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3434.jpeg" alt="" class="wp-image-8253"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8255,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3435.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3435.jpeg" alt="" class="wp-image-8255"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8254,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3436.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3436.jpeg" alt="" class="wp-image-8254"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8251,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3438.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3438.jpeg" alt="" class="wp-image-8251"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:image {"id":8252,"sizeSlug":"large","linkDestination":"media"} -->
+<figure class="wp-block-image size-large"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3439.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3439.jpeg" alt="" class="wp-image-8252"/></a></figure>
+<!-- /wp:image --></figure>
+<!-- /wp:gallery -->
+
+<!-- wp:paragraph -->
+<p>За клиентите това означава по-голям избор, по-добри цени и достъп до решения, които до скоро бяха ограничени до няколко глобални играча.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading"><strong>Заключение</strong></h2>
+<!-- /wp:heading -->
+
+<!-- wp:image {"id":8256,"sizeSlug":"full","linkDestination":"media"} -->
+<figure class="wp-block-image size-full"><a href="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3442.jpeg"><img src="https://www.carlifebydani.com/wp-content/uploads/2026/03/img_3442.jpeg" alt="" class="wp-image-8256"/></a></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>BYD вече е в България – и това е много повече от новина за нов бранд. Това е влизането на глобален индустриален и технологичен лидер, който идва с ясна стратегия, сериозен ресурс и амбиция за растеж.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>С комбинацията от мащаб, инженерна експертиза и бърза адаптация към пазарите, BYD има всички предпоставки да се превърне в един от ключовите играчи на българския автомобилен пазар в близките години.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p></p>
+<!-- /wp:paragraph -->
