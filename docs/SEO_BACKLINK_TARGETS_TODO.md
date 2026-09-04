@@ -38,7 +38,6 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 | `[ ]` | 3032 | MG 9 EV – Китайско чудо прикрито като Британска класика | publications | 4115 (outbound) | 91 / 1 / 1.10% / 5.1 | — |
 | `[ ]` | 7351 | Tesla Lightshow – Ihtiman Airport LBHT | publications | 5350 (outbound) | 80 / 5 / 6.25% / 6.3 | — |
 | `[ ]` | 1509 | Защо спряха автобусите в Осло? Какво ново около Tesla Model Y Juniper? | ev-news | 5240 (outbound) | 0 / 0 / — / — (no impressions in window) | — |
-| `[ ]` | 4902 | Hyundai IONIQ 6 – Всичко, което знаем за разхода и зареждането | publications | 3957 (outbound) | 616 / 21 / 3.41% / 6.8 | — |
 | `[ ]` | 5016 | Сравнение при зареждане на Hyundai IONIQ 5 N, Tesla S Plaid и Tesla Y Long Range | publications | 3957 (outbound) | 336 / 3 / 0.89% / 5.8 | — |
 | `[ ]` | 196 | Nissan Ariya – „Най-забавният педал на спирачката" | ev-review | 1027, 2622 (both outbound) | 0 / 0 / — / — (no impressions in window) | — |
 
@@ -93,6 +92,7 @@ completed rows, they're what makes this file useful as an audit trail.
 | `[x]` | 6889 | Renault 5 E-Tech Electric – завръщането на иконата | publications | 9383 (outbound) | 7,188 / 49 / 0.68% / 7.3 (2026-06-06→09-03) | [2026-09-04-6889-renault-5-e-tech.md](../reports/seo-metatags/2026-09-04-6889-renault-5-e-tech.md) |
 | `[x]` | 2398 | Автомобилно Изложение Женева 2024 – Renault 5, Lucid Sapphire, Lucid Gravity, MG, Renault Scenic | ev-news | 6889, 2455 (both outbound) | 9 / 0 / 0% / 12.3 (2026-06-06→09-03) | [2026-09-05-2398-geneva-2024-lucid-gravity.md](../reports/seo-metatags/2026-09-05-2398-geneva-2024-lucid-gravity.md) |
 | `[x]` | 8836 | Renault 4 Plein Sud – Хронология на отворения покрив | publications | 8968 (outbound) | 149 / 6 / 4.03% / 5.1 | [2026-09-05-8836-renault-4-plein-sud.md](../reports/seo-metatags/2026-09-05-8836-renault-4-plein-sud.md) |
+| `[x]` | 4902 | Hyundai IONIQ 6 – Всичко, което знаем за разхода и зареждането | publications | 3957 (outbound) | 142 / 5 / 3.52% / 10.0 (2026-06-06→09-03, fresh pull — see report for note on the earlier, larger 616/21/6.8 figure) | [2026-09-05-4902-hyundai-ioniq6-razhod.md](../reports/seo-metatags/2026-09-05-4902-hyundai-ioniq6-razhod.md) |
 
 ---
 
