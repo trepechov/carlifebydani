@@ -41,7 +41,6 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 | `[ ]` | 1509 | Защо спряха автобусите в Осло? Какво ново около Tesla Model Y Juniper? | ev-news | 5240 (outbound) | 0 / 0 / — / — (no impressions in window) | — |
 | `[ ]` | 4902 | Hyundai IONIQ 6 – Всичко, което знаем за разхода и зареждането | publications | 3957 (outbound) | 616 / 21 / 3.41% / 6.8 | — |
 | `[ ]` | 5016 | Сравнение при зареждане на Hyundai IONIQ 5 N, Tesla S Plaid и Tesla Y Long Range | publications | 3957 (outbound) | 336 / 3 / 0.89% / 5.8 | — |
-| `[ ]` | 2398 | Автомобилно Изложение Женева 2024 – Renault 5, Lucid Sapphire, Lucid Gravity, MG, Renault Scenic | ev-news | 6889, 2455 (both outbound) | 9 / 0 / 0% / 12.3 | — |
 
 GSC window: 2026-06-06 → 2026-09-03, page-dimension pull filtered to each
 URL (9099's baseline below uses its own original 2026-05-15→2026-08-13
@@ -83,6 +82,7 @@ completed rows, they're what makes this file useful as an audit trail.
 | `[x]` | 4129 | #EVN51 – Защо Xiaomi SU7 катастрофира толкова често? | ev-news | 9348 (outbound) | 14 / 0 / 0% / 7.1 (2026-06-06→09-03) | [2026-09-04-4129-xiaomi-su7-katastrofi.md](../reports/seo-metatags/2026-09-04-4129-xiaomi-su7-katastrofi.md) |
 | `[x]` | 3957 | Как да зареждаме електромобил в гаража | publications | 9350 (inbound-edit) | 11,519 / 263 / 2.28% / 7.0 (2026-06-06→09-03) | [2026-09-04-3957-domashno-zarezhdane.md](../reports/seo-metatags/2026-09-04-3957-domashno-zarezhdane.md) |
 | `[x]` | 6889 | Renault 5 E-Tech Electric – завръщането на иконата | publications | 9383 (outbound) | 7,188 / 49 / 0.68% / 7.3 (2026-06-06→09-03) | [2026-09-04-6889-renault-5-e-tech.md](../reports/seo-metatags/2026-09-04-6889-renault-5-e-tech.md) |
+| `[x]` | 2398 | Автомобилно Изложение Женева 2024 – Renault 5, Lucid Sapphire, Lucid Gravity, MG, Renault Scenic | ev-news | 6889, 2455 (both outbound) | 9 / 0 / 0% / 12.3 (2026-06-06→09-03) | [2026-09-05-2398-geneva-2024-lucid-gravity.md](../reports/seo-metatags/2026-09-05-2398-geneva-2024-lucid-gravity.md) |
 
 ---
 
