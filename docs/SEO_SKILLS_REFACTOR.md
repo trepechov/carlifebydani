@@ -1,10 +1,13 @@
 # SEO Skills — Refactoring Plan
 
 **Created:** 2026-08-14 · **Status:** ✅ all 12 execution-order items landed 2026-08-14 — see
-Progress tracker below. Two items shipped partial by explicit user decision rather than left
-incomplete: W6's full 313-post GSC scan and W7's `noindex` decision are deferred, documented as
-open TODOs in their own sections, not silently dropped.
-**Companions:** [`SEO_EV_NEWS_TODO.md`](SEO_EV_NEWS_TODO.md) (the live backlog) ·
+Progress tracker below. One item shipped partial by explicit user decision rather than left
+incomplete: W7's `noindex` decision is deferred, documented as an open TODO in its own section,
+not silently dropped. W6's full 313-post GSC scan was the other deferred half — **run
+2026-09-04** once the cost blocker (DataForSEO's `40104` block) cleared; see §W6 and the new
+[`SEO_SITE_TODO.md`](SEO_SITE_TODO.md).
+**Companions:** [`SEO_EV_NEWS_TODO.md`](SEO_EV_NEWS_TODO.md) (the EV-News-only backlog) ·
+[`SEO_SITE_TODO.md`](SEO_SITE_TODO.md) (the other three categories, from W6's 2026-09-04 scan) ·
 [`EV_NEWS_CONTENT_METHOD.md`](EV_NEWS_CONTENT_METHOD.md) (the built transcript-content method) ·
 [`SEO_TRANSCRIPT_MCP_PROPOSALS.md`](SEO_TRANSCRIPT_MCP_PROPOSALS.md) (what's still proposal-only) ·
 [`MCP_SERVERS.md`](MCP_SERVERS.md) (toolchain)
@@ -24,7 +27,7 @@ if a session was interrupted; this is the resumption point.
 | 6 | W3 + W11 — news CSV + tag-band | ✅ done 2026-08-14 — also resolved Open Question 4 (column 3 = `author`) and registered `news_csv` for REST (needs deploy, see §W3) |
 | 7 | W4 — alt write path | ✅ done 2026-08-14 — live-verified on media 7334 |
 | 8 | W9 (rest) — docs restructure | ✅ done 2026-08-14 |
-| 9 | W6 — generalise + rescan | ✅ partial 2026-08-14 — audit + backlog entries done; full 313-post GSC scan deferred by user decision, see §W6 |
+| 9 | W6 — generalise + rescan | ✅ done 2026-08-14 (audit) + 2026-09-04 (the deferred 313-post GSC scan — see §W6, [`SEO_SITE_TODO.md`](SEO_SITE_TODO.md)) |
 | 10 | W5 — inbound links | ✅ done 2026-08-14 — live-verified, 7533→7333 |
 | 11 | ~~W12 — gate on transcript availability~~ | ✅ done 2026-08-14, landed with item 4 |
 | 12 | W13 — ledger + verification step | ✅ done 2026-08-14 — 2 rows backfilled, first verdicts due 2026-09-11 |
@@ -39,41 +42,50 @@ two skills document conflicting run orders, and the half of the SEO skill that s
 
 Verified by reading the skill files on 2026-08-14, not inferred.
 
+> 🔄 **This table is the pre-refactor snapshot and was never updated after W1–W13 shipped.**
+> Re-verified against the live repo and `reports/seo-optimizations/ledger.csv` on 2026-09-04 —
+> every ❌/⚠️ row below has since closed except the full 313-post scan. If you're reading this
+> table on its own, read the **State** column's 2026-09-04 note, not the original one next to it.
+
 | Capability you asked for | Where it lives today | State |
 |---|---|---|
 | Read the article's content | `seo-article-optimize` Step 2 — reads **both** WP `post_content` and the rendered page, because they differ on this site | ✅ built |
 | Research the topics | Step 3a–3e — GSC → autocomplete → DataForSEO → Semrush → live SERP → GA4, cheapest-first, cache-gated | ✅ built |
 | Propose SEO keyword | Step 4 — one focus keyphrase + 2–4 secondary, with cannibalisation check | ✅ built |
 | Propose SEO description | Step 5 — title + metadesc + focuskw, char-budgeted, **applied after approval** | ✅ built |
-| Propose tags | Step 4b — mapped to the site's existing 365-term vocabulary, reuse-only, capped 1–2 entity + 0–2 intent | ⚠️ built, but the **frequency rule is backwards** — see W11 |
-| Image alt optimization | Step 6.4 | ⚠️ **proposed only — never written** |
-| Links to other existing articles | Step 7 — inbound *and* outbound, via `/wp/v2/search` | ⚠️ **proposed only — never written** |
+| Propose tags | Step 4b — mapped to the site's existing 365-term vocabulary, reuse-only, band-targeted | ~~⚠️ built, but the frequency rule is backwards~~ **✅ fixed — W11, 2026-08-14** (band, not "higher is better"; further corrected same day to owned-prose-vs-cards, see [[feedback-tag-cap-owned-prose]]) |
+| Image alt optimization | Step 6.4, `seo-article-apply` Step 3.4 | ~~⚠️ proposed only — never written~~ **✅ built and live — W4, 2026-08-14.** Verified on media 7334; by 2026-09-04 alt+title written for every post in the ledger (24 posts) |
+| Links to other existing articles | Step 7, `seo-article-apply` Step 4 | ~~⚠️ proposed only — never written~~ **✅ built and live — W5, 2026-08-14.** Inbound (7533→7333) and outbound links now applied routinely; tracked in `docs/SEO_BACKLINK_TARGETS_TODO.md` |
 | EV News content from the YouTube MCP | `ev-news-transcript-content` — resolves episode, searches own transcript then the archive, 3 grounded paragraphs, every claim timestamped | ✅ built |
-| Read the episode's news CSV | — | ❌ **missing** |
-| Coverage beyond EV News | — | ❌ **185 posts never scanned** |
-| Orchestration between the two skills | — | ❌ **manual, and the two skills document opposite orders** |
-| Machine-readable record of what was already optimized | prose `Status:` lines in `reports/seo-metatags/`, worded 3 different ways across 4 files | ❌ **not queryable — see W13** |
-| Verifying an optimization actually worked | — | ❌ **nothing measured after a write; no baseline frozen, no re-check due — see W13** |
+| Read the episode's news CSV | `seo-keyphrase-research` Step 2c | ~~❌ missing~~ **✅ built — W3, 2026-08-14.** Fetches/parses `news_csv` directly (width-detected, positional), feeds entity seeds + tag candidates into Phase A |
+| Coverage beyond EV News | `SEO_SITE_TODO.md` | ~~❌ 185 posts never scanned~~ **✅ scanned 2026-09-04** (W6) — 185-post GSC baseline done, ranked backlog written to `SEO_SITE_TODO.md`; 24 of 313 posts across all 4 categories actually *optimized* to date (13 ev-news, 5 publications, 3 ev-review, 3 ev-masters, per `ledger.csv`) — scanning and optimizing are separate counts, don't conflate them |
+| Orchestration between the two skills | `seo-article-optimize` | ~~❌ manual, and the two skills document opposite orders~~ **✅ built — W1, 2026-08-14.** Thin orchestrator sequences A→C (A→B→C for EV News); "optimize post N" is one call |
+| Machine-readable record of what was already optimized | `reports/seo-optimizations/ledger.csv` | ~~❌ not queryable~~ **✅ built — W13, 2026-08-14.** Append-only, one row per write; 27 rows / 24 distinct posts as of 2026-09-04, checked by Phase A Step 0 before every new run |
+| Verifying an optimization actually worked | `seo-performance-report` Step 4a | ~~❌ nothing measured after a write~~ **⚠️ mechanism built (W13), not yet exercised.** No row has reached `verify_due` yet — earliest is 2026-09-11; `checks.csv` is still empty by design, not by omission |
 
-**So: you were right that most of it exists.** The gaps are the last three rows plus two
-half-open write paths.
+**Updated 2026-09-04:** every gap this table originally listed has shipped, including the
+313-post scan (W6, run today). What's left is not a missing capability but calendar-bound: the
+W13 verification loop can't produce a verdict before its first `verify_due` date (2026-09-11),
+and the 161 posts `SEO_SITE_TODO.md` newly surfaced are scanned but not yet optimized.
 
 ### Scale check — "every article we have"
 
-| Category | Posts | Ever scanned for SEO? |
-|---|---|---|
-| `ev-news` | 128 | yes — 3 posts + the hub optimized |
-| `publications` | **121** | **no** |
-| `ev-review` | **41** | **no** |
-| `ev-masters` | **23** | **no** |
-| **Total** | **313** | 3 done (1.0%) |
+| Category | Posts | Ever scanned for SEO? (2026-08-14) | Optimized to date (2026-09-04) |
+|---|---|---|---|
+| `ev-news` | 128 | yes — 3 posts + the hub optimized | **13 posts** |
+| `publications` | **121** | **no** | **5 posts** |
+| `ev-review` | **41** | **no** | **3 posts** |
+| `ev-masters` | **23** | **no** | **3 posts** |
+| **Total** | **313** | 3 done (1.0%) | **24 done (7.7%)**, per `reports/seo-optimizations/ledger.csv` |
 
-The original baseline scan only covered category 1, which is why post **6165**
-(`/publications/…juniper…`, **3,927 impressions at 2.06% CTR, position 5.3**) has never been
-in a backlog. It is worth more than the entire current P1 list combined. Post **7533**
-(`/ev-review/…cybertruck…`, 237 impr, 0.84% CTR) is the same story. Both are already flagged
-in [`SEO_EV_NEWS_TODO.md`](SEO_EV_NEWS_TODO.md#highest-value-work-still-untouched) as
-missing from the list.
+The last column is a running count of posts actually written through the pipeline, not a
+scan — the full 313-post GSC baseline re-scan (W6) is still deferred. The original baseline
+scan only covered category 1, which is why post **6165** (`/publications/…juniper…`, then
+3,927 impressions at 2.06% CTR, position 5.3) was missing from every backlog at the time this
+was written. **Both 6165 and 7533 are done now** — optimized 2026-08-14, tracked in
+[`SEO_EV_NEWS_TODO.md`](SEO_EV_NEWS_TODO.md#highest-value-work-still-untouched) as `[x]`, with
+reports at `reports/seo-metatags/2026-08-14-6165-tesla-model-y-juniper.md` and
+`reports/seo-metatags/2026-08-14-7533-cybertruck-review-inbound-link.md`.
 
 ---
 
@@ -353,14 +365,23 @@ once, the video embed present exactly once, all gallery images and the spec tabl
 byte-unchanged. `post_content` is revision-covered, so this is recoverable if it needs undoing
 (revision history on the post, not a separate CSV backup).
 
-### W6 — Generalise beyond EV News · ~3h · partial ✅ done 2026-08-14
+### W6 — Generalise beyond EV News · ~3h · ✅ done 2026-08-14 + 2026-09-04
 
 The skill body is already category-agnostic; the *carve-outs* and the *backlog* are not.
 
 - Re-run the GSC baseline scan across all four categories and extend
   `SEO_EV_NEWS_TODO.md` — or split a general backlog out of it, since the name will stop
-  fitting. — **deferred by user decision 2026-08-14**: a 313-post scan is a large API/token
-  spend for one pass; do it as its own dedicated run rather than folded into this refactor.
+  fitting. — ~~**deferred by user decision 2026-08-14**: a 313-post scan is a large API/token
+  spend for one pass~~. **✅ Done 2026-09-04.** Turned out to need one `gsc_query` call
+  (`dimensions=page`, `row_limit=25000`, no per-post pagination) plus the WP post lists already
+  fetched for the category-ID audit below — not the large spend assumed. Ran and split a
+  general backlog out, as this bullet itself suggested:
+  [`SEO_SITE_TODO.md`](SEO_SITE_TODO.md). Headline finding: `publications` + `ev-review` +
+  `ev-masters` combined pull **~141k impressions / 90d — ~52× EV News's own 2,708** over the
+  same window. The scan's own EV News re-pull came back inconsistent with the old
+  `SEO_EV_NEWS_TODO.md` baseline (129 vs 128 posts, "28 of 128" undercounted by the 250-row cap
+  the new pull avoided) — flagged in the new doc as needing its own dedicated re-check, not
+  resolved here.
 - Audit the EV-News-specific assumptions and gate them on category rather than assuming:
   the `post_content` ≠ rendered-page warning, the `#EV160` prefix stripping, the
   *"never target EV новини"* rule, the Phase B hand-off. ✅ — audited all four; three were
@@ -411,8 +432,11 @@ Currently untracked and load-bearing:
 - `tools/resolve_episode.py` — the episode resolver, marked a **stopgap** until the MCP ships
   `resolve_episode` (producer request #3)
 - `reports/seo-metatags/2026-08-14-7333-excerpt-draft.md` — the proof the method works
-- Decide gitignore-vs-commit for `reports/yoast-meta-backup/` (open since 2026-08-13). It holds
-  the only recovery path for postmeta, which argues for committing it.
+- ~~Decide gitignore-vs-commit for `reports/yoast-meta-backup/` (open since 2026-08-13).~~
+  **Resolved in practice, confirmed 2026-09-04 — committed.** 56 files tracked in git, the
+  most recent from today's optimization run; not in `.gitignore`. The "only recovery path for
+  postmeta" argument won by default rather than by an explicit decision recorded anywhere, but
+  the outcome is the one this item recommended.
 
 ### W9 — Convert the proposal docs into documentation · ~2h · ✅ done 2026-08-14
 
@@ -827,10 +851,14 @@ the verification step whenever; the calendar sets the pace, not the backlog.**
    this doc assumed elsewhere — no separate topic column exists, `tags` is free-text
    comma-separated. The 2025 file has only 6 columns (`title,description,link,author,upvote,
    downvote`) — confirms the width-detection requirement below is not theoretical.
-5. **DataForSEO is still `40104`-blocked** (diagnosed 2026-08-13, account-side, not code). The
-   plan assumes Semrush + autocomplete carry Step 3c. If it clears, bulk `search_volume`
-   (1,000 keywords per request) makes W6's 185-post scan dramatically cheaper — worth one
-   probe before starting W6.
+5. ~~**DataForSEO is still `40104`-blocked** (diagnosed 2026-08-13, account-side, not code).~~
+   **Resolved 2026-09-04 — fully unblocked.** Cleared account-side between the two dates (no
+   code change); confirmed today via a live bulk `search_volume/live` call returning real data
+   (`reports/seo-metatags/2026-09-04-9348-evn163-tesla-recall-china.md`), and separately on
+   `1039-porsche-taycan-turbo-s.md` the same day. This was the condition the note itself named
+   as the trigger for cheapening W6: bulk `search_volume` (1,000 keywords/request) is now
+   available and makes the deferred 313-post scan meaningfully cheaper than it was when W6 was
+   deferred — worth re-costing W6 before assuming the original deferral still holds.
 6. **Transcript coverage caps Phase B at 91/128 posts.** The ~35 missing episodes are producer
    request #5. Phase B correctly stops on `NOT_INGESTED` rather than improvising, so this
    limits throughput, not correctness.

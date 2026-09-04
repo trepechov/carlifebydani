@@ -288,7 +288,8 @@ visibility at all.
 - **Teardown when this push ends:** `claude mcp remove wordpress`,
   `security delete-generic-password -a "$USER" -s carlifebydani-wp-mcp`, then revoke the
   app password in the `seo-bot` profile. A standing production write credential shouldn't linger.
-- `reports/yoast-meta-backup/` is currently untracked — decide gitignore vs commit.
+- ~~`reports/yoast-meta-backup/` is currently untracked — decide gitignore vs commit.~~
+  Resolved — committed (56 files tracked as of 2026-09-04, not gitignored).
 
 ## Measuring whether any of this worked
 
