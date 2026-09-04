@@ -34,7 +34,6 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 | Status | Post ID | Title | Category | Backlink source(s) | GSC 90d (impr / clicks / CTR / pos) | Report |
 |---|---|---|---|---|---|---|
 | `[ ]` | 8075 | Eldrive откри втора сателитна зарядна станция в София | publications | 9350 (inbound-edit) | 314 / 6 / 1.91% / 8.2 | — |
-| `[ ]` | 8836 | Renault 4 Plein Sud – Хронология на отворения покрив | publications | 8968 (outbound) | 149 / 6 / 4.03% / 5.1 | — |
 | `[ ]` | 7631 | Hyundai Concept 3 – за първи път в България | publications | 9383 (inbound-edit) | 95 / 1 / 1.05% / 7.0 | — |
 | `[ ]` | 3032 | MG 9 EV – Китайско чудо прикрито като Британска класика | publications | 4115 (outbound) | 91 / 1 / 1.10% / 5.1 | — |
 | `[ ]` | 7351 | Tesla Lightshow – Ihtiman Airport LBHT | publications | 5350 (outbound) | 80 / 5 / 6.25% / 6.3 | — |
@@ -53,6 +52,15 @@ window instead — see its row).
 > this. Caught on a manual check the next day (2026-09-05), not by the
 > automated step. Worth double-checking this doesn't recur on the next few
 > runs rather than assuming the mechanism is now reliably firing.
+>
+> **A second, different kind of miss (2026-09-05):** 8836's own Backlog row
+> (added when 8968 linked to it) was never moved to Done when 8836 itself
+> was applied later the same day — the tracking mechanism only covers
+> *adding* rows when a new link appears, not *closing* a row when its
+> subject gets optimized. Caught on this manual check, not automatically.
+> Worth remembering to check the Backlog table for the post id currently
+> being optimized, not just to log new targets, each time this pipeline
+> runs.
 
 ### Also flagged — citation owed, not yet written
 
@@ -84,6 +92,7 @@ completed rows, they're what makes this file useful as an audit trail.
 | `[x]` | 3957 | Как да зареждаме електромобил в гаража | publications | 9350 (inbound-edit) | 11,519 / 263 / 2.28% / 7.0 (2026-06-06→09-03) | [2026-09-04-3957-domashno-zarezhdane.md](../reports/seo-metatags/2026-09-04-3957-domashno-zarezhdane.md) |
 | `[x]` | 6889 | Renault 5 E-Tech Electric – завръщането на иконата | publications | 9383 (outbound) | 7,188 / 49 / 0.68% / 7.3 (2026-06-06→09-03) | [2026-09-04-6889-renault-5-e-tech.md](../reports/seo-metatags/2026-09-04-6889-renault-5-e-tech.md) |
 | `[x]` | 2398 | Автомобилно Изложение Женева 2024 – Renault 5, Lucid Sapphire, Lucid Gravity, MG, Renault Scenic | ev-news | 6889, 2455 (both outbound) | 9 / 0 / 0% / 12.3 (2026-06-06→09-03) | [2026-09-05-2398-geneva-2024-lucid-gravity.md](../reports/seo-metatags/2026-09-05-2398-geneva-2024-lucid-gravity.md) |
+| `[x]` | 8836 | Renault 4 Plein Sud – Хронология на отворения покрив | publications | 8968 (outbound) | 149 / 6 / 4.03% / 5.1 | [2026-09-05-8836-renault-4-plein-sud.md](../reports/seo-metatags/2026-09-05-8836-renault-4-plein-sud.md) |
 
 ---
 
