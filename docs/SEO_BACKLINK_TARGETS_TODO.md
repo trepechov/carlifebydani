@@ -33,7 +33,6 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 
 | Status | Post ID | Title | Category | Backlink source(s) | GSC 90d (impr / clicks / CTR / pos) | Report |
 |---|---|---|---|---|---|---|
-| `[ ]` | **3957** | Как да зареждаме електромобил в гаража | publications | 9350 (inbound-edit) | **11,519 / 263 / 2.28% / 7.0** | — |
 | `[ ]` | **6889** | Renault 5 E-Tech Electric – завръщането на иконата | publications | 9383 (outbound) | **7,188 / 49 / 0.68% / 7.3** | — |
 | `[ ]` | 8075 | Eldrive откри втора сателитна зарядна станция в София | publications | 9350 (inbound-edit) | 314 / 6 / 1.91% / 8.2 | — |
 | `[ ]` | 8836 | Renault 4 Plein Sud – Хронология на отворения покрив | publications | 8968 (outbound) | 149 / 6 / 4.03% / 5.1 | — |
@@ -41,6 +40,8 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 | `[ ]` | 3032 | MG 9 EV – Китайско чудо прикрито като Британска класика | publications | 4115 (outbound) | 91 / 1 / 1.10% / 5.1 | — |
 | `[ ]` | 7351 | Tesla Lightshow – Ihtiman Airport LBHT | publications | 5350 (outbound) | 80 / 5 / 6.25% / 6.3 | — |
 | `[ ]` | 1509 | Защо спряха автобусите в Осло? Какво ново около Tesla Model Y Juniper? | ev-news | 5240 (outbound) | 0 / 0 / — / — (no impressions in window) | — |
+| `[ ]` | 4902 | Hyundai IONIQ 6 – Всичко, което знаем за разхода и зареждането | publications | 3957 (outbound) | 616 / 21 / 3.41% / 6.8 | — |
+| `[ ]` | 5016 | Сравнение при зареждане на Hyundai IONIQ 5 N, Tesla S Plaid и Tesla Y Long Range | publications | 3957 (outbound) | 336 / 3 / 0.89% / 5.8 | — |
 
 GSC window: 2026-06-06 → 2026-09-03, page-dimension pull filtered to each
 URL (9099's baseline below uses its own original 2026-05-15→2026-08-13
@@ -73,6 +74,7 @@ completed rows, they're what makes this file useful as an audit trail.
 | `[x]` | 8227 | BYD вече е в България: глобалният електрически гигант стъпва официално на нашия пазар | publications | 4115 (outbound, same-story-sequel citation, new→old) | 227 / 0 / 0% / 10.6 (2026-06-06→09-03) | [2026-09-04-8227-byd-vece-e-v-blgariya.md](../reports/seo-metatags/2026-09-04-8227-byd-vece-e-v-blgariya.md) |
 | `[x]` | 5350 | #EVN71 – Tesla Cybertruck в България, Light Show във Велико Търново | ev-news | 7333 (outbound) | 28 / 0 / 0% / 8.6 (2026-06-06→09-03) | [2026-09-04-5350-cybertruck-veliko-tarnovo.md](../reports/seo-metatags/2026-09-04-5350-cybertruck-veliko-tarnovo.md) |
 | `[x]` | 4129 | #EVN51 – Защо Xiaomi SU7 катастрофира толкова често? | ev-news | 9348 (outbound) | 14 / 0 / 0% / 7.1 (2026-06-06→09-03) | [2026-09-04-4129-xiaomi-su7-katastrofi.md](../reports/seo-metatags/2026-09-04-4129-xiaomi-su7-katastrofi.md) |
+| `[x]` | 3957 | Как да зареждаме електромобил в гаража | publications | 9350 (inbound-edit) | 11,519 / 263 / 2.28% / 7.0 (2026-06-06→09-03) | [2026-09-04-3957-domashno-zarezhdane.md](../reports/seo-metatags/2026-09-04-3957-domashno-zarezhdane.md) |
 
 ---
 
