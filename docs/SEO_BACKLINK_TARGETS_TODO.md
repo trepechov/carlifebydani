@@ -41,6 +41,7 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 | `[ ]` | 1509 | Защо спряха автобусите в Осло? Какво ново около Tesla Model Y Juniper? | ev-news | 5240 (outbound) | 0 / 0 / — / — (no impressions in window) | — |
 | `[ ]` | 4902 | Hyundai IONIQ 6 – Всичко, което знаем за разхода и зареждането | publications | 3957 (outbound) | 616 / 21 / 3.41% / 6.8 | — |
 | `[ ]` | 5016 | Сравнение при зареждане на Hyundai IONIQ 5 N, Tesla S Plaid и Tesla Y Long Range | publications | 3957 (outbound) | 336 / 3 / 0.89% / 5.8 | — |
+| `[ ]` | 196 | Nissan Ariya – „Най-забавният педал на спирачката" | ev-review | 1027 (outbound) | 0 / 0 / — / — (no impressions in window) | — |
 
 GSC window: 2026-06-06 → 2026-09-03, page-dimension pull filtered to each
 URL (9099's baseline below uses its own original 2026-05-15→2026-08-13
