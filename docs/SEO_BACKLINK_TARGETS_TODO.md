@@ -41,10 +41,18 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 | `[ ]` | 1509 | Защо спряха автобусите в Осло? Какво ново около Tesla Model Y Juniper? | ev-news | 5240 (outbound) | 0 / 0 / — / — (no impressions in window) | — |
 | `[ ]` | 4902 | Hyundai IONIQ 6 – Всичко, което знаем за разхода и зареждането | publications | 3957 (outbound) | 616 / 21 / 3.41% / 6.8 | — |
 | `[ ]` | 5016 | Сравнение при зареждане на Hyundai IONIQ 5 N, Tesla S Plaid и Tesla Y Long Range | publications | 3957 (outbound) | 336 / 3 / 0.89% / 5.8 | — |
+| `[ ]` | 2398 | Автомобилно Изложение Женева 2024 – Renault 5, Lucid Sapphire, Lucid Gravity, MG, Renault Scenic | ev-news | 6889, 2455 (both outbound) | 9 / 0 / 0% / 12.3 | — |
 
 GSC window: 2026-06-06 → 2026-09-03, page-dimension pull filtered to each
 URL (9099's baseline below uses its own original 2026-05-15→2026-08-13
 window instead — see its row).
+
+> **2398 was missed at write time** — both 6889's and 2455's own Phase C
+> runs (2026-09-04) added outbound links to it but neither logged it here,
+> despite the "Backlink-target tracking" trap existing specifically for
+> this. Caught on a manual check the next day (2026-09-05), not by the
+> automated step. Worth double-checking this doesn't recur on the next few
+> runs rather than assuming the mechanism is now reliably firing.
 
 ### Also flagged — citation owed, not yet written
 
