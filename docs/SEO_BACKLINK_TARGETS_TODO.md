@@ -33,7 +33,6 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 
 | Status | Post ID | Title | Category | Backlink source(s) | GSC 90d (impr / clicks / CTR / pos) | Report |
 |---|---|---|---|---|---|---|
-| `[ ]` | **6889** | Renault 5 E-Tech Electric – завръщането на иконата | publications | 9383 (outbound) | **7,188 / 49 / 0.68% / 7.3** | — |
 | `[ ]` | 8075 | Eldrive откри втора сателитна зарядна станция в София | publications | 9350 (inbound-edit) | 314 / 6 / 1.91% / 8.2 | — |
 | `[ ]` | 8836 | Renault 4 Plein Sud – Хронология на отворения покрив | publications | 8968 (outbound) | 149 / 6 / 4.03% / 5.1 | — |
 | `[ ]` | 7631 | Hyundai Concept 3 – за първи път в България | publications | 9383 (inbound-edit) | 95 / 1 / 1.05% / 7.0 | — |
@@ -56,8 +55,8 @@ exists; here, it's a known TODO for a future edit). Listed so it isn't lost.
 
 | Status | Post ID | Title | Category | What's owed | Source report |
 |---|---|---|---|---|---|
-
-_(none pending)_
+| `[ ]` | 7407 | Renault 4 E-Tech Electric – поглед в миналото, задвижван от бъдещето | publications | Should consider citing back to 6889 (new→old): 6889 (2025-06-05) mentions "Съвместимост с бъдещи модели → като Renault 4 и Alpine A290" on the shared AmpR Small/CMF-B platform; 7407 (2025-09-29, newer) is that model's own full review | [2026-09-04-6889-renault-5-e-tech.md](../reports/seo-metatags/2026-09-04-6889-renault-5-e-tech.md) |
+| `[ ]` | 8836 | Renault 4 Plein Sud – Хронология на отворения покрив | publications | Same platform-compatibility mention in 6889 as above; 8836 (2026-06-20) is an even later Renault 4 trim piece — lower priority than 7407 for this citation but flagged for the same reason | [2026-09-04-6889-renault-5-e-tech.md](../reports/seo-metatags/2026-09-04-6889-renault-5-e-tech.md) |
 
 ---
 
@@ -75,6 +74,7 @@ completed rows, they're what makes this file useful as an audit trail.
 | `[x]` | 5350 | #EVN71 – Tesla Cybertruck в България, Light Show във Велико Търново | ev-news | 7333 (outbound) | 28 / 0 / 0% / 8.6 (2026-06-06→09-03) | [2026-09-04-5350-cybertruck-veliko-tarnovo.md](../reports/seo-metatags/2026-09-04-5350-cybertruck-veliko-tarnovo.md) |
 | `[x]` | 4129 | #EVN51 – Защо Xiaomi SU7 катастрофира толкова често? | ev-news | 9348 (outbound) | 14 / 0 / 0% / 7.1 (2026-06-06→09-03) | [2026-09-04-4129-xiaomi-su7-katastrofi.md](../reports/seo-metatags/2026-09-04-4129-xiaomi-su7-katastrofi.md) |
 | `[x]` | 3957 | Как да зареждаме електромобил в гаража | publications | 9350 (inbound-edit) | 11,519 / 263 / 2.28% / 7.0 (2026-06-06→09-03) | [2026-09-04-3957-domashno-zarezhdane.md](../reports/seo-metatags/2026-09-04-3957-domashno-zarezhdane.md) |
+| `[x]` | 6889 | Renault 5 E-Tech Electric – завръщането на иконата | publications | 9383 (outbound) | 7,188 / 49 / 0.68% / 7.3 (2026-06-06→09-03) | [2026-09-04-6889-renault-5-e-tech.md](../reports/seo-metatags/2026-09-04-6889-renault-5-e-tech.md) |
 
 ---
 
