@@ -63,8 +63,8 @@ exists; here, it's a known TODO for a future edit). Listed so it isn't lost.
 
 | Status | Post ID | Title | Category | What's owed | Source report |
 |---|---|---|---|---|---|
-| `[ ]` | 7407 | Renault 4 E-Tech Electric – поглед в миналото, задвижван от бъдещето | publications | Should consider citing back to 6889 (new→old): 6889 (2025-06-05) mentions "Съвместимост с бъдещи модели → като Renault 4 и Alpine A290" on the shared AmpR Small/CMF-B platform; 7407 (2025-09-29, newer) is that model's own full review | [2026-09-04-6889-renault-5-e-tech.md](../reports/seo-metatags/2026-09-04-6889-renault-5-e-tech.md) |
-| `[ ]` | 8836 | Renault 4 Plein Sud – Хронология на отворения покрив | publications | Same platform-compatibility mention in 6889 as above; 8836 (2026-06-20) is an even later Renault 4 trim piece — lower priority than 7407 for this citation but flagged for the same reason | [2026-09-04-6889-renault-5-e-tech.md](../reports/seo-metatags/2026-09-04-6889-renault-5-e-tech.md) |
+| `[x]` | 7407 | Renault 4 E-Tech Electric – поглед в миналото, задвижван от бъдещето | publications | ~~Should consider citing back to 6889 (new→old)~~ — **done 2026-09-05**: 7407's own Phase C wrapped its existing "Renault 5" mention (AmpR Small paragraph) with a link to 6889 | [2026-09-05-7407-renault-4-e-tech.md](../reports/seo-metatags/2026-09-05-7407-renault-4-e-tech.md) |
+| `[ ]` | 8836 | Renault 4 Plein Sud – Хронология на отворения покрив | publications | Same platform-compatibility mention in 6889 as above; 8836 (2026-06-20) is an even later Renault 4 trim piece — also now a candidate to cite forward to 7407 (2025-09-29, its own full-model review, applied 2026-09-05) once both are in final form | [2026-09-04-6889-renault-5-e-tech.md](../reports/seo-metatags/2026-09-04-6889-renault-5-e-tech.md) |
 
 ---
 
