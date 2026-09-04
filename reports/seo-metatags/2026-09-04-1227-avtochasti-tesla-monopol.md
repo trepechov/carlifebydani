@@ -2,9 +2,9 @@
 
 **URL:** https://www.carlifebydani.com/ev-masters/kak-se-namirat-avtochasti-za-tesla-v-blgariya-ima-li-monopol-i-kakvi-sa-alternativite/ · **Post ID:** 1227 · **Category:** ev-masters
 **Prepared:** 2026-09-04 (first phase to touch this post)
-**Status:** researched
+**Status:** applied
 **Keyphrase:** части за Tesla в България
-**Ledger:** (set by Phase C)
+**Ledger:** 1227-2026-09-04-C
 
 ---
 
@@ -192,14 +192,15 @@ editorial recommendation for a manual edit or a future targeted pass, not
 part of this run's write manifest.
 
 ### Applied
-- [ ] Metatags — title / metadesc / focuskw written
-- [ ] Tags written
-- [ ] Image alt + title written — media id: 1267
-- [ ] Auto-linked `/tag/` count inside body prose (baseline, pre-write): `tesla` 6, `avtochasti` 4, `remont` 2, `pokupka-na-avtomobil` 2 (includes header/footer tag-pill instances, not just in-prose auto-links)
+- [x] Metatags — title / metadesc / focuskw written, confirmed live in rendered `<title>`, `<meta name="description">` and `og:description` 2026-09-04
+- [ ] Tags — declined (kept as-is, see Declined below)
+- [x] Image alt + title written — media id: 1267 (confirmed in write response; not independently re-verifiable on the rendered page — this theme doesn't render the featured image as an inline `<img>` on the article page, only via `og:image`/schema, so there's no visible `alt=""` slot for it here)
+- [x] Auto-linked `/tag/` count inside body prose (unchanged, tags not touched): `tesla` 6, `avtochasti` 4, `remont` 2, `pokupka-na-avtomobil` 2 (includes header/footer tag-pill instances, not just in-prose auto-links)
 
 ### Declined
 | Group | What was proposed | Reason declined | Date |
 |---|---|---|---|
+| Tags | Drop `Покупка на автомобил` (id 249, count 2, below 3–10 reuse band) | User chose "keep all 4 tags" | 2026-09-04 |
 
 ### Risks / notes
 No cannibalization risk with the chosen focus keyphrase (see Phase A flag on
