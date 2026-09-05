@@ -95,7 +95,9 @@ class ENA_PWA {
     // ── Scripts ───────────────────────────────────────────────────────────────
 
     public static function enqueue_scripts(): void {
-        wp_enqueue_script( 'ena-pwa-init', ENA_PLUGIN_URL . 'assets/pwa-init.js', [], ENA_VERSION, true );
+        // strategy=>defer: named as render-blocking by GTmetrix 2026-09-05 (report 7ksv4vEw)
+        // alongside the theme's own scripts — see docs/plans/2026-09-05-002-fix-onsite-seo-performance-plan.md.
+        wp_enqueue_script( 'ena-pwa-init', ENA_PLUGIN_URL . 'assets/pwa-init.js', [], ENA_VERSION, [ 'strategy' => 'defer', 'in_footer' => true ] );
         wp_localize_script( 'ena-pwa-init', 'pwaConfig', [
             'vapidPublicKey' => ENA_Push::get_public_key_base64url(),
             'subscribeUrl'   => admin_url( 'admin-ajax.php' ),

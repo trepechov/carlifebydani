@@ -172,7 +172,7 @@
             Each article is analysed once (in the same OpenRouter call that writes the Bulgarian title &amp;
             summary) to flag off-topic items and extract tags &amp; region. These lists steer that judgment —
             they are guidance for the model, not a literal keyword filter. Results are written to the
-            <code>on_topic</code>, <code>tags</code> and <code>region</code> columns of the Google Sheet for review.
+            <code>off_topic</code>, <code>tags</code> and <code>region</code> columns of the Google Sheet for review.
         </p>
         <table class="form-table" role="presentation">
             <tr>

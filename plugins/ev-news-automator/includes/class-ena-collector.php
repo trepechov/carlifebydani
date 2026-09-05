@@ -183,27 +183,36 @@ class ENA_Collector {
     /**
      * Assemble a sheet row from an analyze() result + per-article metadata (link/author/pub_date).
      * Single source of truth shared by run() and add_manual() so every row — automatic or manual —
-     * carries the same shape and the same on_topic/tags/region signals.
+     * carries the same shape and the same off_topic/tags/region signals.
      *
      * upvote/downvote/clicks are real GA4-backed counters seeded at 0 on insert and updated by the
      * GA4 sync. added_date is written by the storage adapter automatically.
-     * on_topic is stored as human-readable "yes"/"no" so the sheet stays scannable during the
-     * observation phase; tags are joined into one comma-separated Bulgarian string.
+     * off_topic is stored as human-readable "yes"/"no" (yes = NOT about EVs) so the sheet stays
+     * scannable during the observation phase; tags are joined into one comma-separated Bulgarian string.
      */
     private function build_row( array $analysis, array $meta ): array {
         return [
             'title'       => $analysis['bg_title'],
             'description' => $analysis['bg_summary'],
             'link'        => $meta['link'],
-            'author'      => $meta['author'],
+            'author'      => self::normalize_source( (string) $meta['author'] ),
             'upvote'      => 0,
             'downvote'    => 0,
             'clicks'      => 0,
             'pub_date'    => $meta['pub_date'],
-            'on_topic'    => ! empty( $analysis['on_topic'] ) ? 'yes' : 'no',
+            'off_topic'   => empty( $analysis['on_topic'] ) ? 'yes' : 'no',
             'tags'        => implode( ', ', $analysis['tags'] ?? [] ),
             'region'      => $analysis['region'] ?? '',
         ];
+    }
+
+    /**
+     * Normalize the source host written to column D (author): trim whitespace and strip a leading
+     * "www." so the sheet shows the bare domain (e.g. "www.electrek.co" → "electrek.co"). Harmless
+     * for automatic-collection sources that are already bare hosts or outlet names.
+     */
+    private static function normalize_source( string $author ): string {
+        return preg_replace( '/^www\./i', '', trim( $author ) );
     }
 
     /** Compact one-line summary of an analyze() result for the run transcript. */
