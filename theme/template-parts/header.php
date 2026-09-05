@@ -18,7 +18,7 @@
             <nav class="flex items-center gap-2 text-xs">
                 <span class="font-bold uppercase">Популярни теми</span>
 
-                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/slash.svg" alt="slash" class="h-6" />
+                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/slash.svg" alt="slash" class="h-6" width="18" height="36" />
 
                 <ul class="list-none flex gap-4">
                     <?php
@@ -70,7 +70,7 @@
                 <div class="flex gap-6 items-center">
                     <!-- Logo -->
                     <a href="<?php echo get_home_url(); ?>">
-                        <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo.svg" alt="Car Life by Dani" class="h-16 sm:h-20" />
+                        <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo.svg" alt="Car Life by Dani" class="h-16 sm:h-20" width="224" height="80" />
                     </a>
 
                     <!-- Main menu with categories -->
@@ -159,7 +159,7 @@
                     </label>
                     <!-- Mobile menu with button-->
 
-                    <div class="hidden mt-4 mr-4 ml-2 2xl:block"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/slash.svg" alt="slash" class="h-9" /></div>
+                    <div class="hidden mt-4 mr-4 ml-2 2xl:block"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/slash.svg" alt="slash" class="h-9" width="18" height="36" /></div>
 
                     <!-- Share with us menu -->
                     <div class="hidden 2xl:flex flex-col items-start gap-1">
