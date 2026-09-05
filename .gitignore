@@ -20,6 +20,14 @@
 .DS_Store
 Thumbs.db
 
+# Local-only MCP server runtime (GSC MCP launcher + vendored package).
+# Personal/local — registered at local scope in ~/.claude.json, never committed.
+/.mcp-local
+
+# Python bytecode
+__pycache__/
+*.pyc
+
 # Credentials (never commit)
 /.credentials
 
@@ -27,3 +35,12 @@ Thumbs.db
 /.claude/settings.local.json
 # Test output (generated files, never commit)
 /plugins/*/tests/output/
+
+# Cached raw API responses — regenerable, and bulky (SERP/GSC JSON blobs).
+# The keyword ledger (data/seo-cache/keywords.csv) IS committed: it is small,
+# greppable, and git history gives search-volume trends for free.
+/data/seo-cache/raw/
+
+# tools/resolve_episode.py's local episode index — mirrors youtube-rag-n8n's
+# Qdrant state, which changes on every ingestion run. Not this repo's data.
+/data/seo-cache/episodes-index.json
