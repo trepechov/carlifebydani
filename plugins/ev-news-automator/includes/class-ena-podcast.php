@@ -30,11 +30,19 @@ class ENA_Podcast {
     }
 
     public function run(): array {
+        // The podcast covers the session whose collection window has CLOSED — not the
+        // one the collector is currently filling. During the 18h freeze window before
+        // recording, those are different tabs (the collector has already rolled over to
+        // next week's fresh tab), so every operation below targets the source tab
+        // explicitly rather than defaulting to the active/newest tab.
+        $source = ENA_Cron::podcast_source_tab_name();
+        $this->logger->step( 'podcast_source', 'ok', "reading session tab: {$source}" );
+
         // Steps 1–2: refresh GA4 clicks/votes and physically re-sort the sheet —
         // identical to the collection pipeline (ENA_Cron::run_pipeline()) — so the
         // script is always built from the exact same order the spreadsheet ends up in.
-        ENA_Cron::refresh_analytics( $this->storage, $this->analytics, $this->logger );
-        $sort_result = ENA_Cron::sort_sheet( $this->storage, $this->logger );
+        ENA_Cron::refresh_analytics( $this->storage, $this->analytics, $this->logger, $source );
+        $sort_result = ENA_Cron::sort_sheet( $this->storage, $this->logger, $source );
         if ( is_wp_error( $sort_result ) ) {
             $this->logger->log( 'podcast', 'error', $sort_result->get_error_message() );
             return [ 'doc_url' => '', 'count' => 0 ];
@@ -42,7 +50,7 @@ class ENA_Podcast {
 
         // Step 3: read the now-sorted sheet and take the top N off the top —
         // same order the spreadsheet shows.
-        $rows = $this->storage->read_data_rows();
+        $rows = $this->storage->read_data_rows( $source );
         if ( is_wp_error( $rows ) ) {
             $this->logger->log( 'podcast', 'error', $rows->get_error_message() );
             return [ 'doc_url' => '', 'count' => 0 ];
@@ -91,6 +99,9 @@ class ENA_Podcast {
             $sections[] = [
                 'bg_title'    => $row['title'],
                 'url'         => $row['link'],
+                'off_topic'   => $row['off_topic'] ?? '', // "yes"/"no" off-topic flag (yes = NOT about EVs)
+                'tags'        => $row['tags'] ?? '',    // comma-separated Bulgarian tags from analyze()
+                'region'      => $row['region'] ?? '',  // ISO region code(s) the article is about
                 'description' => $row['description'], // copied verbatim from the sheet
                 'summary'     => $summary,             // longer AI-generated write-up
             ];

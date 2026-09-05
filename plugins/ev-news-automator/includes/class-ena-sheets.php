@@ -7,13 +7,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 //   One Google Spreadsheet with multiple sheets (tabs), one per podcast session.
 //   Tab names use DD.MM.YYYY format (e.g. "16.06.2026").
 //   Columns per tab: title | description | link | author | upvote | downvote | clicks | added_date
-//                     | pub_date | on_topic | tags | region
+//                     | pub_date | off_topic | tags | region
 //   upvote (col E) / downvote (col F) — real GA4-synced vote counts; written as 0 on append,
 //   updated by ENA_Analytics from the ev_news_upvote / ev_news_downvote GA4 events.
 //   clicks (col G) — GA4 click count; written as 0 on append, updated daily by ENA_Analytics.
 //   added_date (col H) — Y-m-d date the row was appended; written by the adapter, never changed.
 //   pub_date (col I) — Y-m-d original publication date (from the source), or '' if unknown.
-//   on_topic (col J) — "yes"/"no" EV-relevance flag from ENA_OpenRouter::analyze(); observation-only.
+//   off_topic (col J) — "yes"/"no" EV-irrelevance flag derived from ENA_OpenRouter::analyze()
+//                       (yes = NOT about EVs, no = on-topic); observation-only.
 //   tags (col K) — comma-separated Bulgarian tags (brand + model + event descriptors).
 //   region (col L) — ISO 3166-1 alpha-2 region the article is about (e.g. "US", "CN,EU"), or ''.
 //   The session date lives in the tab name, not a column.
@@ -21,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 //
 // Backward compat: tabs created before the count/added_date columns are handled by
 // read_data_rows() — missing upvote/downvote/clicks treated as 0, missing added_date=session_date.
-// Missing on_topic/tags/region (older tabs) default to '' — an empty on_topic means "never judged",
+// Missing off_topic/tags/region (older tabs) default to '' — an empty off_topic means "never judged",
 // which consumers should treat as on-topic (don't hide rows we never analyzed).
 //
 // Interface contract (all callers use these):
@@ -33,7 +34,7 @@ class ENA_Sheets {
 
     private const BASE                 = 'https://sheets.googleapis.com/v4/spreadsheets';
     private const SCOPES               = [ 'https://www.googleapis.com/auth/spreadsheets' ];
-    private const COLUMNS              = [ 'title', 'description', 'link', 'author', 'upvote', 'downvote', 'clicks', 'added_date', 'pub_date', 'on_topic', 'tags', 'region' ];
+    private const COLUMNS              = [ 'title', 'description', 'link', 'author', 'upvote', 'downvote', 'clicks', 'added_date', 'pub_date', 'off_topic', 'tags', 'region' ];
     private const SESSION_DATE_PATTERN = '/^\d{2}\.\d{2}\.\d{4}$/';
 
     private ENA_Google_Auth $auth;
@@ -73,7 +74,7 @@ class ENA_Sheets {
             if ( (string) $assoc['downvote'] === '' ) $assoc['downvote'] = 0;
             if ( (string) $assoc['clicks'] === '' )   $assoc['clicks'] = 0;
             if ( (string) $assoc['added_date'] === '' ) $assoc['added_date'] = $date;
-            // on_topic/tags/region: older tabs have none — leave as '' (unjudged), no forced default.
+            // off_topic/tags/region: older tabs have none — leave as '' (unjudged), no forced default.
             $assoc['upvote']       = (int) $assoc['upvote'];
             $assoc['downvote']     = (int) $assoc['downvote'];
             $assoc['clicks']       = (int) $assoc['clicks'];
@@ -179,7 +180,8 @@ class ENA_Sheets {
 
         $header = null;
         if ( $copy_header_from !== '' ) {
-            $range         = rawurlencode( "{$copy_header_from}!A1:I1" );
+            // Read the full 12-column header (A:L). A:I would drop off_topic/tags/region.
+            $range         = rawurlencode( "{$copy_header_from}!A1:L1" );
             $read_response = ENA_HTTP::get( self::BASE . "/{$id}/values/{$range}", [
                 'headers' => [ 'Authorization' => "Bearer {$token}" ],
             ] );
@@ -188,7 +190,12 @@ class ENA_Sheets {
                 $header = $read_data['values'][0];
             }
         }
-        if ( $header === null ) $header = self::COLUMNS;
+        // Fall back to the canonical schema if there's no source or the copied header is
+        // short (e.g. copied from an older tab that predates the off_topic/tags/region cols),
+        // so a new tab always starts with the full 12-column header.
+        if ( $header === null || count( $header ) < count( self::COLUMNS ) ) {
+            $header = self::COLUMNS;
+        }
 
         $write_response = ENA_HTTP::post_json( self::BASE . "/{$id}/values:batchUpdate", [
             'valueInputOption' => 'RAW',
@@ -210,7 +217,7 @@ class ENA_Sheets {
         $token = $this->auth->get_access_token( self::SCOPES );
         if ( is_wp_error( $token ) ) return $token;
 
-        $sheet_id = $this->active_sheet_id_numeric();
+        $sheet_id = $this->sheet_id_numeric();
         if ( is_wp_error( $sheet_id ) ) return $sheet_id;
 
         rsort( $row_indices );
@@ -321,8 +328,8 @@ class ENA_Sheets {
      * The header row (row 1) is preserved — sort starts at row index 1.
      * Called after update_upvotes() so the spreadsheet reflects engagement order.
      */
-    public function sort_by_upvotes(): bool|WP_Error {
-        $sheet_id = $this->active_sheet_id_numeric();
+    public function sort_by_upvotes( ?string $sheet_name = null ): bool|WP_Error {
+        $sheet_id = $this->sheet_id_numeric( $sheet_name );
         if ( is_wp_error( $sheet_id ) ) return $sheet_id;
 
         $token = $this->auth->get_access_token( self::SCOPES );
@@ -468,11 +475,11 @@ class ENA_Sheets {
     }
 
     /**
-     * Returns the direct URL to the active session tab including the #gid anchor.
-     * Mirrors active_sheet_name() logic — filters, sorts, then reads 'id' from the
-     * same array element to avoid a secondary title-match lookup that can fail silently.
+     * Returns the direct URL (with #gid anchor) to $sheet_name, or the active tab's
+     * when null. For the active tab this mirrors active_sheet_name()'s sort-then-read
+     * so it can't drift; for a named tab it looks the title up directly.
      */
-    public function active_sheet_url(): string|WP_Error {
+    public function active_sheet_url( ?string $sheet_name = null ): string|WP_Error {
         $sheets = $this->list_sheets();
         if ( is_wp_error( $sheets ) ) return $sheets;
 
@@ -485,13 +492,23 @@ class ENA_Sheets {
             return new WP_Error( 'no_session_sheet', 'No session sheet found — cannot build sheet URL.' );
         }
 
-        usort( $dated, fn ( $a, $b ) =>
-            $this->parse_session_timestamp( $b['title'] ) <=> $this->parse_session_timestamp( $a['title'] )
-        );
+        if ( $sheet_name === null ) {
+            usort( $dated, fn ( $a, $b ) =>
+                $this->parse_session_timestamp( $b['title'] ) <=> $this->parse_session_timestamp( $a['title'] )
+            );
+            $target = $dated[0];
+        } else {
+            $target = null;
+            foreach ( $dated as $s ) {
+                if ( $s['title'] === $sheet_name ) { $target = $s; break; }
+            }
+            if ( $target === null ) {
+                return new WP_Error( 'no_session_sheet', "Session tab not found: {$sheet_name}" );
+            }
+        }
 
-        $active = $dated[0];
-        $id     = $this->settings->get( 'spreadsheet_id' );
-        return "https://docs.google.com/spreadsheets/d/{$id}/edit#gid={$active['id']}";
+        $id = $this->settings->get( 'spreadsheet_id' );
+        return "https://docs.google.com/spreadsheets/d/{$id}/edit#gid={$target['id']}";
     }
 
     // ── Private helpers ──────────────────────────────────────────────────────
@@ -511,8 +528,9 @@ class ENA_Sheets {
         return $data['values'] ?? [];
     }
 
-    private function active_sheet_id_numeric(): int|WP_Error {
-        $sheet_name = $this->active_sheet_name();
+    /** Numeric sheetId for $sheet_name, or the active tab's when null. */
+    private function sheet_id_numeric( ?string $sheet_name = null ): int|WP_Error {
+        $sheet_name ??= $this->active_sheet_name();
         if ( is_wp_error( $sheet_name ) ) return $sheet_name;
 
         $sheets = $this->list_sheets();

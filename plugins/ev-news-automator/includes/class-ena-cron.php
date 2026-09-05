@@ -5,6 +5,24 @@ class ENA_Cron {
 
     private const HOOK_COLLECTION = 'ena_daily_collection';
 
+    // Session/podcast cadence, all in the site's timezone (Europe/Sofia, EET/EEST).
+    // Sessions run Tuesday-to-Tuesday; the podcast records Tuesday evening (~19:00).
+    private const SESSION_DOW         = 2;  // Tuesday (ISO: 1=Mon .. 7=Sun)
+    private const PODCAST_RECORD_HOUR = 19; // approx recording time on the session day
+    // Every article must be live on the feed at least this many hours before the
+    // episode that covers it. The collection tab therefore rolls over to the next
+    // episode FEED_LEAD_HOURS before recording (19:00 − 18h = 01:00): anything
+    // collected inside that final window lands in the next episode's fresh tab
+    // instead of being rushed into the one recorded that same evening.
+    private const FEED_LEAD_HOURS     = 18;
+    // The feed AND podcast source keep showing an episode until the day AFTER recording
+    // (session day + 1 = Wednesday) at this hour, then advance together to the new week's
+    // tab — so the just-aired episode's articles stay visible overnight for listeners
+    // rather than vanishing at 19:00 the moment the episode drops. NOTE: unlike the other
+    // constants above, this Wednesday switch is evaluated in SERVER time (UTC), not the
+    // site timezone — see current_episode_tab_name().
+    private const FEED_SWITCH_HOUR    = 0;
+
     public static function activate(): void {
         add_filter( 'cron_schedules', [ __CLASS__, 'add_intervals' ] );
         self::reschedule();
@@ -35,7 +53,7 @@ class ENA_Cron {
 
         try {
             $result = self::run_pipeline( $plugin );
-            $plugin->logger->end_run( array_merge( $result, [ 'duration' => '?' ] ) );
+            $plugin->logger->end_run( $result );
         } catch ( \Throwable $e ) {
             $plugin->logger->log_error( 'collection', 'Uncaught exception: ' . $e->getMessage() );
         }
@@ -56,9 +74,14 @@ class ENA_Cron {
      * in step 1 succeeded. A failed clicks fetch must never skip the sort, or
      * freshly appended articles are stranded, unsorted, at the bottom of the sheet.
      *
-     * @return array{added:int,removed:int,synced:int}
+     * @return array{added:int,removed:int,synced:int,duration:string}
      */
     public static function run_pipeline( ENA_Plugin $plugin ): array {
+        // Wall-clock start used only to report how long the run took. Kept
+        // separate from $run_started_at below (which drives the age cutoff) so
+        // its sub-second precision isn't conflated with the cutoff timestamp.
+        $started = microtime( true );
+
         // Record start time before fetching so the next run's cutoff covers
         // any articles published during this run's execution window.
         $run_started_at = time();
@@ -100,13 +123,19 @@ class ENA_Cron {
             is_wp_error( $active_name ) ? $active_name->get_error_message() : "resolved active tab: {$active_name}"
         );
 
-        // Session tabs are created manually (e.g. weekly), and refresh_analytics()/
-        // ENA_Sync only ever touch the active (newest) tab. The run that first
-        // notices the active tab changed gives the OUTGOING tab one last GA4
-        // refresh before it's abandoned — otherwise any votes/clicks that landed
-        // on it after rotation are frozen forever.
+        // The feed AND the podcast read the current live-episode tab (they share one
+        // source, flipping together at Wed 00:00). From the 01:00 collection rollover until
+        // that Wednesday it's a DIFFERENT tab from the one the collector is filling
+        // ($active_name), so track it and keep it refreshed. Refreshing $active_name plus
+        // $feed_tab therefore covers every tab in play (collection + live episode).
+        $feed_tab = self::feed_display_tab_name();
+
+        // When the collection tab rotates (weekly, at the 01:00 freeze boundary) give the
+        // OUTGOING tab one last GA4 refresh before it's abandoned — unless it's still the
+        // live feed/episode tab, which the feed refresh below keeps current every run.
         $previous_active = get_option( ENA_OPT_LAST_ACTIVE_SHEET, '' );
-        if ( ! is_wp_error( $active_name ) && $previous_active && $previous_active !== $active_name ) {
+        if ( ! is_wp_error( $active_name ) && $previous_active
+            && $previous_active !== $active_name && $previous_active !== $feed_tab ) {
             $plugin->logger->step( 'tab_rotation', 'ok',
                 "active tab changed {$previous_active} -> {$active_name}; refreshing outgoing tab one last time" );
             self::refresh_analytics( $plugin->storage, $plugin->analytics, $plugin->logger, $previous_active );
@@ -115,6 +144,15 @@ class ENA_Cron {
         // 1. Refresh clicks + votes on existing rows. Shared with the podcast script
         //    generator (ENA_Podcast::run()) so both always sort off the same data.
         self::refresh_analytics( $plugin->storage, $plugin->analytics, $plugin->logger );
+
+        // 1b. During the freeze window the feed/episode tab differs from the active tab
+        //     refreshed above; refresh it too so votes/clicks readers cast on the feed
+        //     don't stay frozen at their rollover-time values until the podcast runs.
+        if ( ! is_wp_error( $active_name ) && $feed_tab !== $active_name ) {
+            $plugin->logger->step( 'feed_tab_refresh', 'ok',
+                "refreshing feed/episode tab {$feed_tab} (freeze window; collector on {$active_name})" );
+            self::refresh_analytics( $plugin->storage, $plugin->analytics, $plugin->logger, $feed_tab );
+        }
 
         // 2. Collect & append new articles at the bottom.
         $result = $plugin->collector->run();
@@ -162,6 +200,8 @@ class ENA_Cron {
         if ( ! is_wp_error( $active_name ) ) {
             update_option( ENA_OPT_LAST_ACTIVE_SHEET, $active_name );
         }
+
+        $result['duration'] = round( microtime( true ) - $started, 1 ) . 's';
 
         return $result;
     }
@@ -263,8 +303,8 @@ class ENA_Cron {
      * Shared by run_pipeline() and ENA_Podcast::run() so the spreadsheet and the
      * generated script always end up in the exact same order.
      */
-    public static function sort_sheet( ENA_Sheets $storage, ENA_Logger $logger ): bool|WP_Error {
-        $sort_result = $storage->sort_by_upvotes();
+    public static function sort_sheet( ENA_Sheets $storage, ENA_Logger $logger, ?string $sheet_name = null ): bool|WP_Error {
+        $sort_result = $storage->sort_by_upvotes( $sheet_name );
         if ( is_wp_error( $sort_result ) ) {
             $logger->step( 'sheets_sort', 'error', $sort_result->get_error_message() );
             return $sort_result;
@@ -274,26 +314,74 @@ class ENA_Cron {
     }
 
     /**
-     * The DD.MM.YYYY name of the session tab that should be active right now.
-     * Sessions run Tuesday-to-Tuesday: the podcast records Tuesday evening and a
-     * fresh tab is expected once that's wrapped up — approximated as 19:00 in the
-     * site's configured timezone (expected to be Europe/Sofia / EET-EEST, matching
-     * the podcast's actual recording schedule). Before that cutoff on a Tuesday,
-     * the previous week's Tuesday is still the current session.
+     * The DD.MM.YYYY name of the session tab the COLLECTOR should be writing to now.
+     * Tabs are named after the Tuesday the episode RECORDS (its episode date). Collection
+     * for episode T runs from the previous Tuesday 01:00 up to Tuesday T at 01:00 — i.e.
+     * it closes FEED_LEAD_HOURS before T's recording. At that 01:00 rollover the collector
+     * advances to the NEXT episode (T+7), so an article arriving in the final window before
+     * a recording lands in next week's episode instead of the one recorded that evening.
+     *
+     * @see podcast_source_tab_name() — the upcoming, not-yet-recorded episode the podcast
+     *      reads. It differs from this only during the freeze window: the collector has
+     *      already advanced to next week while the podcast still reads tonight's episode.
      */
     private static function current_session_tab_name(): string {
-        $now = new DateTimeImmutable( 'now', wp_timezone() );
+        return self::collection_recording_tuesday( new DateTimeImmutable( 'now', wp_timezone() ) )
+            ->format( 'd.m.Y' );
+    }
 
-        $dow                 = (int) $now->format( 'N' ); // 1=Mon .. 7=Sun, Tuesday=2
-        $days_since_tuesday   = ( $dow - 2 + 7 ) % 7;
-        $this_weeks_tuesday   = $days_since_tuesday > 0
-            ? $now->modify( "-{$days_since_tuesday} days" )->setTime( 0, 0, 0 )
-            : $now->setTime( 0, 0, 0 );
+    /**
+     * The DD.MM.YYYY tab of the episode that is currently LIVE — the one shown on the feed
+     * AND read by the podcast script generator. It stays on the current episode until the
+     * day after recording (Wednesday FEED_SWITCH_HOUR), then advances to the episode the
+     * collector is now filling. Feed and podcast deliberately share this single source so
+     * they always flip together on Wednesday — NOT at the Tue 19:00 recording. So a script
+     * (re)generated Tuesday night still targets that evening's episode.
+     *
+     * The Wednesday switch is evaluated in SERVER time (UTC) per the operator's choice,
+     * even though the recording/collection are anchored to the site timezone. We find the
+     * most recent switch INSTANT in UTC, then resolve which episode the collector was
+     * filling at that instant using the site-timezone Tuesday math (so 01:00/19:00 keep
+     * their Europe/Sofia meaning). UTC Wed 00:00 ≈ 02:00–03:00 Sofia depending on DST.
+     */
+    public static function current_episode_tab_name(): string {
+        $now_utc    = new DateTimeImmutable( 'now', new DateTimeZone( 'UTC' ) );
+        $switch_dow = ( self::SESSION_DOW % 7 ) + 1; // day after the session day (Wednesday)
+        $days_since = ( (int) $now_utc->format( 'N' ) - $switch_dow + 7 ) % 7;
+        $switch     = $now_utc->modify( "-{$days_since} days" )->setTime( self::FEED_SWITCH_HOUR, 0, 0 );
+        if ( $switch > $now_utc ) {
+            $switch = $switch->modify( '-7 days' ); // today is the switch day but before the switch hour (UTC)
+        }
+        // Same instant, re-expressed in the site timezone, so the Tuesday/01:00 math below is correct.
+        return self::collection_recording_tuesday( $switch->setTimezone( wp_timezone() ) )->format( 'd.m.Y' );
+    }
 
-        $rollover_passed = $days_since_tuesday > 0 || $now->format( 'H:i' ) >= '19:00';
-        $target          = $rollover_passed ? $this_weeks_tuesday : $this_weeks_tuesday->modify( '-7 days' );
+    /** Tab the podcast script reads — the current live episode (see current_episode_tab_name()). */
+    public static function podcast_source_tab_name(): string {
+        return self::current_episode_tab_name();
+    }
 
-        return $target->format( 'd.m.Y' );
+    /** Tab the public feed displays — the current live episode (see current_episode_tab_name()). */
+    public static function feed_display_tab_name(): string {
+        return self::current_episode_tab_name();
+    }
+
+    /**
+     * The recording Tuesday (00:00) of the episode being COLLECTED INTO at $now. Collection
+     * for an episode closes at its own Tuesday 01:00 (FEED_LEAD_HOURS before recording):
+     * before that rollover we're still filling this week's episode, at/after it next week's.
+     * Shared by the collection- and feed-tab helpers.
+     */
+    private static function collection_recording_tuesday( DateTimeImmutable $now ): DateTimeImmutable {
+        $this_weeks_tue = self::this_weeks_session_day( $now );
+        $rollover       = $this_weeks_tue->setTime( self::PODCAST_RECORD_HOUR - self::FEED_LEAD_HOURS, 0, 0 );
+        return $now >= $rollover ? $this_weeks_tue->modify( '+7 days' ) : $this_weeks_tue;
+    }
+
+    /** Midnight of the most recent SESSION_DOW (Tuesday) at or before $now, in $now's timezone. */
+    private static function this_weeks_session_day( DateTimeImmutable $now ): DateTimeImmutable {
+        $days_since = ( (int) $now->format( 'N' ) - self::SESSION_DOW + 7 ) % 7;
+        return $now->modify( "-{$days_since} days" )->setTime( 0, 0, 0 );
     }
 
     public static function add_intervals( array $schedules ): array {

@@ -267,6 +267,7 @@ $content_html = ena_md_to_html( $md );
                     <li>Crawl RSS/HTML</li>
                     <li>AI summary in BG</li>
                     <li>Add to Sheet</li>
+                    <li>Tue 01:00: auto-roll to next tab (18h freeze)</li>
                 </ul>
             </div>
         </div>
@@ -291,7 +292,7 @@ $content_html = ena_md_to_html( $md );
         <div class="ena-phase ena-phase--record">
             <div class="ena-phase__icon">🎙️</div>
             <div class="ena-phase__body">
-                <strong>Tuesday evening</strong>
+                <strong>Tuesday ~19:00</strong>
                 <span>Recording</span>
                 <ul>
                     <li>Hosts read Google Doc</li>
@@ -306,13 +307,26 @@ $content_html = ena_md_to_html( $md );
             <div class="ena-phase__icon">🚀</div>
             <div class="ena-phase__body">
                 <strong>Tuesday — after recording</strong>
-                <span>Manual · ~10 min</span>
+                <span>Manual · ~2 min</span>
                 <ul>
                     <li>Publish episode</li>
-                    <li>New tab DD.MM.YYYY</li>
                     <li>New WP page</li>
                     <li>news_csv meta</li>
-                    <li>Start collection</li>
+                    <li><em>Tab &amp; collection are automatic</em></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="ena-phase__arrow" aria-hidden="true">›</div>
+
+        <div class="ena-phase ena-phase--auto">
+            <div class="ena-phase__icon">🌐</div>
+            <div class="ena-phase__body">
+                <strong>Wednesday 00:00</strong>
+                <span>Automatic</span>
+                <ul>
+                    <li>Feed switches to the new week</li>
+                    <li>Aired episode held overnight</li>
                 </ul>
             </div>
         </div>
