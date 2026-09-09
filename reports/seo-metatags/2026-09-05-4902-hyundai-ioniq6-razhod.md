@@ -4,7 +4,7 @@
 **Prepared:** 2026-09-05 (first phase to touch this post)
 **Status:** applied
 **Keyphrase:** Hyundai IONIQ 6 разход
-**Ledger:** `4902-2026-09-05-C`
+**Ledger:** `4902-2026-09-05-C`; `4902-2026-09-09-C2`
 
 **How this post surfaced:** top of
 [`docs/SEO_BACKLINK_TARGETS_TODO.md`](../../docs/SEO_BACKLINK_TARGETS_TODO.md)'s
@@ -198,3 +198,31 @@ edit) were approved in full._
 Baseline (GSC, 2026-06-06→2026-09-03): 142 impr / 5 clicks / 3.52% CTR
 (blended) / ~10 pos (blended across top queries). Re-check in 2–4 weeks —
 real existing impressions to build on.
+
+### Addendum (2026-09-09) — outbound link to post 1725
+Per explicit user request ("IONIQ 6 non-N post to put a backlink to" —
+resolved to post 1725, the only remaining non-N base-model IONIQ 6 post
+without a backlink or its own optimization pass). Checked 1725's own data
+table before writing anything: it's **the same underlying data point**
+already cited in this post's own text — 1725's "DA9 Hyundai IONIQ 6" row
+shows highway/extra-urban consumption of **15,7 / 12,9 kWh/100km**,
+identical to the "Магистрала Извънградско 15,7 12,9" figures this post's
+own summary table already reports as its summer data. 1725 (2024-02-14)
+predates this post (2024-07-07), so citing it here is new→old, correct
+direction — and it's the genuine original source of the data being
+referenced, not a loosely related link.
+
+- [x] Outbound link — wrapped the existing "групата на седаните" (the
+  sedan group) phrase, in the sentence introducing the summer IONIQ 6 RWD
+  data, with a link to post 1725 (EVTour400 Group D). Built and verified
+  the spliced content programmatically (single-occurrence fragment match,
+  all block counts unchanged, link count 15→16, char delta exactly the
+  128-char inserted text) before sending via `curl` with the `seo-bot`
+  Keychain password. Confirmed byte-identical live response.
+- Target (1725) is **not yet optimized** — no ledger row, no report.
+  Flagging it as a real candidate for its own future
+  `seo-article-optimize` pass (real 1,100-word 4-car sedan comparison —
+  Tesla Model 3 variants, BMW i4, Mercedes EQE, Hyundai IONIQ 6 — currently
+  no Yoast metatags at all) rather than adding it to
+  `docs/SEO_BACKLINK_TARGETS_TODO.md`'s automated backlog, since the user
+  named it directly this session.
