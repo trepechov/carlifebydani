@@ -145,22 +145,44 @@ Run it for the focus keyphrase and for each main entity, then propose:
   pages over other news episodes. On EV News posts these are usually already
   covered by Phase B's own prose (it links out as it writes ¶2/¶3) — check
   before proposing more.
-  **Exception — same-story sequels are not ordinary outbound links.** If the
-  outbound target and the current post both narrate the *same continuing news
-  event* at two different points in time (an announcement and its later
-  confirmation, part 1 and part 2 of a developing story — not just a shared
-  brand or model), the citation must run **new → old**, same direction as an
-  inbound link, never the reverse. An older post narrating "X is happening"
-  should not link forward to a newer post as if citing settled fact about its
-  own still-open story — that reads as an anachronism, not a reference. If the
-  older post is the one being optimized and the natural sequel is newer,
-  either skip the link entirely or (if the newer post is also being touched
-  right now) add the citation there instead, pointing back. This is narrower
-  than the general **outbound rule below**, which stays unrestricted by date —
-  a genuine "further reading on a different subtopic" link (e.g. an older post
-  mentioning a battery in passing, linking out to a newer post's full
-  technical deep-dive on that battery) is not a same-story sequel and needs no
-  date check.
+  **Exception — same-story sequels are not ordinary outbound links.** Before
+  proposing or approving any outbound link to a target *newer* than the
+  current post, run two checks, in order:
+  1. **Reverse-link check first, always — it's cheap.** Does the newer
+     target already link back to the current post (check its own report, or
+     `/wp/v2/search`)? If yes, **do not also add the reverse link.** A newer
+     post citing an older one as background is the normal direction; adding
+     the reverse creates a two-way loop where the older post's own prose
+     points forward to something that didn't exist when its episode was
+     recorded — wrong regardless of subtopic, and this check alone catches
+     most instances before the second, harder judgment call is even needed.
+  2. **Same-story-sequel check.** If the outbound target and the current
+     post both narrate the *same continuing news event* at two different
+     points in time (an announcement and its later confirmation, part 1 and
+     part 2 of a developing story — not just a shared brand or model), the
+     citation must run **new → old**, same direction as an inbound link,
+     never the reverse. An older post narrating "X is happening" should not
+     link forward to a newer post as if citing settled fact about its own
+     still-open story — that reads as an anachronism, not a reference. If
+     the older post is the one being optimized and the natural sequel is
+     newer, either skip the link entirely or (if the newer post is also
+     being touched right now) add the citation there instead, pointing back.
+
+  This is narrower than the general **outbound rule below**, which stays
+  unrestricted by date — a genuine "further reading on a different subtopic"
+  link (e.g. an older post mentioning a battery in passing, linking out to a
+  newer post's full technical deep-dive on that same battery) is not a
+  same-story sequel and needs no date check. **But the exemption requires the
+  grounding claim itself to actually be about the target's subtopic** — a
+  single shared word or generic theme (a metaphor, a brand name, a
+  throwaway joke in the transcript) is never sufficient. Post 9248 (#EVN161,
+  2026-09-16) got an outbound link added to post 9462 (#EV166, the Roadster
+  reveal, published the day before) on nothing more than the shared word
+  "ракети" (rockets) — 9462 *already linked back* to 9248, so check 1 alone
+  would have caught it. Caught by the user after publish, fixed by
+  unwrapping the link back to plain text. When in doubt about whether two
+  posts share a subtopic or a story thread, treat it as the same thread and
+  skip the link.
 - Skip `/tag/` pages as link targets — thin taxonomy pages already outrank real
   editorial content on this site, and linking to them makes it worse.
 
@@ -343,15 +365,22 @@ from an earlier Phase B write on this post).
   `date` alongside relevance and discard any hit newer than the current post
   before it reaches the proposal stage.
 - **An old post narrating a newer post's outcome, via an "unrestricted"
-  outbound link, is the same bug in the other direction.** Happened on post
-  7577 (2026-08-15): Phase B added an outbound link from 7577 (2025-10-14, the
-  original Zeekr-Bulgaria market-entry announcement) forward to 8659
-  (2026-05-19, the confirmed-entry follow-up seven months later) — technically
-  permitted by the old "outbound is unrestricted" wording, but wrong, because
-  both posts narrate the *same continuing story*, not two different subtopics.
-  Caught by the user, not before writing. Fixed by reverting the 7577 link and
-  adding the citation to 8659 instead, pointing back at 7577. This is what the
-  same-story-sequel exception above now exists to prevent — check whether an
-  outbound target is a genuine subtopic reference (date-unrestricted, fine
-  either direction) or a sequel narrating the same event (new → old only)
-  before writing it, not after.
+  outbound link, is the same bug in the other direction — happened twice.**
+  Post 7577 (2026-08-15): Phase B added an outbound link from 7577
+  (2025-10-14, the original Zeekr-Bulgaria market-entry announcement)
+  forward to 8659 (2026-05-19, the confirmed-entry follow-up seven months
+  later) — technically permitted by the old "outbound is unrestricted"
+  wording, but wrong, because both posts narrate the *same continuing
+  story*, not two different subtopics. Fixed by reverting the 7577 link and
+  adding the citation to 8659 instead, pointing back at 7577.
+  Post 9248 (2026-09-16): Phase B added an outbound link from 9248
+  (2026-07-28, the Tesla/SpaceX merger hint) forward to 9462 (2026-09-15,
+  the Roadster reveal teaser, published the day before) — grounded in
+  nothing more than the transcript's throwaway word "ракети" (rockets),
+  which 9462 also happens to touch via a different, unrelated speculation
+  (thrusters on the Roadster). 9462 *already linked back* to 9248 as
+  background. Both times caught by the user after publish, not before
+  writing — this is exactly what the two-step check above (reverse-link
+  check, then same-story-sequel check) now exists to prevent. Run the
+  reverse-link check *first*, always — it would have caught both instances
+  immediately, before the harder subtopic judgment call was even needed.

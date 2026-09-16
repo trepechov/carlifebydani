@@ -4,7 +4,7 @@
 **Prepared:** 2026-09-16 (first phase to touch this post — no prior report existed despite metatags already being set, see below)
 **Status:** applied
 **Keyphrase:** Tesla SpaceX merger (changed from `сливане между Tesla и SpaceX` in Phase C)
-**Ledger:** `9248-2026-09-16` (Phase B); `9248-2026-09-16-C` (Phase C)
+**Ledger:** `9248-2026-09-16` (Phase B); `9248-2026-09-16-C` (Phase C); `9248-2026-09-16-D` (link-revert fix)
 
 ---
 
@@ -170,18 +170,15 @@ closing segment (hosts explicitly flag it as "последната новина"
 
 **Total: 157 words** (target 130–190).
 
-**Internal link:** one outbound link, ¶2 → post 9462 (#EV166, "9 години
-по-късно…TESLA ROADSTER!", 2026-09-15) — newer than this post, but a genuine
-different-subtopic reference (this post is about the corporate
-Tesla/SpaceX merger speculation; 9462 is about Roadster spec speculation
-that itself name-checks a "SpaceX package") rather than a same-story
-sequel, so the date-unrestricted outbound rule applies. Post 9462 has
-already been through this full pipeline (`reports/seo-metatags/2026-09-16-
-9462-ev166-tesla-roadster.md`, Status: applied) — no backlink-target
-logging needed since the target is already optimized. A second link was
-not forced — `/wp/v2/search` for `FSD Hardware 3`, `Boring Company`,
-`Starlink` surfaced only thin embed-only EV News posts with no owned prose
-to anchor a natural link in.
+**Internal link — CORRECTED 2026-09-16, see Phase C addendum below.** ¶2
+originally linked "„ракети“" to post 9462 (#EV166, "9 години
+по-късно…TESLA ROADSTER!", 2026-09-15), on the reasoning that this post's
+corporate-merger story and 9462's Roadster-spec speculation were different
+enough subtopics to fall under the date-unrestricted "further reading"
+outbound rule. **This was wrong** — flagged by the user after publish. See
+the Phase C addendum for the fix and the corrected classification.
+Text is now plain, unlinked "„ракети“". No outbound link from this post's
+own prose remains.
 
 ### Facts to confirm before publishing
 - [ ] **"Still this year" timeline** — the hosts' own framing, not a
@@ -294,3 +291,41 @@ tag/alt/focuskw effect and again at 4–8 weeks for the new body content to
 be crawled/indexed.
 
 ---
+
+### Addendum (2026-09-16, same day) — same-story-sequel link reverted
+User caught: this post's own Phase B outbound link (¶2, "„ракети“" →
+post 9462) violated the site's own same-story-sequel rule, and I had
+misclassified it as an exempt "different subtopic" reference when writing
+it. Re-examined:
+
+- **9462 (2026-09-15, newer) already links *to* 9248 (2026-07-28, older)**
+  from its own ¶3 ("SpaceX пакет") — the correct, established direction:
+  a newer post citing an earlier episode as background for its own
+  speculation.
+- My added reverse link (9248 → 9462) created exactly the anachronistic
+  loop the pipeline's own known-traps section already documents from the
+  7577↔8659 precedent (2026-08-15): an older post's *own new prose*
+  pointing forward to a newer post it could not have known about at
+  transcript-record time. The July 28 episode transcript never mentions
+  the Roadster or a "SpaceX package" — the link only existed because
+  "ракети" (rockets), a throwaway joke in the July transcript about
+  Tesla's future, was a loose word-match to 9462's thruster-speculation
+  content, not a real thematic connection. Both posts sit on the same
+  overarching "Tesla/SpaceX technology overlap" thread — not the
+  genuinely distinct subtopics the exemption requires.
+- **Fixed:** removed the `<a>` wrapper around „ракети“ in ¶2, verified via
+  `difflib` against the pre-fix `content.raw` that this was the *only*
+  change (no other text touched). Confirmed live — the post no longer
+  links to 9462 anywhere. `wordCount` unchanged (173).
+- **No re-classification needed for the correct-direction link** — 9462's
+  own outbound link to 9248 stays; that one already runs new→old and does
+  not have this problem.
+
+**Process fix, to stop this recurring:** the `ev-news-transcript-content`
+and `seo-article-apply` skill files' same-story-sequel guidance has been
+tightened (see their own "Known traps" sections, updated the same day) —
+the "different subtopic" exemption now requires the outbound link's own
+grounding to actually be about the target's specific topic, not a single
+shared word or generic theme pulled from the transcript. A generic word
+match ("ракети", "технология", "бъдеще") is never sufficient grounds by
+itself for an outbound link to a newer post.

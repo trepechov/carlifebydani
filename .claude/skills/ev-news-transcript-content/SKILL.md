@@ -151,24 +151,51 @@ entities involved. Prefer:
 2. An evergreen `/ev-review/` or `/publications/` page over another news
    episode.
 
-**Before linking to any candidate, check whether it's a same-story sequel —
-a post narrating the *same continuing news event* as this one, just at a
-different point in time (an earlier rumor/announcement and its later
-confirmation, part 1 and part 2 of a developing story).** If it is, and the
-candidate is *newer* than the post being drafted, don't link to it — an older
-post shouldn't narrate a newer post's outcome as if it were already settled
-fact at its own publish time. Either skip the link (the newer post can cite
-back to this one when *it* gets optimized) or, if you're certain the shared
-event is real and current, flag it in the report for a human decision rather
-than writing it. This restriction is narrower than it sounds: a candidate
-covering a genuinely different subtopic (e.g. this episode mentions a battery
-in passing, another post has the technical deep-dive) is an ordinary
-"further reading" link and is fine regardless of date — only same-event
-sequels need the check. Confirmed necessary 2026-08-15: post 7577 (#EV122,
-the original Zeekr-Bulgaria market-entry announcement) had a Phase B link
-added forward to post 8659 (#EV151, the confirmed-entry follow-up 7 months
-later) — caught by the user after publish, fixed by reverting it and citing
-7577 from 8659 instead.
+**Before linking to any candidate that is *newer* than the post being
+drafted, run two checks, in order — both must pass:**
+
+1. **Reverse-link check (cheap, do this first).** `/wp/v2/search` the
+   candidate, or just check whether its own report/content already links
+   back to the post you're drafting. **If the newer post already links to
+   this one, do not also add a link the other way.** A newer post citing
+   an older one as background is the normal, correct direction; adding the
+   reverse creates a two-way loop where the older post's own prose links
+   forward to something it could not have known about when the episode was
+   recorded — that mismatch is real regardless of subtopic.
+2. **Same-story-sequel check.** Is the candidate narrating the *same
+   continuing news event* as this post, just at a different point in time
+   (an earlier rumor/announcement and its later confirmation, part 1 and
+   part 2 of a developing story)? If so, don't link forward — an older post
+   shouldn't narrate a newer post's outcome as if it were already settled
+   fact at its own publish time. Either skip the link (the newer post can
+   cite back to this one when *it* gets optimized) or, if you're certain the
+   shared event is real and current, flag it in the report for a human
+   decision rather than writing it.
+
+   **A candidate only counts as a genuinely different subtopic — exempt from
+   this check, fine regardless of date — if the *specific claim you're
+   grounding the link in* is actually about that subtopic**, not a loose or
+   generic word shared between the two posts (a metaphor, a brand name, a
+   throwaway joke). "This episode mentions a battery in passing, another
+   post has the technical deep-dive on that same battery" is a genuine
+   different-subtopic link. "This episode's hosts joke that Tesla might sell
+   'rockets' one day" linking to a *different, later* post's specific
+   thruster-speculation content is **not** — the transcript never actually
+   discusses that post's subject; the only connection is one shared word.
+   When in doubt, treat it as the same thread and skip the link.
+
+   Confirmed necessary twice: post 7577 (#EV122, 2026-08-15, the original
+   Zeekr-Bulgaria market-entry announcement) had a Phase B link added forward
+   to post 8659 (#EV151, the confirmed-entry follow-up 7 months later) —
+   caught by the user after publish, fixed by reverting it and citing 7577
+   from 8659 instead. Post 9248 (#EVN161, 2026-09-16, the Tesla/SpaceX merger
+   hint) had a Phase B link added forward to post 9462 (#EV166, the Roadster
+   reveal teaser, 2026-09-15) on a single shared word ("ракети") — 9462
+   *already linked back* to 9248 (check 1 would have caught this
+   immediately) — caught by the user after publish, fixed by unwrapping the
+   link back to plain text. Both times the mistake was judging "different
+   headline story" as sufficient for the exemption instead of checking
+   whether the *grounding claim itself* was actually about the target.
 
 Link naturally inside the prose (anchor text = a real phrase, never "тук").
 
