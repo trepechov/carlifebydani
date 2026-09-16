@@ -41,7 +41,6 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 | `[ ]` | 5016 | Сравнение при зареждане на Hyundai IONIQ 5 N, Tesla S Plaid и Tesla Y Long Range | publications | 3957 (outbound) | 336 / 3 / 0.89% / 5.8 | — |
 | `[ ]` | 196 | Nissan Ariya – „Най-забавният педал на спирачката" | ev-review | 1027, 2622 (both outbound) | 0 / 0 / — / — (no impressions in window) | — |
 | `[ ]` | 3946 | Tesla ще представи Robotaxi на 8ми Август | publications | 9447 (outbound) | 0 / 0 / — / — (no impressions in window) | — |
-| `[ ]` | 9248 | #EVN161 – Илон Мъск загатна за сливане между Tesla и SpaceX още тази година? | ev-news | 9462 (outbound) | 0 / 0 / — / — (no impressions in window) | — |
 
 GSC window: 2026-06-06 → 2026-09-03, page-dimension pull filtered to each
 URL (9099's baseline below uses its own original 2026-05-15→2026-08-13
@@ -95,6 +94,7 @@ completed rows, they're what makes this file useful as an audit trail.
 | `[x]` | 2398 | Автомобилно Изложение Женева 2024 – Renault 5, Lucid Sapphire, Lucid Gravity, MG, Renault Scenic | ev-news | 6889, 2455 (both outbound) | 9 / 0 / 0% / 12.3 (2026-06-06→09-03) | [2026-09-05-2398-geneva-2024-lucid-gravity.md](../reports/seo-metatags/2026-09-05-2398-geneva-2024-lucid-gravity.md) |
 | `[x]` | 8836 | Renault 4 Plein Sud – Хронология на отворения покрив | publications | 8968 (outbound) | 149 / 6 / 4.03% / 5.1 | [2026-09-05-8836-renault-4-plein-sud.md](../reports/seo-metatags/2026-09-05-8836-renault-4-plein-sud.md) |
 | `[x]` | 4902 | Hyundai IONIQ 6 – Всичко, което знаем за разхода и зареждането | publications | 3957 (outbound) | 142 / 5 / 3.52% / 10.0 (2026-06-06→09-03, fresh pull — see report for note on the earlier, larger 616/21/6.8 figure) | [2026-09-05-4902-hyundai-ioniq6-razhod.md](../reports/seo-metatags/2026-09-05-4902-hyundai-ioniq6-razhod.md) |
+| `[x]` | 9248 | #EVN161 – Илон Мъск загатна за сливане между Tesla и SpaceX още тази година? | ev-news | 9462 (outbound) | 0 / 0 / 0% / — (no impressions, 2026-06-18→09-15) | [2026-09-16-9248-evn161-tesla-spacex-sliyane.md](../reports/seo-metatags/2026-09-16-9248-evn161-tesla-spacex-sliyane.md) |
 
 ---
 
