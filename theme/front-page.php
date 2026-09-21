@@ -8,6 +8,8 @@
 
 get_template_part('template-parts/header'); ?>
 
+<h1 class="sr-only"><?php bloginfo('name'); ?><?php $tagline = get_bloginfo('description'); if ($tagline) : ?> — <?php echo esc_html($tagline); ?><?php endif; ?></h1>
+
 <!-- <div> -->
 <?php
 get_template_part('template-parts/front-page/featured-posts');
