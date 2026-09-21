@@ -30,6 +30,7 @@
                 "css/*.css",
                 "js/*.js",
                 "images/**",
+                "fonts/**",
                 "template-parts/**"
             ],
             "to": "temp/carlifebydani/"

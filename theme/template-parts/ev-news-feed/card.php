@@ -55,7 +55,7 @@ $data_id      = esc_attr( $article['id'] ?? md5( $article['link'] ?? '' ) );
             <span class="text-xs text-brand-lightgrey"><?php echo $pub_date; ?></span>
             <?php endif; ?>
             <?php if ( $is_new ) : ?>
-            <span class="material-symbols-outlined text-brand-red flex-shrink-0" style="font-size:20px" title="Нова статия">fiber_new</span>
+            <svg class="icon text-brand-red" style="font-size:20px"><title>Нова статия</title><use href="#icon-fiber-new"/></svg>
             <?php endif; ?>
 
             <?php /* Vote buttons — always rendered (clickable at 0); cookie state applied by ev-news-voting.js */ ?>
@@ -64,14 +64,14 @@ $data_id      = esc_attr( $article['id'] ?? md5( $article['link'] ?? '' ) );
                     data-ev-news-upvote data-article-id="<?php echo $data_id; ?>" data-article-url="<?php echo $data_url; ?>" data-title="<?php echo $data_title; ?>"
                     aria-label="Upvote">
                 <span class="text-xs font-bold" data-vote-count="up"><?php echo $upvote; ?></span>
-                <div class="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center rounded-full bg-brand-green material-symbols-outlined" style="font-size:9px;box-shadow:0 0 0 1.5px #000">thumb_up</div>
+                <div class="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center rounded-full bg-brand-green" style="font-size:9px;box-shadow:0 0 0 1.5px #000"><svg class="icon" aria-hidden="true"><use href="#icon-thumb-up"/></svg></div>
             </button>
             <button type="button"
                     class="relative rounded-full border w-7 h-7 flex items-center justify-center bg-brand-solidgrey border-brand-red flex-shrink-0 transition-colors duration-300 disabled:cursor-not-allowed"
                     data-ev-news-downvote data-article-id="<?php echo $data_id; ?>" data-article-url="<?php echo $data_url; ?>" data-title="<?php echo $data_title; ?>"
                     aria-label="Downvote">
                 <span class="text-xs font-bold" data-vote-count="down"><?php echo $downvote; ?></span>
-                <div class="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center rounded-full bg-brand-red material-symbols-outlined" style="font-size:9px;box-shadow:0 0 0 1.5px #000">thumb_down</div>
+                <div class="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center rounded-full bg-brand-red" style="font-size:9px;box-shadow:0 0 0 1.5px #000"><svg class="icon" aria-hidden="true"><use href="#icon-thumb-down"/></svg></div>
             </button>
         </div>
 

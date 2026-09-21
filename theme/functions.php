@@ -10,6 +10,9 @@ function wpdocs_carlifebydani_scripts()
     // report 7ksv4vEw) flagged all of these by exact handle/URL as render-blocking
     // resources (2,990ms potential savings) — none of them gate first paint, so none
     // need to block the parser. See docs/plans/2026-09-05-002-fix-onsite-seo-performance-plan.md.
+    // Self-hosted Sofia Sans (theme/fonts/sofia-sans/), replacing the fonts.googleapis.com
+    // @import that used to chain behind style.min.css. See docs/plans/2026-09-21-003-fix-onsite-performance-plan.md.
+    wp_enqueue_style('theme-fonts', get_stylesheet_directory_uri() . '/css/fonts.css');
     wp_enqueue_style('theme-css', get_stylesheet_directory_uri() . '/css/style.min.css');
     wp_enqueue_style('glightbox-css', get_stylesheet_directory_uri() . '/css/glightbox.min.css');
     wp_enqueue_style('cookieconsent-css', get_stylesheet_directory_uri() . '/css/cookieconsent.min.css');

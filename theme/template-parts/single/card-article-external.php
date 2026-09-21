@@ -25,7 +25,7 @@
                 <label class="mt-3 flex items-center gap-1 cursor-pointer" for="news-article-<?php echo esc_attr($args['article']->id) ?>">
                     <input class="peer hidden" type="checkbox" id="news-article-<?php echo esc_attr($args['article']->id) ?>">
                     <span class="w-[18px] h-[18px] text-md flex justify-center items-center bg-brand-solidgrey delay-75 duration-150 peer-checked:rotate-180">
-                        <span class="material-symbols-outlined">keyboard_arrow_down</span>
+                        <svg class="icon" aria-hidden="true"><use href="#icon-keyboard-arrow-down"/></svg>
                     </span>
 
                     <span class="text-brand-red">Виж още</span>
@@ -38,11 +38,11 @@
     <div class="flex gap-3 items-center h-20">
         <div class="rounded-full border-2 w-12 h-12 flex justify-center items-center bg-brand-solidgrey border-brand-green border-opacity-40 relative">
             <span class="text-lg font-bold"><?php echo esc_html(!empty($args['article']->upvote) ? $args['article']->upvote : '0') ?></span>
-            <div class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs font-bold rounded-full bg-brand-green material-symbols-outlined" style="font-size:10px">check</div>
+            <div class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs font-bold rounded-full bg-brand-green" style="font-size:10px"><svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg></div>
         </div>
         <div class="rounded-full border-2 w-12 h-12 flex justify-center items-center bg-brand-solidgrey border-brand-red border-opacity-40 relative">
             <span class="text-lg font-bold"><?php echo esc_html(!empty($args['article']->downvote) ? $args['article']->downvote : '0') ?></span>
-            <div class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs font-bold rounded-full bg-brand-red material-symbols-outlined" style="font-size:10px">close</div>
+            <div class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs font-bold rounded-full bg-brand-red" style="font-size:10px"><svg class="icon" aria-hidden="true"><use href="#icon-close"/></svg></div>
         </div>
     </div>
 </article>

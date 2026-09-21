@@ -12,6 +12,7 @@
 </head>
 
 <body class="body">
+    <?php get_template_part('template-parts/icons-sprite'); ?>
     <header class="bg-black sticky top-0 z-999 sm:static">
         <div class="hidden wrapper py-2 justify-between items-center lg:flex">
             <!-- Popular tags menu -->
@@ -52,7 +53,7 @@
                     ?>
                 </ul>
                 <a href='<?php echo esc_url($topMenuItems[$i]->url) ?>' class="button" target="_blank">
-                    <span class="material-symbols-outlined -ml-1">favorite</span>
+                    <svg class="icon -ml-1" aria-hidden="true"><use href="#icon-favorite"/></svg>
                     <?php echo esc_html($topMenuItems[$i]->title) ?>
                 </a>
             </nav>
@@ -105,16 +106,14 @@
                 <div class="flex items-center">
                     <!-- Support us button (mobile) -->
                     <a href='<?php echo esc_url($topMenuItems[$i]->url) ?>' class="button mr-4 !hidden sm:!flex lg:!hidden" target="_blank">
-                        <span class="material-symbols-outlined -ml-1">favorite</span>
+                        <svg class="icon -ml-1" aria-hidden="true"><use href="#icon-favorite"/></svg>
                         <?php echo esc_html($topMenuItems[$i]->title) ?>
                     </a>
 
                     <!-- Seach menu with button -->
                     <label class="relative cursor-pointer p-1 mt-2 2xl:mt-6" for="search-menu">
                         <input class="peer hidden" type="checkbox" id="search-menu" />
-                        <span class="material-symbols-outlined text-4xl z-999 peer-checked:z-999 hover:text-brand-red link-transition">
-                            search
-                        </span>
+                        <svg class="icon text-4xl z-999 peer-checked:z-999 hover:text-brand-red link-transition" aria-hidden="true"><use href="#icon-search"/></svg>
 
                         <div class="fixed inset-0 peer-checked:z-999 hidden h-full w-full bg-brand-solidgrey/80 backdrop-blur-sm peer-checked:block">
                             &nbsp;
@@ -126,9 +125,7 @@
                                 <div class="wrapper h-full">
                                     <div class="relative h-full flex justify-center items-center">
 
-                                        <span class="material-symbols-outlined text-4xl absolute right-4 top-4 hover:text-brand-red link-transition cursor-pointer" for="mobile-menu-top">
-                                            close
-                                        </span>
+                                        <svg class="icon text-4xl absolute right-4 top-4 hover:text-brand-red link-transition cursor-pointer" for="mobile-menu-top" aria-hidden="true"><use href="#icon-close"/></svg>
 
                                         <?php get_template_part('template-parts/menus/search'); ?>
                                     </div>
@@ -141,17 +138,13 @@
                     <!-- Mobile menu with button-->
                     <label class="relative cursor-pointer p-1 mt-2 2xl:mt-6 2xl:hidden" for="mobile-menu">
                         <input class="peer hidden" type="checkbox" id="mobile-menu" />
-                        <span class="material-symbols-outlined text-4xl hover:text-brand-red link-transition">
-                            menu
-                        </span>
+                        <svg class="icon text-4xl hover:text-brand-red link-transition" aria-hidden="true"><use href="#icon-menu"/></svg>
                         <div class="fixed inset-0 z-999 hidden h-full w-full bg-brand-solidgrey/80 backdrop-blur-sm peer-checked:block">
                             &nbsp;
                         </div>
                         <div class="fixed top-0 right-0 z-999 h-full w-full flex justify-end translate-x-full overflow-y-auto overscroll-y-none transition duration-300 peer-checked:translate-x-0">
                             <div class="relative h-full w-full px-8 py-12 bg-black/80 shadow-2xl sm:w-1/2 overflow-y-auto overscroll-auto">
-                                <span class="material-symbols-outlined text-4xl absolute right-4 top-4 hover:text-brand-red link-transition">
-                                    close
-                                </span>
+                                <svg class="icon text-4xl absolute right-4 top-4 hover:text-brand-red link-transition" aria-hidden="true"><use href="#icon-close"/></svg>
 
                                 <?php get_template_part('template-parts/menus/mobile-menu'); ?>
                             </div>

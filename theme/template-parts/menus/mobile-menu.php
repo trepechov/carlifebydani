@@ -57,7 +57,7 @@
         ?>
       <li>
           <a href='<?php echo esc_url($topMenuItems[$i]->url) ?>' class="button" target="_blank">
-              <span class="material-symbols-outlined -ml-1">favorite</span>
+              <svg class="icon -ml-1" aria-hidden="true"><use href="#icon-favorite"/></svg>
               <?php echo esc_html($topMenuItems[$i]->title) ?>
           </a>
       </li>

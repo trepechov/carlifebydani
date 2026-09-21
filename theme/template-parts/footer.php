@@ -74,9 +74,7 @@
                     </div>
                 </div>
                 <a class="w-24 h-24 flex items-center justify-center rounded-full bg-brand-red text-lg hover:bg-brand-solidgrey" href="#">
-                    <span class="material-symbols-outlined text-7xl mb-1">
-                        keyboard_arrow_up
-                    </span>
+                    <svg class="icon text-7xl mb-1" aria-hidden="true"><use href="#icon-keyboard-arrow-up"/></svg>
                 </a>
             </div>
         </div>
