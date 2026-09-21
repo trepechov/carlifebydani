@@ -32,6 +32,10 @@ class ENA_Settings {
             'collection_time'       => '09:00',
             'article_age_limit'     => '1d',
             'sources'               => '',
+            // Emails the site admin (get_option('admin_email')) whenever
+            // ENA_Logger::log_error() fires, with the run's full transcript
+            // attached for debugging — see ENA_Logger::maybe_email_alert().
+            'error_alert_enabled'   => true,
             // Off-topic filter dictionaries (guidance injected into the analyze() prompt, not a
             // literal keyword match) + the Bulgarian event-descriptor vocabulary for tags.
             // One item per line (commas within a line are also allowed).

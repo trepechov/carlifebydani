@@ -27,7 +27,7 @@ class ENA_Plugin {
 
     private function __construct() {
         $this->settings   = new ENA_Settings();
-        $this->logger     = new ENA_Logger();
+        $this->logger     = new ENA_Logger( $this->settings );
         $this->http       = new ENA_HTTP();
         $this->auth       = new ENA_Google_Auth( $this->settings );
 

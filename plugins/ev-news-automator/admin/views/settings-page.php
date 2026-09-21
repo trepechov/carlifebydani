@@ -159,6 +159,17 @@
                 </td>
             </tr>
             <tr>
+                <th scope="row"><label for="error_alert_enabled">Email error alerts</label></th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="error_alert_enabled" id="error_alert_enabled" value="1"
+                               <?php checked( $settings->get( 'error_alert_enabled' ), true ); ?>>
+                        Email <code><?php echo esc_html( get_option( 'admin_email' ) ); ?></code> when the plugin logs an error
+                    </label>
+                    <p class="description">Sends the run's full transcript for debugging. Rate-limited to one email per 15 minutes so a run with several failures doesn't flood the inbox — every error is still recorded in the run log on the Dashboard either way.</p>
+                </td>
+            </tr>
+            <tr>
                 <th scope="row"><label for="sources">News Sources</label></th>
                 <td>
                     <textarea name="sources" id="sources" rows="10" class="large-text"><?php echo esc_textarea( $settings->get( 'sources' ) ); ?></textarea>

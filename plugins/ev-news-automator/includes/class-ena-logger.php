@@ -3,8 +3,20 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ENA_Logger {
 
+    // Minimum gap between two alert emails, regardless of how many errors are
+    // logged in between — a bad run can call log_error() once per failing
+    // source, and every one of those is still captured in the run log/
+    // transcript either way, so nothing is lost by not emailing each one.
+    private const ALERT_COOLDOWN  = 15 * MINUTE_IN_SECONDS;
+    private const ALERT_LOCK_KEY  = 'ena_error_alert_lock';
+
     private string $current_trigger = 'manual';
     private string $current_phase   = '';
+    private ?ENA_Settings $settings;
+
+    public function __construct( ?ENA_Settings $settings = null ) {
+        $this->settings = $settings;
+    }
 
     public function log( string $phase, string $level, string $message, array $context = [] ): void {
         $entry = [
@@ -62,6 +74,65 @@ class ENA_Logger {
     public function log_error( string $phase, string $message, array $context = [] ): void {
         $this->log( $phase, 'error', $message, $context );
         $this->step( $phase, 'error', $message );
+        $this->maybe_email_alert( $phase, $message, $context );
+    }
+
+    /**
+     * Emails the site admin on error, gated by the "Email error alerts"
+     * setting (default on) and a cooldown so one bad run — e.g. every
+     * configured source failing in the same collection — sends at most one
+     * email rather than one per failure. Every error is captured in the run
+     * log/transcript regardless of whether an email goes out.
+     */
+    private function maybe_email_alert( string $phase, string $message, array $context ): void {
+        $enabled = $this->settings
+            ? (bool) $this->settings->get( 'error_alert_enabled', true )
+            : true;
+        if ( ! $enabled ) return;
+
+        if ( get_transient( self::ALERT_LOCK_KEY ) ) return;
+        set_transient( self::ALERT_LOCK_KEY, 1, self::ALERT_COOLDOWN );
+
+        $site   = wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
+        $to     = get_option( 'admin_email' );
+        $when   = ( new DateTimeImmutable() )->format( 'Y-m-d H:i:s' );
+        $subject = sprintf( '[%s] EV News Automator error: %s', $site, $phase );
+
+        $lines = [
+            "An error was logged by the EV News Automator plugin.",
+            "",
+            "Site:     " . home_url( '/' ),
+            "Time:     {$when}",
+            "Trigger:  {$this->current_trigger}",
+            "Phase:    {$phase}",
+            "Message:  {$message}",
+        ];
+
+        if ( ! empty( $context ) ) {
+            $lines[] = "Context:";
+            $lines[] = wp_json_encode( $context, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+        }
+
+        $transcript = $this->transcript();
+        if ( ! empty( $transcript ) ) {
+            $lines[] = "";
+            $lines[] = "--- Run transcript (" . count( $transcript ) . " steps) ---";
+            foreach ( $transcript as $entry ) {
+                $lines[] = sprintf(
+                    '[%s] %-24s %-6s %s',
+                    $entry['time']   ?? '',
+                    $entry['step']   ?? '',
+                    $entry['status'] ?? '',
+                    $entry['detail'] ?? ''
+                );
+            }
+        }
+
+        $lines[] = "";
+        $lines[] = "Full run log and controls: " . admin_url( 'admin.php?page=ev-news-automator' );
+        $lines[] = "This alert can be disabled in EV News → Settings.";
+
+        wp_mail( $to, $subject, implode( "\n", $lines ) );
     }
 
     public function all(): array {

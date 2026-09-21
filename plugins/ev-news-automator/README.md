@@ -74,6 +74,7 @@ ln -s /path/to/repo/theme carlifebydani
 | Collection Interval | How often the cron job runs (15 min / 30 min / 1 hr / 6 hr / 12 hr / daily). |
 | Podcast Recording | Day and time the podcast script generation cron fires. |
 | News Sources | One source per line: `https://example.com/feed rss` or `https://example.com html`. Method defaults to `rss`. |
+| Email error alerts | On by default. Emails `admin_email` whenever the plugin logs an error, with the run's full transcript attached. Rate-limited to one email per 15 minutes. |
 
 ### Google service account permissions
 
@@ -212,7 +213,7 @@ No new WP page is created per recording session. To start a new session after a 
 ```
 ENA_Plugin (singleton)
 ├── ENA_Settings        — wp_options wrapper
-├── ENA_Logger          — run log + per-step transcript stored in wp_options
+├── ENA_Logger          — run log + per-step transcript stored in wp_options; emails admin_email on error
 ├── ENA_HTTP            — wp_remote_* wrapper with SSRF protection
 ├── ENA_Google_Auth     — service account → JWT → OAuth2 token (cached in wp_options)
 ├── ENA_Sheets          — Google Sheets API (read, append, update, delete, trim)
