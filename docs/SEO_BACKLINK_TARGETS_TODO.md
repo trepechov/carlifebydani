@@ -33,14 +33,20 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 
 | Status | Post ID | Title | Category | Backlink source(s) | GSC 90d (impr / clicks / CTR / pos) | Report |
 |---|---|---|---|---|---|---|
+| `[ ]` | 420 | Mercedes EQS 580 4Matic – Комфорт на всяка цена | ev-review | 9202 (outbound) | 3806 / 44 / 1.16% / 6.5 (2026-06-25→09-22) | — |
+| `[ ]` | 6823 | Volvo EX90 – лукс, иновация и безопасност | publications | 8976 (outbound) | 828 / 8 / 0.97% / 4.8 (2026-06-25→09-22) | — |
 | `[ ]` | 8075 | Eldrive откри втора сателитна зарядна станция в София | publications | 9350 (inbound-edit) | 314 / 6 / 1.91% / 8.2 | — |
 | `[ ]` | 7631 | Hyundai Concept 3 – за първи път в България | publications | 9383 (inbound-edit) | 95 / 1 / 1.05% / 7.0 | — |
 | `[ ]` | 3032 | MG 9 EV – Китайско чудо прикрито като Британска класика | publications | 4115 (outbound) | 91 / 1 / 1.10% / 5.1 | — |
 | `[ ]` | 7351 | Tesla Lightshow – Ihtiman Airport LBHT | publications | 5350 (outbound) | 80 / 5 / 6.25% / 6.3 | — |
 | `[ ]` | 1509 | Защо спряха автобусите в Осло? Какво ново около Tesla Model Y Juniper? | ev-news | 5240 (outbound) | 0 / 0 / — / — (no impressions in window) | — |
 | `[ ]` | 5016 | Сравнение при зареждане на Hyundai IONIQ 5 N, Tesla S Plaid и Tesla Y Long Range | publications | 3957 (outbound) | 336 / 3 / 0.89% / 5.8 | — |
+| `[ ]` | 7491 | Mercedes CLA (електрически): платформа, задвижвания, батерии, аеродинамика и технологии | publications | 9202 (outbound) | 468 / 8 / 1.71% / 6.6 (2026-06-25→09-22) | — |
 | `[ ]` | 196 | Nissan Ariya – „Най-забавният педал на спирачката" | ev-review | 1027, 2622 (both outbound) | 0 / 0 / — / — (no impressions in window) | — |
 | `[ ]` | 3946 | Tesla ще представи Robotaxi на 8ми Август | publications | 9447 (outbound) | 0 / 0 / — / — (no impressions in window) | — |
+| `[ ]` | 8340 | #EV146 – FSD в Холандия; Model S/X Signature Edition | ev-news | 9486 (outbound) | not pulled this run | — |
+| `[ ]` | 7821 | #EV127 – Cybertruck с FSD в Прага! | ev-news | 9486 (outbound) | not pulled this run | — |
+| `[ ]` | 8061 | #EV136 – Volvo официално представи новия EX60 | ev-news | 8976 (outbound, same-story-sequel citation, new→old) | 3 / 0 / 0% / 8.0 (2026-06-25→09-22) | — |
 
 GSC window: 2026-06-06 → 2026-09-03, page-dimension pull filtered to each
 URL (9099's baseline below uses its own original 2026-05-15→2026-08-13

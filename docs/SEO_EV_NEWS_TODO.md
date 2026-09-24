@@ -217,6 +217,15 @@ Verified present in the post list as live posts alongside their originals:
       a cannibalization blocker.
 - [ ] `ev80-rivian-i-vw-obedinyavat-sili-za-po-dobro-badeshte` (5742) and
       `ev80-audi-startira-nova-marka-v-kitai-zaedno-sys-saic` (5691) — same number, different stories
+- [ ] `clone-ev157-clbd-coffee-day-2-vv-volvo-premierata-na-ex60-v-blgariya` — **different pattern
+      from the rows above: this one is a true orphan, not a second live post.** `/wp/v2/posts`
+      lookup by that slug returns nothing (confirmed 2026-09-24) — no post exists at that URL —
+      yet it earned **50 impressions / 0 clicks / pos 9.0** in the trailing 90d GSC pull, more
+      impressions than the real post (`ev157-...`, id 8976) at **11 impressions / pos 14.7** over
+      the same window. Found while researching 8976 for `seo-article-optimize`. Worth a redirect
+      (301 `clone-ev157-...` → the real `ev157-...` URL) to recover that impression share rather
+      than leaving it pointed at a 404 — a WP-admin/hosting-level fix, outside this pipeline's
+      write scope.
 - [ ] `ev90-tesla-model-y-juniper-2025-be-predstaven-v-evropa` (6294) and
       `ev91-tesla-model-y-juniper-2025-be-predstaven-v-evropa` (6350) — identical titles
 - [ ] `ev103-...` (6898) and `ev104-byd-navliza-v-rumniya-...` (6906) — identical titles,
