@@ -32,7 +32,7 @@
                 </label>
             <?php } ?>
         </div>
-        <p class="mt-2 text-base overflow-hidden transition-all ease-in-out duration-300 opacity-0 max-h-0 peer-has-[:checked]:max-h-60 peer-has-[:checked]:opacity-100"><?php echo esc_html($args['article']->description) ?></p>
+        <p class="mt-2 text-base overflow-hidden transition-all ease-in-out duration-300 opacity-0 max-h-0 peer-has-[:checked]:max-h-[40rem] peer-has-[:checked]:opacity-100"><?php echo esc_html($args['article']->description) ?></p>
     </div>
 
     <div class="flex gap-3 items-center h-20">

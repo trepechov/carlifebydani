@@ -617,6 +617,18 @@ video {
   padding-right: 4%;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 .pointer-events-none {
   pointer-events: none;
 }
@@ -2335,8 +2347,8 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.peer:has(:checked) ~ .peer-has-\[\:checked\]\:max-h-60 {
-  max-height: 15rem;
+.peer:has(:checked) ~ .peer-has-\[\:checked\]\:max-h-\[40rem\] {
+  max-height: 40rem;
 }
 
 .peer:has(:checked) ~ .peer-has-\[\:checked\]\:opacity-100 {
