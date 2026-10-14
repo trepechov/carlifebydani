@@ -7,11 +7,11 @@ WordPress plugin for **Car Life by Dani**. Collects English-language EV news fro
 ## What it does
 
 1. **Collects** articles from RSS feeds and HTML pages on a configurable schedule (cron or manual trigger).
-2. **Summarises** each new article — sends the title and excerpt to an OpenRouter AI model, receives a Bulgarian headline and 2–3 sentence summary.
+2. **Summarises** each new article — scrapes the article body (first 1500 chars; falls back to the RSS excerpt) and sends it with the title and publication date to an OpenRouter AI model, which returns a Bulgarian headline and a 2–3 sentence answer-first (AEO) summary. The writing rules live in editable prompt files — see [AEO content rules](#aeo-content-rules).
 3. **Stores** results in a Google Sheet (one tab per recording session). Deduplicates against existing URLs. Trims the sheet to a configurable maximum.
 4. **Tracks engagement** — syncs `ev_news_click`, `ev_news_upvote`, and `ev_news_downvote` GA4 event counts back into the sheet on every collection run. After syncing, sorts the sheet by upvote DESC → pub_date DESC → added_date DESC and trims oldest zero-upvote rows to the configured maximum.
 5. **Syncs to live** — pushes the current sheet tab's articles into a WordPress option (`ev_news_live_articles`). Display order: articles added *today* (calendar-day match on `added_date`, same cutoff the "new" badge uses — not a rolling 24-hour window) first (sheet order preserved), followed by older articles (sheet order preserved). The theme reads this option to render the **EV News Feed** page (`/ev-news-feed/`) — a standalone public page with an Instagram-style mobile feed and a desktop grid layout. Each card shows upvote/downvote buttons; votes are stored in a first-party cookie and fired as GA4 events.
-6. **Generates a podcast script** on recording day — re-syncs GA4 engagement and re-sorts the sheet (same upvote DESC → pub_date DESC → added_date DESC order as the daily collection run, so the script always matches what's in the sheet), then for each of the top N articles writes the sheet's title, link, verbatim description, and an AI-generated extended summary (8–10 sentences, more detail than the description) to a configured Google Doc — no article scraping needed.
+6. **Generates a podcast script** on recording day — re-syncs GA4 engagement and re-sorts the sheet (same upvote DESC → pub_date DESC → added_date DESC order as the daily collection run, so the script always matches what's in the sheet), then for each of the top N articles writes the sheet's title, link, verbatim description, and an AI-generated «Резюме» brief to a configured Google Doc. The brief is written from the scraped article body in AEO shape: one exact question a listener would ask, then a flowing answer paragraph (falls back to title + description if the page can't be fetched).
 7. **Adds a single article manually** — from the Dashboard, an admin can paste a URL not covered by any configured source. It's scraped and summarised through the exact same AI call as the automatic pipeline, then appended, sorted, trimmed, and synced to the live feed like a normal collection run (skipping the GA4 refresh and push-notification steps, which don't apply to a single ad-hoc add).
 
 ---
@@ -129,16 +129,25 @@ wp eval-file wp-content/plugins/ev-news-automator/tests/test-01-scraper-openrout
 # Leaves the sheet in its original state.
 wp eval-file wp-content/plugins/ev-news-automator/tests/test-02-google-sheets.php
 
-# Test 03 — Google Docs + Drive
-# Creates a file in the configured Drive folder, appends a test podcast
-# section to the configured podcast doc, and generates an AI podcast script.
+# Test 03 — Google Docs
+# Appends a test section to the test podcast doc, then generates AEO «Резюме»
+# briefs for 3 rows of a tab (default 20.10.2026) and writes them to the doc.
 # The appended content must be removed manually from the Google Doc afterwards.
-wp eval-file wp-content/plugins/ev-news-automator/tests/test-03-google-docs.php
+wp eval-file wp-content/plugins/ev-news-automator/tests/test-03-google-docs.php [tab]
 
 # Test 04 — Google Analytics
 # Verifies the service account can query the GA4 property and fetch
 # ev_news_click events. Zero results is expected on a fresh install.
 wp eval-file wp-content/plugins/ev-news-automator/tests/test-04-google-analytics.php
+
+# Test 05 — AEO prompt A/B (exploration)
+# Legacy vs production vs tests/prompts/*.txt variants on the same articles → side-by-side report.
+wp eval-file wp-content/plugins/ev-news-automator/tests/test-05-aeo-prompt-ab.php [tab|rss] [limit] [body|excerpt]
+
+# Test 06 — analyze() contract + AEO regression gate (run after any prompt change)
+# Fails on contract/format breaks; reports lengths, on_topic agreement with the pre-1.3.0
+# prompt, numbers not found in the source, and markets not named early.
+wp eval-file wp-content/plugins/ev-news-automator/tests/test-06-analyze-contract.php [tab|rss] [limit] [body|excerpt]
 ```
 
 Test output (JSON logs) is written to `tests/output/` and is git-ignored.
@@ -152,7 +161,20 @@ Run the suite after every new deployment or configuration change:
 [ ] test-02 passes  — Google Sheets read/write working
 [ ] test-03 passes  — Google Docs append and Drive folder working
 [ ] test-04 passes  — GA4 property access granted, custom dimension registered
+[ ] test-06 passes  — after any change in prompts/ (AEO contract + regression gate)
 ```
+
+---
+
+## AEO content rules
+
+The Bulgarian titles, descriptions and the podcast «Резюме» are written with answer-engine (AEO) rules. They live as editable prompt files in `prompts/`:
+
+- `prompts/aeo-rules.md`: shared rules (answer first, explicit subjects, absolute dates, attribution, market/audience rules)
+- `prompts/analysis-system.md`: title + description + on_topic/tags/region (sheet columns A/B/J/K/L)
+- `prompts/podcast-summary.md`: the «Резюме» brief in the podcast Doc
+
+Rationale, soft length targets and how to test a change: [docs/AEO_CONTENT_GUIDELINES.md](docs/AEO_CONTENT_GUIDELINES.md).
 
 ---
 
