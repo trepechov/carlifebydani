@@ -34,7 +34,7 @@ class ENA_Collector {
         $new_articles  = [];
         $batch_seen    = [];
 
-        $this->logger->step( 'existing_urls', 'ok', count( $existing_urls ) . ' URLs already in active sheet (used for dedup)' );
+        $this->logger->step( 'existing_urls', 'ok', count( $existing_urls ) . ' URLs already in the recent session tabs (used for dedup)' );
 
         $cutoff   = $this->settings->article_age_cutoff();
         $html_cap = 5; // HTML pages carry no dates; top N items are assumed most recent.
@@ -161,7 +161,7 @@ class ENA_Collector {
 
         $existing_urls = $this->storage->existing_urls();
         if ( isset( $existing_urls[ $url ] ) ) {
-            return new WP_Error( 'duplicate_url', 'This article is already in the active sheet.' );
+            return new WP_Error( 'duplicate_url', 'This article is already in one of the recent session tabs.' );
         }
 
         $body = $this->scraper->extract_body( $url );
