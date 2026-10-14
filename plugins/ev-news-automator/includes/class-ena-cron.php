@@ -51,6 +51,10 @@ class ENA_Cron {
         $plugin = ENA_Plugin::instance();
         $plugin->logger->begin_run( 'cron', 'collection' );
 
+        // Each new article now costs a page fetch (body for analyze()) on top of the OpenRouter call —
+        // lift the PHP time limit like the background worker does (ENA_Ajax::handle_bg_worker()).
+        if ( function_exists( 'set_time_limit' ) ) @set_time_limit( 0 );
+
         try {
             $result = self::run_pipeline( $plugin );
             $plugin->logger->end_run( $result );

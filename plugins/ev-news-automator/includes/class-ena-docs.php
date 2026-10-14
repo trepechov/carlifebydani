@@ -204,9 +204,35 @@ class ENA_Docs {
                 $cursor += $dlen;
             }
 
-            // ── Extended summary (AI-generated, longer than the description) ─
+            // ── «Резюме» (AI-generated AEO brief: question + answer paragraph) ─
+            // ENA_OpenRouter::podcast_summary() returns "Въпрос: …?\nОтговор: …". Failure placeholders
+            // ("[AI резюме …]") don't start with the question label and fall through to the plain branch.
             $summary = trim( $s['summary'] ?? '' );
-            if ( $summary !== '' ) {
+            if ( str_starts_with( $summary, ENA_OpenRouter::BRIEF_QUESTION_LABEL ) ) {
+                $heading = "Резюме:\n";
+                $brief   = $summary . "\n\n";
+                $requests[] = $this->req_insert( $heading . $brief, $cursor );
+                $requests[] = $this->req_text_style( $cursor, $cursor + $this->utf16_len( 'Резюме:' ), [
+                    'bold' => true,
+                ], 'bold' );
+
+                $brief_start = $cursor + $this->utf16_len( $heading );
+                $first_line  = strstr( $summary, "\n", true );
+                $first_line  = $first_line === false ? $summary : $first_line;
+                $requests[] = $this->req_text_style( $brief_start, $brief_start + $this->utf16_len( $first_line ), [
+                    'bold' => true,
+                ], 'bold' );
+
+                $answer_pos = mb_strpos( $summary, ENA_OpenRouter::BRIEF_ANSWER_LABEL );
+                if ( $answer_pos !== false ) {
+                    $label_start = $brief_start + $this->utf16_len( mb_substr( $summary, 0, $answer_pos ) );
+                    $requests[] = $this->req_text_style( $label_start, $label_start + $this->utf16_len( ENA_OpenRouter::BRIEF_ANSWER_LABEL ), [
+                        'bold' => true,
+                    ], 'bold' );
+                }
+
+                $cursor += $this->utf16_len( $heading . $brief );
+            } elseif ( $summary !== '' ) {
                 $summary_text = "Резюме: {$summary}\n\n";
                 $slen         = $this->utf16_len( $summary_text );
                 $requests[] = $this->req_insert( $summary_text, $cursor );

@@ -9,6 +9,7 @@ class ENA_Podcast {
     private ENA_Sheets     $storage;
     private ENA_Analytics  $analytics;
     private ENA_OpenRouter $openrouter;
+    private ENA_Scraper    $scraper;
     private ENA_Docs       $docs;
     private ENA_Logger     $logger;
     private ENA_Settings   $settings;
@@ -17,6 +18,7 @@ class ENA_Podcast {
         ENA_Sheets     $storage,
         ENA_Analytics  $analytics,
         ENA_OpenRouter $openrouter,
+        ENA_Scraper    $scraper,
         ENA_Docs       $docs,
         ENA_Logger     $logger,
         ENA_Settings   $settings
@@ -24,6 +26,7 @@ class ENA_Podcast {
         $this->storage    = $storage;
         $this->analytics  = $analytics;
         $this->openrouter = $openrouter;
+        $this->scraper    = $scraper;
         $this->docs       = $docs;
         $this->logger     = $logger;
         $this->settings   = $settings;
@@ -58,7 +61,8 @@ class ENA_Podcast {
         $top_n = max( 1, (int) $this->settings->get( 'max_script_articles', 10 ) );
         $top   = array_slice( $rows, 0, $top_n );
 
-        // Step 4: generate summaries from existing title + description — no scraping needed.
+        // Step 4: generate the AEO «Резюме» brief per article from the scraped article body
+        // (falls back to the sheet title + description when the page can't be fetched).
         $sections      = [];
         $total         = count( $top );
         $stopped_early = false; // set once a 429/401 hits, so remaining articles skip the API call too.
@@ -73,7 +77,12 @@ class ENA_Podcast {
                 if ( $i > 0 ) {
                     sleep( self::REQUEST_DELAY_SECONDS );
                 }
-                $generated = $this->openrouter->podcast_summary( $row['title'], $row['description'] );
+                $body      = $this->scraper->extract_body( $row['link'] );
+                $body_text = is_wp_error( $body ) ? '' : $body;
+                if ( $body_text === '' ) {
+                    $this->logger->step( 'podcast_body', 'warn', "article " . ( $i + 1 ) . "/{$total} — body unavailable, brief uses title + description: {$row['link']}" );
+                }
+                $generated = $this->openrouter->podcast_summary( $row['title'], $row['description'], $body_text, (string) ( $row['pub_date'] ?? '' ) );
 
                 if ( is_wp_error( $generated ) ) {
                     if ( ENA_OpenRouter::is_fatal_batch_error( $generated ) ) {
@@ -103,7 +112,7 @@ class ENA_Podcast {
                 'tags'        => $row['tags'] ?? '',    // comma-separated Bulgarian tags from analyze()
                 'region'      => $row['region'] ?? '',  // ISO region code(s) the article is about
                 'description' => $row['description'], // copied verbatim from the sheet
-                'summary'     => $summary,             // longer AI-generated write-up
+                'summary'     => $summary,             // AEO brief: "Въпрос: …?\nОтговор: …" (or a failure placeholder)
             ];
         }
 
