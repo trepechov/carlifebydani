@@ -89,19 +89,19 @@ the `/ev-news-feed/` hub. Each episode should own its distinctive story.
 | | Post ID | Slug | Impr | CTR | Pos |
 |---|---|---|---|---|---|
 | [x] | 7333 | `ev114-ima-li-registriran-tesla-cybertruck-v-blgariya` | 530 | 4.1% | 6.9 |
-| [ ] | 5240 | `evn67-novi-spekulaczii-okolo-tesla-model-y-i-predstavitelstvo-v-blgariya` | 212 | 0.9% | 10.9 |
-| [ ] | 8026 | `ev133-izminalata-2025-rekordni-prodazhbi-na-novi-avtomobili-v-blgariya` | 204 | 0.9% | 7.4 |
-| [ ] | 6898 | `ev103-byd-navliza-v-rumniya-s-brzoto-razshiryavane-na-trgovskata-si-mrezha` | 138 | 0.7% | 7.7 |
-| [ ] | 8721 | `ev152-ferrari-imame-elektrichesko-ferari-mercedes-iskame-da-schupim-fizikata` | 99 | 1.0% | 7.2 |
-| [ ] | 7472 | `ev120` | 98 | 4.0% | 8.0 |
-| [ ] | 5673 | `evn79-kia-ev2-niskobyudzhetna-kola-otnovo` | 97 | 2.0% | 8.8 |
-| [ ] | 7367 | `ev117-mercedes-glc-eq-2026-vs-bmw-ix3-2026` | 95 | 2.1% | 6.8 |
+| [x] | 5240 | `evn67-novi-spekulaczii-okolo-tesla-model-y-i-predstavitelstvo-v-blgariya` | 212 | 0.9% | 10.9 |
+| [x] | 8026 | `ev133-izminalata-2025-rekordni-prodazhbi-na-novi-avtomobili-v-blgariya` | 204 | 0.9% | 7.4 |
+| [x] | 6898 | `ev103-byd-navliza-v-rumniya-s-brzoto-razshiryavane-na-trgovskata-si-mrezha` | 138 | 0.7% | 7.7 |
+| [x] | 8721 | `ev152-ferrari-imame-elektrichesko-ferari-mercedes-iskame-da-schupim-fizikata` | 99 | 1.0% | 7.2 |
+| [x] | 7472 | `ev120` | 98 | 4.0% | 8.0 |
+| [x] | 5673 | `evn79-kia-ev2-niskobyudzhetna-kola-otnovo` | 97 | 2.0% | 8.8 |
+| [x] | 7367 | `ev117-mercedes-glc-eq-2026-vs-bmw-ix3-2026` | 95 | 2.1% | 6.8 |
 | [x] | 1751 | `evn41-tesla-my-juniper-se-otlaga-za-nqkolko-meseca` | 65 | 4.6% | **2.7** |
-| [ ] | 5343 | `evn70-hyundai-ioniq-6n-novi-danni` | 65 | 4.6% | 9.3 |
-| [ ] | 8319 | `ev144-byd-veche-e-v-blgariya` | 54 | 1.8% | 7.1 |
-| [ ] | 5574 | `evn75-organizacziyata-na-naj-golyamoto-svetlinno-shou-v-blgariyaevn75` | 52 | 5.7% | 6.8 |
-| [ ] | 7984 | `ev131-edin-gigacast-po-ksno` | 30 | 6.6% | 5.4 |
-| [ ] | 7899 | `ev130-kak-se-zhivee-s-lucid-air-saphire` | 30 | 3.3% | 6.5 |
+| [-] | 5343 | `evn70-hyundai-ioniq-6n-novi-danni` | 65 | 4.6% | 9.3 |
+| [x] | 8319 | `ev144-byd-veche-e-v-blgariya` | 54 | 1.8% | 7.1 |
+| [x] | 5574 | `evn75-organizacziyata-na-naj-golyamoto-svetlinno-shou-v-blgariyaevn75` | 52 | 5.7% | 6.8 |
+| [-] | 7984 | `ev131-edin-gigacast-po-ksno` | 30 | 6.6% | 5.4 |
+| [-] | 7899 | `ev130-kak-se-zhivee-s-lucid-air-saphire` | 30 | 3.3% | 6.5 |
 | [x] | 9248 | `evn-161-ilon-mask-zagatna-za-slivane-mezhdu-tesla-i-spacex-osthe-tazi-godina` | — | — | — |
 
 Notes on individual rows:
@@ -149,7 +149,19 @@ see `SEO_SKILLS_REFACTOR.md` §W6).
       with 7333's `Tesla Cybertruck България`.
 - **1751** sat at position **2.7** with 4.6% CTR — position 2–3 should pull 10–15%. Addressed
   2026-08-13 (see note above); watch GSC in 2–4 weeks to see whether the snippet was the cause.
-- **6898** at 0.7% CTR is the worst ratio in the set.
+- **5343 (EVN70) — SKIPPED 2026-10-22.** ≈14 impr/90d; the episode has no real IONIQ 6N data (hosts judged the clip fake, t=9405) and 7189 / 7303 / 5664 already own the 6N topic. Report: [`2026-10-22-5343-evn70-ioniq-6n.md`](../reports/seo-metatags/2026-10-22-5343-evn70-ioniq-6n.md). No WordPress writes. `[-]` = skipped by decision.
+- **5240 (EVN67)** — checkbox was stale; done 2026-09-04 per ledger.
+- **5574 (EVN75) — DONE 2026-10-22.** Phase B (165 words, links to older EVN71/EVN72) + metatags; keyphrase `организация на светлинно шоу с Tesla` (≈0 volume; the 390-vol `светлинно шоу велико търново` is a different intent, and EVN71 owns `Tesla Велико Търново`). 90d GSC was 0 impressions. Report: [`2026-10-22-5574-evn75-svetlinno-shou.md`](../reports/seo-metatags/2026-10-22-5574-evn75-svetlinno-shou.md).
+- **5673 (EVN79) — DONE 2026-10-22.** Keyphrase `Kia EV2` (390 vol, 720/mo recent, no competing page). Phase B + metatags + 4 tags applied. Report: [`2026-10-22-5673-evn79-kia-ev2.md`](../reports/seo-metatags/2026-10-22-5673-evn79-kia-ev2.md).
+- **6898 (EV103) — DONE 2026-10-22.** Keyphrase `BYD Румъния` (already pos 7.7, 56 impr, 0 clicks). Phase B + metatags + tag BYD. Report: [`2026-10-22-6898-ev103-byd-romania.md`](../reports/seo-metatags/2026-10-22-6898-ev103-byd-romania.md).
+- **7367 (EV117) — DONE 2026-10-22.** Keyphrase `BMW iX3 2026` (320/mo; page now ~8 impr). Phase B + metatags + tags BMW/Mercedes. Report: [`2026-10-22-7367-ev117-glc-eq-vs-ix3.md`](../reports/seo-metatags/2026-10-22-7367-ev117-glc-eq-vs-ix3.md).
+- **7472 (EV120) — DONE 2026-10-22.** Keyphrase `електрически автобус Габрово София` (page already pos 5.8 for `електрически автобус`); the 720-vol `автобус габрово софия` is timetable intent and deliberately not targeted. Phase B + metatags, no tags (no in-band автобус tag exists). Report: [`2026-10-22-7472-ev120-elektricheski-avtobus-gabrovo.md`](../reports/seo-metatags/2026-10-22-7472-ev120-elektricheski-avtobus-gabrovo.md).
+- **7899 (EV130) — SKIPPED 2026-10-22.** Title promises "how to live with a Lucid Air" but the episode never discusses a Lucid Air (it is FSD in Munich, iX3, solid-state batteries); no honest Phase B/metatags possible. Report: [`2026-10-22-7899-ev130-lucid-air.md`](../reports/seo-metatags/2026-10-22-7899-ev130-lucid-air.md). Fix the title upstream first.
+- **7984 (EV131) — SKIPPED 2026-10-22.** Behind-the-scenes episode of the team's own Xmas GigaCast; zero impressions now, `gigacast` autocomplete is about the manufacturing process, and publication 7912 owns the event. Report: [`2026-10-22-7984-ev131-gigacast.md`](../reports/seo-metatags/2026-10-22-7984-ev131-gigacast.md).
+- **8026 (EV133) — DONE 2026-10-22.** Keyphrase `продажби на нови автомобили в България` (≈20/mo, 0 impr 90d — low-value, done because the episode genuinely answers its title). Phase B + metatags + tags BYD/Lucid. Report: [`2026-10-22-8026-ev133-prodazhbi-2025.md`](../reports/seo-metatags/2026-10-22-8026-ev133-prodazhbi-2025.md).
+- **8319 (EV144) — DONE 2026-10-22.** Keyphrase `BYD представителство в България` (40/mo) — deliberately NOT the 6 600/mo head term `byd българия`, which belongs to publication 8227 (the post links to it). Phase B + metatags + tag BYD. Report: [`2026-10-22-8319-ev144-byd-bulgaria.md`](../reports/seo-metatags/2026-10-22-8319-ev144-byd-bulgaria.md).
+- **8721 (EV152) — DONE 2026-10-22.** Keyphrase `електрическо Ferrari` (110/mo, page already pos 1.0; `ferrari luce` 2 400/mo). Phase B + metatags; tags left as they were. Report: [`2026-10-22-8721-ev152-elektricheski-ferrari.md`](../reports/seo-metatags/2026-10-22-8721-ev152-elektricheski-ferrari.md).
+- **6898** at 0.7% CTR was the worst ratio in the set.
 
 ## P1 — the hub page itself
 
@@ -228,7 +240,7 @@ Verified present in the post list as live posts alongside their originals:
       write scope.
 - [ ] `ev90-tesla-model-y-juniper-2025-be-predstaven-v-evropa` (6294) and
       `ev91-tesla-model-y-juniper-2025-be-predstaven-v-evropa` (6350) — identical titles
-- [ ] `ev103-...` (6898) and `ev104-byd-navliza-v-rumniya-...` (6906) — identical titles,
+- [x] `ev103-...` (6898) and `ev104-...` (6906) — **resolved (verified 2026-10-22): 6906 is now `#EV104 – Дали е време за Tesla MY Performance`; no duplicate remains.** Was: identical titles,
       and 6898 is in the P1 list above. Resolve the duplicate *before* writing its meta.
 
 **URLs earning impressions that are NOT in the current post list** — these need checking for
