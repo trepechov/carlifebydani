@@ -33,6 +33,7 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 
 | Status | Post ID | Title | Category | Backlink source(s) | GSC 90d (impr / clicks / CTR / pos) | Report |
 |---|---|---|---|---|---|---|
+| `[ ]` | 1042 | BMW i4 M50 (G26) – По-бързо от Tesla M3LR, но с по-малък пробег | ev-review | 8824 (outbound, 2026-10-22) | 1000 / 9 / 0.90% / 6.1 (2026-06-18→09-15) | — |
 | `[ ]` | 420 | Mercedes EQS 580 4Matic – Комфорт на всяка цена | ev-review | 9202 (outbound) | 3806 / 44 / 1.16% / 6.5 (2026-06-25→09-22) | — |
 | `[ ]` | 6823 | Volvo EX90 – лукс, иновация и безопасност | publications | 8976 (outbound) | 828 / 8 / 0.97% / 4.8 (2026-06-25→09-22) | — |
 | `[ ]` | 8075 | Eldrive откри втора сателитна зарядна станция в София | publications | 9350 (inbound-edit) | 314 / 6 / 1.91% / 8.2 | — |
