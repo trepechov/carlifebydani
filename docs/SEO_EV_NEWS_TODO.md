@@ -161,6 +161,7 @@ see `SEO_SKILLS_REFACTOR.md` §W6).
 - **8026 (EV133) — DONE 2026-10-22.** Keyphrase `продажби на нови автомобили в България` (≈20/mo, 0 impr 90d — low-value, done because the episode genuinely answers its title). Phase B + metatags + tags BYD/Lucid. Report: [`2026-10-22-8026-ev133-prodazhbi-2025.md`](../reports/seo-metatags/2026-10-22-8026-ev133-prodazhbi-2025.md).
 - **8319 (EV144) — DONE 2026-10-22.** Keyphrase `BYD представителство в България` (40/mo) — deliberately NOT the 6 600/mo head term `byd българия`, which belongs to publication 8227 (the post links to it). Phase B + metatags + tag BYD. Report: [`2026-10-22-8319-ev144-byd-bulgaria.md`](../reports/seo-metatags/2026-10-22-8319-ev144-byd-bulgaria.md).
 - **8721 (EV152) — DONE 2026-10-22.** Keyphrase `електрическо Ferrari` (110/mo, page already pos 1.0; `ferrari luce` 2 400/mo). Phase B + metatags; tags left as they were. Report: [`2026-10-22-8721-ev152-elektricheski-ferrari.md`](../reports/seo-metatags/2026-10-22-8721-ev152-elektricheski-ferrari.md).
+- **9622 (EV169) — DONE 2026-10-22** (not in the original P1 table; requested directly). Keyphrase `Paris Motor Show 2026` (near-zero demand; fresh news/brand page). Phase B + metatags + tag Mercedes + link to EV81. Report: [`2026-10-22-9622-ev169-paris-motor-show-darik.md`](../reports/seo-metatags/2026-10-22-9622-ev169-paris-motor-show-darik.md).
 - **6898** at 0.7% CTR was the worst ratio in the set.
 
 ## P1 — the hub page itself

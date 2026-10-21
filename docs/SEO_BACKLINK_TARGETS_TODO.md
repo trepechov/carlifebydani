@@ -33,6 +33,7 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 
 | Status | Post ID | Title | Category | Backlink source(s) | GSC 90d (impr / clicks / CTR / pos) | Report |
 |---|---|---|---|---|---|---|
+| [ ] | 5742 | #EV81 RIVIAN и VW обединяват сили за по-добро бъдеще | ev-news | 9622 (outbound, 2026-10-22) | — (not pulled) | — |
 | [ ] | 5446 | #EVN72 – 100 ТЕСЛИ на Lightshow в София, 300 ТЕСЛИ Lightshow във Велико Търново | ev-news | 5574 (outbound, 2026-10-22) | — (not pulled) | — |
 | `[ ]` | 1042 | BMW i4 M50 (G26) – По-бързо от Tesla M3LR, но с по-малък пробег | ev-review | 8824 (outbound, 2026-10-22) | 1000 / 9 / 0.90% / 6.1 (2026-06-18→09-15) | — |
 | `[ ]` | 420 | Mercedes EQS 580 4Matic – Комфорт на всяка цена | ev-review | 9202 (outbound) | 3806 / 44 / 1.16% / 6.5 (2026-06-25→09-22) | — |
