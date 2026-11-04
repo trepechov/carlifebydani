@@ -103,3 +103,8 @@ id,date_applied,post_id,slug,category,phase,changed,report,keyphrase,base_start,
 9220-2026-11-04-C,2026-11-04,9220,ev160-byd-denza-z-1582-konya-chista-elektricheska-mosht,ev-news,C,title|metadesc|focuskw|tags|alt|media_title,2026-11-04-9220-ev160-byd-denza-z.md,BYD Denza Z,,,0,0,0.0000,,,,9220-2026-11-04.csv,2026-12-02
 9502-2026-11-04-B2,2026-11-04,9502,ev168-watts-on-the-grill-septemvri-2026-skara-koli-i-dobra-kompaniya,ev-news,B,content,2026-10-02-9502-ev168-watts-on-the-grill.md,Rivian R2 recall,,,0,0,0.0000,,,,,2026-12-30
 9502-2026-11-04-C-b,2026-11-04,9502,ev168-watts-on-the-grill-septemvri-2026-skara-koli-i-dobra-kompaniya,ev-news,C,tags,2026-10-02-9502-ev168-watts-on-the-grill.md,Rivian R2 recall,,,0,0,0.0000,,,,,2026-12-02
+9735-2026-11-04-C-b,2026-11-04,9735,ev172-clbd-car-project-01-kakvo-kupihme-i-kakvo-predstoi,ev-news,C,tags,2026-11-04-9735-ev172-clbd-car-project.md,CLBD Car Project,,,0,0,0.0000,,,,,2026-12-02
+9220-2026-11-04-B2,2026-11-04,9220,ev160-byd-denza-z-1582-konya-chista-elektricheska-mosht,ev-news,B,content,2026-11-04-9220-ev160-byd-denza-z.md,BYD Denza Z,,,0,0,0.0000,,,,,2026-12-30
+9220-2026-11-04-C-b,2026-11-04,9220,ev160-byd-denza-z-1582-konya-chista-elektricheska-mosht,ev-news,C,tags,2026-11-04-9220-ev160-byd-denza-z.md,BYD Denza Z,,,0,0,0.0000,,,,,2026-12-02
+9732-2026-11-04-B2,2026-11-04,9732,ev171-asia-motor-show-2026-aziya-prevzema-avtomobilniya-svyat,ev-news,B,content,2026-11-04-9732-ev171-asia-motor-show.md,Asia Motor Show 2026,,,0,0,0.0000,,,,,2026-12-30
+9732-2026-11-04-C-b,2026-11-04,9732,ev171-asia-motor-show-2026-aziya-prevzema-avtomobilniya-svyat,ev-news,C,tags,2026-11-04-9732-ev171-asia-motor-show.md,Asia Motor Show 2026,,,0,0,0.0000,,,,,2026-12-02

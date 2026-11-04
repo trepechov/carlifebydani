@@ -140,3 +140,9 @@ _Written by `seo-article-apply`._
 |---|---|---|---|
 | 2 Tags | `CLBD` (id 320) | Not proposed/declined by user — skipped by design: theme auto-linker would turn the keyphrase's first word into a link to the thin `/tag/clbd/` archive | 2026-11-04 |
 | 2 Tags | `Leapmotor` | No tag exists; not created for one post (gap noted) | 2026-11-04 |
+
+---
+
+## Tag revision — 2026-11-04 (new tag rule, user request)
+Tags `[141, 371]` → `[141 Stellantis, 456 Leapmotor (NEW), 320 CLBD, 457 CLBD Car Project (NEW), 371 CoffeeDay, 361 EX60, 374 ПроКредит Банк, 154 Gigacharger]`. No body change — every tag is already named in ¶1–¶3.
+Prices (BG/mo): leapmotor 2,900 · stellantis 1,300 · volvo ex60 720 · `clbd car project` series (no demand data). Top-3 CSV: story 0 (Stellantis/Leapmotor) discussed ≈5464 s → tagged; story 1 (FPC cell contact, garbled on air) and story 2 (Zeekr 7X, not discussed) → no tags. Skipped: eACTROS (451, 10/mo), Zeekr, Smart (row 3).
