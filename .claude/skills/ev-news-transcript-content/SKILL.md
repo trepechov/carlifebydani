@@ -131,6 +131,40 @@ related chunk into an answer, and do not write ¶1 without a real one.
 | **2** | 50–70 | What the hosts actually said — first-hand, specific, the uncopyable part. Prefer direct paraphrase over invented color. |
 | **3** | 40–60 | What the episode *itself* actually covers (from Step 3, even if ¶1/¶2 came from elsewhere) — named with real brand/model terms, not "various other topics." |
 
+**AEO writing rules — apply to all three paragraphs.** Answer engines (Google
+AI Overviews, ChatGPT, Perplexity) quote single sentences out of context, so
+every sentence must stand on its own. These mirror the shared rules in the
+EV News Automator plugin (`plugins/ev-news-automator/prompts/aeo-rules.md`,
+rationale in its `docs/AEO_CONTENT_GUIDELINES.md`, both on `main`) so the
+feed cards, podcast «Резюме» and these intros stay consistent. If that file
+changes, update this block too.
+
+- **Answer first.** The first sentence of ¶1 states the answer or the key fact
+  on its own, with the key number or date. No warm-up ("В този епизод…").
+- **Explicit subject in every sentence.** Name the company, brand, model or
+  person each time. Never "той", "тя", "компанията", "автомобилът".
+- **Only facts from the transcript.** Never invent figures, dates, prices or
+  quotes (this reinforces the timestamp rule below).
+- **Absolute dates only.** Never "тази седмица", "вчера", "в понеделник".
+  Resolve relative dates from the episode's publish date; if they can't be
+  resolved, leave the date out.
+- **Attribution.** Opinions and speculation are the hosts' — write "според
+  Дани" / "според водещите", not as fact. Company claims, reports and
+  estimates get "според Tesla", "по данни на …".
+- **Prices stay in the original currency** ("41 900 AUD", "$66 200"). A bare
+  "$" or "долара" means US dollars only; other dollars get their code (AUD,
+  CAD, NZD, SGD). Never convert currencies.
+- **Imperial units get metric in brackets:** "428 мили (около 689 км)".
+- **Name the market** for market-specific news (price, launch, subsidy,
+  recall, sales) — "в САЩ", "в Германия" — in ¶1. Say whether it applies to
+  Europe/Bulgaria only if the transcript says so; never guess availability.
+  Global news gets no market label.
+- **Paragraphs, not lists.** Flowing prose, no bullets.
+
+Length stays governed by the word counts in the table above (they override
+the feed-card character targets in the plugin guidelines). In the Step 7
+report, add one line confirming the draft was checked against these rules.
+
 **Every claim needs a `timestamp_url`.** Build a source table before writing
 prose — claim, quote/paraphrase, `timestamp_url` — the same way the 7333
 report did; it's what makes the draft checkable instead of trusted.
