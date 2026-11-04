@@ -256,3 +256,12 @@ change this pass). Ledger row: `1039-2026-09-04-C`, `verify_due`: `2026-10-02`.
   revisited).
 
 ---
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 1039-2026-09-04-C | title|metadesc|focuskw|alt | 28d | 2026-09-05–2026-10-02 | 10 / 0 / 0.00% / 6.1 | **inconclusive** | impression floor: base 5 / after 10 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

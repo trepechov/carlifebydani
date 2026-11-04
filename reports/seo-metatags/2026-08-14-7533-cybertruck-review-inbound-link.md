@@ -191,3 +191,14 @@ Baseline (GSC, 2026-07-17→2026-08-13): 68 impr / 1 click / 1.47% CTR / pos 4.8
 2–4 weeks. Watch specifically: `тесла cybertruck` (pos 5.6, closest to page 1) and `тесла
 кибертрак` (pos 9.4) — both currently earn zero clicks despite real impressions, the cleanest
 signal of whether the new metadesc worked.
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 7533-2026-08-14 | inbound | 28d | 2026-08-15–2026-09-11 | 95 / 0 / 0.00% / 6.6 | **improved** | primary=impr +40% vs ctrl +11% (25pp band = calibration guess) |
+| 7533-2026-08-14-b | title|metadesc|focuskw|tags | 28d | 2026-08-15–2026-09-11 | 95 / 0 / 0.00% / 6.6 | **inconclusive** | primary=CTR 1.47%->0.00% (ctrl +0.03pp); position moved +1.8 (>1): CTR not comparable at stable position |
+| 7533-2026-08-14-c | alt|media_title | 28d | 2026-08-15–2026-09-11 | — | **not-applicable** | alt/media_title only: no web-search ranking/CTR signal attributable; live value not re-verified (see note in snapshot) |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

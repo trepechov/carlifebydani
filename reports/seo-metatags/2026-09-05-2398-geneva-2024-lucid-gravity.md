@@ -292,3 +292,13 @@ drafted._
   side.
 
 **Ledger:** `2398-2026-09-05-C` (appended alongside this section).
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 2398-2026-09-05 | content | 56d | 2026-09-06–2026-10-31 | — | **inconclusive** | impression floor: base 9 / after 0 |
+| 2398-2026-09-05-C | title|metadesc|focuskw|tags|alt | 28d | 2026-09-06–2026-10-03 | — | **inconclusive** | impression floor: base 9 / after 0 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

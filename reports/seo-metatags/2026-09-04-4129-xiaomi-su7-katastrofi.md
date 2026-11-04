@@ -295,3 +295,13 @@ Baseline (GSC, 2026-06-06→2026-09-03): 14 impr / 0 clicks / 0% CTR / pos
 `4129-2026-09-04-C`, `verify_due` 2026-10-02) and again at 4–8 weeks for
 the new body content to be crawled/indexed (ledger `4129-2026-09-04`,
 `verify_due` 2026-10-30).
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 4129-2026-09-04 | content | 56d | 2026-09-05–2026-10-30 | 39 / 0 / 0.00% / 7.2 | **inconclusive** | impression floor: base 14 / after 39 |
+| 4129-2026-09-04-C | title|metadesc|focuskw|alt | 28d | 2026-09-05–2026-10-02 | 22 / 0 / 0.00% / 7.3 | **inconclusive** | impression floor: base 14 / after 22 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

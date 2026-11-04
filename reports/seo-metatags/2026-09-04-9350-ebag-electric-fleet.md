@@ -218,3 +218,12 @@ ever made.
 Baseline (GSC, 2026-09-02 → 09-03): 0 impr / 0 clicks / — CTR / — pos (too new
 to have any signal). Re-check after 2–4 weeks (metatags/tags/alt/links —
 no new body content, so no 4–8 week wait needed). Ledger row: `9350-2026-09-04-C`, `verify_due`: 2026-10-02.
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 9350-2026-09-04-C | title|metadesc|focuskw|tags|alt|inbound | 28d | 2026-09-05–2026-10-02 | 53 / 0 / 0.00% / 4.5 | **inconclusive** | impression floor: base 0 / after 53 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

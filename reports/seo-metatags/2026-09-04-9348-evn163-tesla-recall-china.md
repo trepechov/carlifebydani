@@ -273,3 +273,13 @@ deploy ships.
 None — all proposed items (metatags, tags, image alt/title) were approved as drafted.
 
 ---
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 9348-2026-09-04 | content | 56d | 2026-09-05–2026-10-30 | 15 / 0 / 0.00% / 5.9 | **inconclusive** | impression floor: base 0 / after 15 |
+| 9348-2026-09-04-C | title|metadesc|focuskw|tags|alt | 28d | 2026-09-05–2026-10-02 | 6 / 0 / 0.00% / 3.8 | **inconclusive** | impression floor: base 0 / after 6 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

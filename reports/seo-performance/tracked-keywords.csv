@@ -1,21 +1,31 @@
 review_date,keyword,category,months_tracked,signal_source,position,impressions,trend,status,note
 2026-08-05,hyundai ioniq 5 мнения,hyundai,0,,,,new,tracking,bootstrap — no signal data yet
 2026-09-18,hyundai ioniq 5 мнения,hyundai,1,gsc,27.3,3,new,tracking,
+2026-11-04,hyundai ioniq 5 мнения,hyundai,2,semrush_manual,5,51,new,tracking,
 2026-08-05,renault 5,renault,0,,,,new,tracking,bootstrap — no signal data yet
 2026-09-18,renault 5,renault,1,gsc,13.0,24,new,tracking,
+2026-11-04,renault 5,renault,2,gsc,7.3,48,no-footprint,tracking,
 2026-08-05,volvo ex90,volvo,0,,,,new,tracking,bootstrap — no signal data yet
 2026-09-18,volvo ex90,volvo,1,gsc,34.3,3,new,tracking,
+2026-11-04,volvo ex90,volvo,2,semrush_manual,6,105,new,tracking,
 2026-08-05,zeekr 7x цена,zeekr,0,,,,new,tracking,bootstrap — no signal data yet
 2026-09-18,zeekr 7x цена,zeekr,1,gsc,6.1,244,new,tracking,
+2026-11-04,zeekr 7x цена,zeekr,2,gsc,5.9,934,flat,tracking,
 2026-08-05,домашно зареждане на електромобил,charging,0,,,,new,tracking,bootstrap — no signal data yet
 2026-09-18,домашно зареждане на електромобил,charging,1,gsc,8.5,2,new,tracking,
+2026-11-04,домашно зареждане на електромобил,charging,2,gsc,9.8,6,no-footprint,tracking,
 2026-08-05,електромобил,broad,0,,,,new,tracking,bootstrap — no signal data yet
 2026-09-18,електромобил,broad,1,gsc,17.9,21,new,tracking,
+2026-11-04,електромобил,broad,2,gsc,17.6,41,no-footprint,tracking,
 2026-08-05,зарядна станция,charging,0,,,,new,tracking,bootstrap — no signal data yet
 2026-09-18,зарядна станция,charging,1,gsc,0,0,new,tracking,
+2026-11-04,зарядна станция,charging,2,gsc,0,0,no-footprint,tracking,
 2026-08-05,китайски електромобили,chinese-ev,0,,,,new,tracking,bootstrap — no signal data yet
 2026-09-18,китайски електромобили,chinese-ev,1,gsc,0,0,new,tracking,
+2026-11-04,китайски електромобили,chinese-ev,2,gsc,0,0,no-footprint,tracking,
 2026-08-05,нощна тарифа,charging,0,,,,new,tracking,bootstrap — no signal data yet
 2026-09-18,нощна тарифа,charging,1,gsc,0,0,new,tracking,
+2026-11-04,нощна тарифа,charging,2,gsc,0,0,no-footprint,tracking,
 2026-08-05,части за тесла,tesla,0,,,,new,tracking,bootstrap — no signal data yet
 2026-09-18,части за тесла,tesla,1,gsc,6.5,11,new,tracking,
+2026-11-04,части за тесла,tesla,2,semrush_manual,1,31,no-footprint,tracking,

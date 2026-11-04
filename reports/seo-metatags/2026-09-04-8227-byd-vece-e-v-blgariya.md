@@ -282,3 +282,12 @@ Baseline (GSC, 2026-06-06→2026-09-03, 90d): impressions 227, clicks 0, CTR
 0.00%, position 10.6. Re-check after 2–4 weeks (metatags/tags/alt/outbound
 link — no new prose paragraph, so no extended re-crawl wait needed). Ledger
 row: *(set on apply)*, `verify_due`: *(date_applied + 28d)*.
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 8227-2026-09-04-C | title|metadesc|focuskw|tags|alt|content | 28d | 2026-09-05–2026-10-02 | 207 / 4 / 1.93% / 7.7 | **inconclusive** | primary=CTR 0.00%->1.93% (ctrl -0.29pp); position moved -2.9 (>1): CTR not comparable at stable position |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

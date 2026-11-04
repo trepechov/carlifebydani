@@ -329,3 +329,12 @@ grounding to actually be about the target's specific topic, not a single
 shared word or generic theme pulled from the transcript. A generic word
 match ("ракети", "технология", "бъдеще") is never sufficient grounds by
 itself for an outbound link to a newer post.
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 9248-2026-09-16-C | focuskw|tags|alt | 28d | 2026-09-17–2026-10-14 | 9 / 0 / 0.00% / 7.0 | **inconclusive** | impression floor: base 0 / after 9 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

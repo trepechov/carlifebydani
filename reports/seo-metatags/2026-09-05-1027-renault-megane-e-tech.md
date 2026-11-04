@@ -201,3 +201,12 @@ Baseline (GSC, 2026-06-06→2026-09-03): 0 impr / 0 clicks / — CTR / — pos.
 Re-check in 4–8 weeks for the metatag/tag/link changes (longer than the
 usual 2–4, since this is a from-scratch target with no existing ranking to
 build on).
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 1027-2026-09-05-C | title|metadesc|focuskw|tags|alt|outbound | 28d | 2026-09-06–2026-10-03 | 49 / 4 / 8.16% / 6.6 | **inconclusive** | impression floor: base 0 / after 49 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

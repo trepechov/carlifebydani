@@ -130,3 +130,12 @@ connection** — comparisons are only valid across the same window/config.
   2026-09-05 lab scores also dropped on both form factors (mobile Perf
   60→43, desktop 71→59) with field data unaffected — flagged as a watch item,
   not linked to this deploy (content/metadata only, no theme/asset changes).
+- **2026-09-05 → 2026-11-04 — verification loop first run; Semrush moved to browser.**
+  11 commits, none to `wp-content`. First Step 4a run: 65 ledger rows verdicted
+  (5 improved / 4 flat / 2 regressed / 0 not-shipped / 50 inconclusive / 4
+  not-applicable), written to `reports/seo-optimizations/checks.csv`. Impressions
+  are compared per day because some ledger baselines span 90 days. GTmetrix page
+  weight fell 3.07 → 1.02 MB with no matching commit in this repo (deployed
+  elsewhere) and TTFB rose; lab scores recovered. The Semrush MCP was dropped as
+  too expensive; Step 4c now reads Position Tracking → Overview in the user's
+  logged-in Chrome (`Pos.` column, campaign on weekly updates).

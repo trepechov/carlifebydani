@@ -234,3 +234,12 @@ Ledger row: `3957-2026-09-04`. `verify_due`: **2026-10-02**.
 2026-10-02) — this was a metatags + internal-links pass, no new body content, so no
 extended re-crawl window is needed. `seo-performance-report`'s monthly run will also pick
 this up automatically once due.
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 3957-2026-09-04 | title|metadesc|focuskw|outbound | 28d | 2026-09-05–2026-10-02 | 2966 / 59 / 1.99% / 7.0 | **flat** | primary=CTR 1.92%->1.99% (ctrl -0.12pp) |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

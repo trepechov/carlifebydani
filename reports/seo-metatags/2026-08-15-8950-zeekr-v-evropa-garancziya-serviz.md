@@ -212,3 +212,12 @@ changed — this post already stated the exact fact 8968 elaborates on in detail
 byte-for-byte: only that one `<p>` block changed.
 
 ---
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 8950-2026-08-15-C | title|metadesc|focuskw|tags|alt|outbound | 28d | 2026-08-16–2026-09-12 | 94 / 4 / 4.26% / 4.7 | **inconclusive** | impression floor: base 0 / after 94 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

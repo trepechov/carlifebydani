@@ -310,3 +310,12 @@ metatag/tag/alt/inbound-link effect and again at 4–8 weeks for the new body
 content to be crawled/indexed.
 
 ---
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 9447-2026-09-09-C | title|metadesc|focuskw|tags|alt|inbound | 28d | 2026-09-10–2026-10-07 | 2 / 0 / 0.00% / 6.0 | **inconclusive** | impression floor: base 0 / after 2 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

@@ -272,3 +272,13 @@ reports a separate live Q&A fact, not narrating 8659's own unfolding story. Appr
 before writing; verified live.
 
 ---
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 9178-2026-08-15 | content | 56d | 2026-08-16–2026-10-10 | 150 / 8 / 5.33% / 6.6 | **inconclusive** | impression floor: base 2 / after 150 |
+| 9178-2026-08-15-C | title|metadesc|focuskw|tags|alt | 28d | 2026-08-16–2026-09-12 | 69 / 2 / 2.90% / 7.3 | **inconclusive** | impression floor: base 2 / after 69 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

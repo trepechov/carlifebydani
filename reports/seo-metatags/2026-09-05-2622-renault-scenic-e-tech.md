@@ -213,3 +213,12 @@ outbound links) were approved in full._
 Baseline (GSC, 2026-06-06→2026-09-03): 23 impr / 1 click / 4.3% CTR / — pos
 (blended across 8 queries). Re-check in 2–4 weeks for the metatag/tag/link
 changes (this page already has real impressions to build on, unlike 1027).
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 2622-2026-09-05-C | title|metadesc|focuskw|tags|alt|outbound | 28d | 2026-09-06–2026-10-03 | 48 / 3 / 6.25% / 5.9 | **inconclusive** | impression floor: base 23 / after 48 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

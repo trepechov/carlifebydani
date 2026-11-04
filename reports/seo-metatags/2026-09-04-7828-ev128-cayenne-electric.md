@@ -299,3 +299,13 @@ Phase B) — content needs re-crawl/re-index time beyond the metatag change.
   auto-links, not isolated further this pass (same caveat as prior posts).
 
 ---
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 7828-2026-09-04 | content | 56d | 2026-09-05–2026-10-30 | 57 / 1 / 1.75% / 8.6 | **inconclusive** | impression floor: base 12 / after 57 |
+| 7828-2026-09-04-C | title|metadesc|focuskw|tags|alt | 28d | 2026-09-05–2026-10-02 | 21 / 0 / 0.00% / 9.1 | **inconclusive** | impression floor: base 12 / after 21 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

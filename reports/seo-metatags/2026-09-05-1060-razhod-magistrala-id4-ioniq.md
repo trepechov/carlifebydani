@@ -205,3 +205,12 @@ typo fix, outbound link) were approved in full._
 Baseline (GSC, 2026-06-06→2026-09-03): 1 impr / 0 clicks / — pos. Re-check
 in 4–8 weeks rather than the usual 2–4 — from a near-zero baseline, a
 shorter window is unlikely to show anything meaningful either way.
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 1060-2026-09-05-C | title|metadesc|focuskw|tags|alt|outbound | 28d | 2026-09-06–2026-10-03 | 2 / 0 / 0.00% / 4.5 | **inconclusive** | impression floor: base 1 / after 2 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

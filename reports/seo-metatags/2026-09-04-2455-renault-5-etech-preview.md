@@ -226,3 +226,12 @@ above are the available baseline). Re-check in 2–4 weeks specifically on
 differentiated queries this post can actually move, rather than the shared
 terms 6889 already owns. Ledger `2455-2026-09-04-C`, `verify_due`
 2026-10-02.
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 2455-2026-09-04-C | title|metadesc|focuskw|tags|content | 28d | 2026-09-05–2026-10-02 | 37 / 0 / 0.00% / 12.2 | **inconclusive** | impression floor: base 59 / after 37 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

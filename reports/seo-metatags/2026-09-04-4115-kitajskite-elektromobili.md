@@ -281,3 +281,12 @@ keyphrase is buyer's-guide-dominated; the `%%sep%%анализ` framing in the
 title is deliberate to set correct expectations rather than chase a
 shopping-intent SERP this article was never going to win. Re-check GSC in
 2–4 weeks per the measurement plan below.
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 4115-2026-09-04-C | title|metadesc|focuskw|content|alt | 28d | 2026-09-05–2026-10-02 | 4 / 0 / 0.00% / 5.5 | **inconclusive** | impression floor: base 22 / after 4 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

@@ -285,3 +285,13 @@ monthly verification pass. Ledger rows: `8035-2026-09-04` (Phase B),
 `8035-2026-09-04-C` (Phase C).
 
 ---
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 8035-2026-09-04 | content | 56d | 2026-09-05–2026-10-30 | — | **inconclusive** | impression floor: base 0 / after 0 |
+| 8035-2026-09-04-C | title|metadesc|focuskw|tags|alt | 28d | 2026-09-05–2026-10-02 | — | **inconclusive** | impression floor: base 0 / after 0 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

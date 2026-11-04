@@ -320,3 +320,13 @@ genuinely zero (0 impressions/0 clicks for this exact URL, confirmed via the cac
 `query,page` pull) — a cold start, so any real pickup is a clean signal.
 
 ---
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 7577-2026-08-15 | content | 56d | 2026-08-16–2026-10-10 | 65 / 0 / 0.00% / 9.1 | **inconclusive** | impression floor: base 0 / after 65 |
+| 7577-2026-08-15-C | title|metadesc|focuskw|tags|alt | 28d | 2026-08-16–2026-09-12 | 4 / 0 / 0.00% / 12.2 | **inconclusive** | impression floor: base 0 / after 4 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

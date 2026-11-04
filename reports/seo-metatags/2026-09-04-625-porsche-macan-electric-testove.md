@@ -243,3 +243,12 @@ no new body content or tag change). Ledger row: `625-2026-09-04-C`,
 - Outbound link to 1039 confirmed present in the live rendered HTML.
 
 ---
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 625-2026-09-04-C | title|metadesc|focuskw|alt|outbound | 28d | 2026-09-05–2026-10-02 | 1 / 0 / 0.00% / 5.0 | **inconclusive** | impression floor: base 4 / after 1 |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

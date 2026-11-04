@@ -407,3 +407,15 @@ Step 3.4, not a one-off miss on this post. Fixed in the skill (now proposes + wr
 Backup: `reports/yoast-meta-backup/media-7334-2026-08-14-title.csv`. Ledger row
 `7333-2026-08-14-d` (`phase=C`, `changed=media_title`). Attachment `slug` and
 `link` unchanged — WP's `generated_slug` field updated but was never applied to the live slug.
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 7333-2026-08-14 | alt | 28d | 2026-08-15–2026-09-11 | — | **not-applicable** | alt/media_title only: no web-search ranking/CTR signal attributable; live value not re-verified (see note in snapshot) |
+| 7333-2026-08-14-b | metadesc|tags | 28d | 2026-08-15–2026-09-11 | 288 / 13 / 4.51% / 6.0 | **inconclusive** | primary=CTR 3.68%->4.51% (ctrl +0.03pp); position moved -1.2 (>1): CTR not comparable at stable position; cohort n<5: site-wide control only |
+| 7333-2026-08-14-c | tags | 28d | 2026-08-15–2026-09-11 | 288 / 13 / 4.51% / 6.0 | **improved** | primary=page pos 7.2->6.0 (ctrl +0.2); page-level proxy, keyphrase row not pulled; cohort n<5: site-wide control only |
+| 7333-2026-08-14-d | media_title | 28d | 2026-08-15–2026-09-11 | — | **not-applicable** | alt/media_title only: no web-search ranking/CTR signal attributable; live value not re-verified (see note in snapshot) |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

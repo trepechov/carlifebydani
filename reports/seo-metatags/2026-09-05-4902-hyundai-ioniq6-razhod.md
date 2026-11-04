@@ -226,3 +226,13 @@ referenced, not a loosely related link.
   no Yoast metatags at all) rather than adding it to
   `docs/SEO_BACKLINK_TARGETS_TODO.md`'s automated backlog, since the user
   named it directly this session.
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 4902-2026-09-05-C | title|metadesc|focuskw|alt|outbound|linkfix | 28d | 2026-09-06–2026-10-03 | 238 / 5 / 2.10% / 6.4 | **inconclusive** | primary=CTR 3.52%->2.10% (ctrl -0.31pp); position moved -3.6 (>1): CTR not comparable at stable position |
+| 4902-2026-09-09-C2 | outbound | 28d | 2026-09-10–2026-10-07 | 237 / 4 / 1.69% / 6.4 | **improved** | primary=impr +436% vs ctrl +35% (25pp band = calibration guess) |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.

@@ -183,3 +183,13 @@ Baseline (GSC, 2026-07-17→2026-08-13): 996 impr / 23 clicks / 2.31% CTR / pos 
 metadesc was the clearest explanation, so this is the cleanest signal of whether the fix
 worked) and the `tesla y juniper` / `tesla juniper` / `tesla model y juniper` cluster's
 position (currently 7.5–8.3, striking distance).
+
+
+## Verification — 2026-11-04
+
+| Ledger id | Changed | Checkpoint | Window | Page impr / clicks / CTR / pos | Verdict | Note |
+|---|---|---|---|---|---|---|
+| 6165-2026-08-14 | title|metadesc|focuskw|tags | 28d | 2026-08-15–2026-09-11 | 906 / 12 / 1.32% / 5.2 | **regressed** | primary=CTR 2.31%->1.32% (ctrl +0.03pp) |
+| 6165-2026-08-14-b | alt|media_title | 28d | 2026-08-15–2026-09-11 | — | **not-applicable** | alt/media_title only: no web-search ranking/CTR signal attributable; live value not re-verified (see note in snapshot) |
+
+Controls: site-wide + same-category un-optimized cohort median (GSC page-level; impressions compared per-day because some ledger baselines span 90 days). Page-level metrics only; keyphrase-filtered rows not pulled. Verdict bands (±0.5pp CTR / ±0.5 pos / ±25pp impressions) are calibration guesses.
