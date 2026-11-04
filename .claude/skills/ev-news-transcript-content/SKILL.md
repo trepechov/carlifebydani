@@ -129,7 +129,7 @@ related chunk into an answer, and do not write ¶1 without a real one.
 |---|---|---|
 | **1** | 40–60 | Answers the page's own headline question, keyphrase near the front — read the `Keyphrase:` line Phase A wrote to the report. |
 | **2** | 50–70 | What the hosts actually said — first-hand, specific, the uncopyable part. Prefer direct paraphrase over invented color. |
-| **3** | 40–60 | What the episode *itself* actually covers (from Step 3, even if ¶1/¶2 came from elsewhere) — named with real brand/model terms, not "various other topics." |
+| **3** | 40–60 | What the episode *itself* actually covers (from Step 3, even if ¶1/¶2 came from elsewhere) — named with real brand/model terms, not "various other topics." **Cover the CSV's top-3 stories (rows 0–2) here or in ¶2 whenever the transcript shows they were discussed on air**, and use the exact tag vocabulary Phase A listed (`Tesla Supercharger`, `Rivian R2`) — each tag needs an in-text mention. Over the word budget? Shorten wording, never drop a discussed top-3 story. |
 
 **AEO writing rules — apply to all three paragraphs.** Answer engines (Google
 AI Overviews, ChatGPT, Perplexity) quote single sentences out of context, so
@@ -309,9 +309,11 @@ holding the text.
   cut, not softened into vague plausible prose.
 - **`post_content`, never `post_excerpt`.** Settled by measurement, not
   preference — see `_shared/constants.md`'s trap.
-- **Don't decide tags here.** If the draft surfaces an entity that seems
-  tag-worthy, mention it in the report for `seo-keyphrase-research` (Phase A)
-  to evaluate against real demand next time — don't add it directly.
+- **Phase A decides tags; Phase B serves them.** Read the tag list in the
+  report's *Proposed tags* table and make sure each tag's term appears in the
+  prose (top-3 stories first). If the draft surfaces an additional entity that
+  seems tag-worthy, list it in the report for Phase C to price and propose —
+  don't write tags here.
 - **A blocked episode is a stop, not a workaround.** Never draft from the
   episode description, the news-CSV summaries, or general knowledge of the
   brand/model as a substitute for a missing transcript.

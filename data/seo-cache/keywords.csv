@@ -1,11 +1,13 @@
 keyword,database,volume,cpc,competition,kd,source,fetched
 alfa romeo giulia,bg,1900,,,,semrush,2026-08-04
+asia motor show,bg,110,0.26,0.36,,dataforseo,2026-11-04
+asia motor show 2026,bg,50,0.27,0.44,,dataforseo,2026-11-04
 audi a3,bg,5400,,,,semrush,2026-08-04
 audi e tron,bg,1000,,,,semrush,2026-08-04
 audi q7,bg,2900,,,,semrush,2026-08-04
 bmw e92,bg,1900,,,,semrush,2026-08-04
 bmw electric m3,bg,10,,LOW,,dataforseo,2026-10-21
-bmw i3,bg,1900,,,,semrush,2026-08-04
+bmw i3,bg,2400,1.06,0.17,,dataforseo,2026-11-04
 bmw i3 m,bg,10,,LOW,,dataforseo,2026-10-21
 bmw ix3,bg,2400,0.12,LOW,,dataforseo,2026-10-21
 bmw ix3 2026,bg,320,0.19,0.11,,dataforseo,2026-10-21
@@ -63,6 +65,7 @@ kia ev2,bg,390,0.3,0.17,,dataforseo,2026-10-21
 kia ev2 2026,bg,10,,0.5,,dataforseo,2026-10-21
 kia ev2 цена,bg,90,0.33,0.18,,dataforseo,2026-10-21
 koenigsegg gemera,bg,480,,,,semrush,2026-08-04
+leapmotor,bg,2900,0.24,0.27,,dataforseo,2026-11-04
 lucid air,bg,390,,,,dataforseo,2026-09-04
 lucid air sapphire,bg,90,,,,dataforseo,2026-09-04
 lucid gravity,bg,210,0.58,1,,dataforseo,2026-09-04
@@ -83,6 +86,7 @@ mg zs,bg,880,,,,semrush,2026-08-04
 microlino,bg,320,,,,semrush,2026-08-04
 model y v2l,bg,10,,,,dataforseo,2026-09-03
 niki lauda,bg,1600,,,,semrush,2026-08-04
+nio,bg,590,0.70,0.03,,dataforseo,2026-11-04
 nissan 370z,bg,590,,,,semrush,2026-08-04
 nissan juke,bg,2900,,,,semrush,2026-08-04
 omoda 5,bg,720,,,,semrush,2026-08-04
@@ -120,6 +124,7 @@ renault scenic e-tech,bg,110,0.16,0.1,1,dataforseo,2026-09-04
 renault scenic e-tech цена,bg,20,0.17,0.13,1,dataforseo,2026-09-04
 renault scenic electric,bg,30,0.16,0.1,1,dataforseo,2026-09-04
 renault zoe,bg,1000,,,,semrush,2026-08-04
+rivian,bg,590,0.92,0.01,,dataforseo,2026-11-04
 rivian r2,bg,110,0.06,0.03,,dataforseo,2026-10-02
 seat ibiza,bg,1600,,,,semrush,2026-08-04
 skoda citigo,bg,320,,,,semrush,2026-08-04
@@ -136,7 +141,7 @@ tesla model y,bg,1600,,,,semrush,2026-08-04
 tesla model y juniper,bg,170,0.32,0.06,,dataforseo,2026-09-04
 tesla model y v2l,bg,10,,,,dataforseo,2026-09-03
 tesla recall,bg,10,0,LOW,,dataforseo,2026-09-03
-tesla roadster,bg,590,0,1,0,dataforseo,2026-09-16
+tesla roadster,bg,720,0,,,dataforseo,2026-11-04
 tesla roadster 2026,bg,20,,LOW,,dataforseo,2026-10-21
 tesla roadster premiere,bg,10,,LOW,,dataforseo,2026-10-21
 tesla roadster release date,bg,10,0,1,0,dataforseo,2026-09-16
@@ -151,6 +156,7 @@ tesla robotaxi austin,bg,10,0,0.0,0,dataforseo,2026-09-09
 tesla robotaxi tracker,bg,10,0,0.0,0,dataforseo,2026-09-09
 tesla spacex,bg,10,0,1,0,dataforseo,2026-09-16
 tesla spacex merger,bg,10,0,1,0,dataforseo,2026-09-16
+tesla supercharger,bg,2400,0.45,0.02,,dataforseo,2026-11-04
 tesla v2l,bg,10,0.26,0.14,,dataforseo,2026-09-03
 tesla автопилот,bg,10,0,0.0,,dataforseo,2026-09-23
 tesla изтегляне,bg,0,,,,dataforseo,2026-09-03
@@ -175,6 +181,7 @@ xiaomi su7 ultra,bg,1600,,,,dataforseo,2026-09-04
 xiaomi su7 цена,bg,320,0.30,,,dataforseo,2026-09-04
 xiaomi su7 цена българия,bg,140,,,,dataforseo,2026-09-04
 автобус габрово софия,bg,720,0.4,0.3,,dataforseo,2026-10-21
+автомобилно изложение софия,bg,10,0.46,0.10,,dataforseo,2026-11-04
 алтернатор,bg,1300,,,,semrush,2026-08-04
 ангренажен ремък,bg,1300,,,,semrush,2026-08-04
 балкан стар,bg,720,,,,semrush,2026-08-04
@@ -192,6 +199,7 @@ xiaomi su7 цена българия,bg,140,,,,dataforseo,2026-09-04
 електрически автомобил,bg,12100,,,,semrush,2026-08-04
 електрически автопарк,bg,0,0,0,,dataforseo,2026-09-03
 електрически дръжки,bg,0,,,,dataforseo,2026-09-03
+електрически камиони,bg,90,0.44,0.03,,dataforseo,2026-11-04
 електрическо bmw m3,bg,0,,,,dataforseo,2026-10-21
 електрическо ferrari,bg,10,,,,dataforseo,2026-10-21
 електрическо ферари,bg,110,,0.1,,dataforseo,2026-10-21

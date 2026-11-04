@@ -517,6 +517,17 @@ their own way.
 
 ### W11 — Tag selection: target the frequency band · ~1h · ✅ done 2026-08-14 (landed with W1 + W3)
 
+> **⚠️ Superseded 2026-11-04.** The 3–10 band, reuse-only and "ignore the CSV `tags`" rules below
+> produced one tag per EV News post (EV168, EV171 audited) and blocked terms with real BG demand
+> (`Rivian` 590/mo at count 1, `Tesla Supercharger` 2,400, `Nio` 590). `seo-keyphrase-research`
+> Step 4b now targets **5–8 tags**, existing terms first with post count no longer a gate, top-3
+> CSV stories + keyphrase entities mandatory, ≤2 priced NEW tags, keywords built from tag
+> vocabulary. **Trade-off kept on the record:** the original analysis below is still right that
+> tags at 1–2 posts are thin archives which can outrank articles on brand queries (`/tag/clbd/`:
+> 418 impressions, 4 clicks). The accepted mitigation is an owner decision outside the skills:
+> `noindex` tag archives with <3 posts (Yoast → Settings, needs `manage_options`) — still open.
+> The text below is kept for the data and history.
+
 Belongs in **Phase A**, alongside the keyphrase — tags come from demand research, not from
 re-reading whatever prose ends up on the page.
 

@@ -72,14 +72,15 @@ what it is *not* competing with on this site>
 | `_yoast_wpseo_focuskw` | | | |
 
 ### Proposed tags
-<existing terms only, each in the 3–10 use band unless a saturated brand hub is
-genuinely the headline entity>
-| Tier | Tag | id | Existing count |
-|---|---|---|---|
-| Entity | | | |
-| Keyword-intent | | | |
-<Gaps: concepts with no existing tag, deliberately not created — note here if
-this gap recurs across articles, so it can be batch-created instead of ad hoc.>
+<5–8 tags on EV News (4–7 other categories). Existing terms first — post count is
+not a gate; skip only saturated hubs (≥20) that are not the headline. Every
+keyphrase / secondary-phrase / top-3-story entity is a tag. ≤2 NEW tags, marked
+NEW. Every row priced (BG monthly volume).>
+| Tier | Tag | id (or NEW) | Count | BG vol/mo | Source |
+|---|---|---|---|---|---|
+| Entity | | | | | keyphrase / top3 / title / prose |
+| Keyword-intent | | | | | intent |
+<Skipped: candidates dropped and why (saturated hub / no demand / not on page).>
 
 ---
 

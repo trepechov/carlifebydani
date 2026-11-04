@@ -324,6 +324,10 @@ the proposal instead of pretending the meta fix is sufficient.
 ### Step 4 — Choose the focus keyphrase
 
 Exactly **one** focus keyphrase, plus 2–4 secondary phrases. Rules:
+- **Keywords and tags share one vocabulary.** Build the secondary phrases from
+  the terms that will be tags (Step 4b) — the headline entity and the other top-3
+  stories (`Rivian R2`, `Tesla Supercharger`) — and price each (BG volume). A
+  keyphrase whose main entity is not also a tag is a sign something is missing.
 - It must be something the article genuinely satisfies. Ranking for a phrase the
   page doesn't answer produces a bounce, not a win.
 - Prefer a phrase already at **position 5–20** in GSC over a bigger phrase at
@@ -338,76 +342,71 @@ Exactly **one** focus keyphrase, plus 2–4 secondary phrases. Rules:
   (`/wp/v2/search?search=<phrase>`). If it is, this is a cannibalisation decision,
   not a metatag decision — flag it and stop before writing.
 
-### Step 4b — Map the research to existing tags
+### Step 4b — Build the tag set (5–8 tags; keywords and tags share one vocabulary)
 
-Tags come from the **same research as the keyphrase**, not from a fresh read of
-whatever prose ends up on the page — a separate content-analysis pass over the
-finished article would pick up whatever happens to be mentioned (a passing
-brand name, a sponsor) rather than what the article's *demand* actually is.
+> **Rewritten 2026-11-04.** The previous rule (existing terms only, 3–10 uses
+> only, CSV `tags` ignored, tag only what a 140-word intro happens to name)
+> produced 1 tag per EV News post — EV168 and EV171 shipped with a single tag
+> while the stories that lead the episode had none (`Rivian` 590 searches/mo,
+> `Tesla Supercharger` 2,400, `Nio` 590 — all blocked by the use-count floor).
+> Tags are this site's topic-cluster and internal-link layer *and* search
+> vocabulary; treating them as a risk to minimise was the wrong default.
 
-Candidates are the entities from Step 2 and the keyphrase/secondary phrases
-from Step 3–4: the headline story's brand(s) and model(s), plus one keyword-
-intent term if the story fits an existing pattern — `Премиера` (launch),
-`слух` (rumor/speculation), `Регистрация`, `Зареждане`, `Разход`, `Инцидент` —
-this site already tags EV News posts this way (`Tesla`+`SpaceX`+`слух` on the
-Илон Мъск/SpaceX merger story is the existing pattern to match, not invent). On
-EV News posts on modern (12-column) CSVs, each story's `tags` column (Step 2c)
-is a free-text comma-separated candidate list, and `region` is a locale hint
-(`GLOBAL`, etc.) — additional candidates to check against the rule below, not
-to adopt directly; the CSV's classification is a suggestion, not a validated
-decision, and it's absent entirely on back-catalogue (6-column) files.
+**Target: 5–8 tags on an EV News post, 4–7 on other categories. One or two tags
+is a defect, not caution.**
 
-**Reuse only — do not create speculatively.** Check every candidate against
-what's already there:
+**Where candidates come from (collect all, then filter):**
+1. **The keyphrase and every secondary phrase.** Each brand / model / event /
+   series in them **must** be a tag, and secondary phrases should be built from
+   tag vocabulary (`Tesla Supercharger`, `Rivian R2`) — so the keywords the page
+   targets and the tags it carries are the same words.
+2. **EV News: the top 3 stories.** CSV rows 0–2 are the editorial ranking
+   (hottest first). Map each row's `tags` column (brands, models, intent terms)
+   to WordPress terms — these three stories are what the episode is about.
+   Rows 3+ qualify only if the story is named in the owned prose or discussed
+   on air (Phase B finds that out). The CSV `tags` text is a candidate list, so
+   every candidate is still checked against the steps below — but it is no
+   longer ignored.
+3. **The title's own subject** — event or series (`Watts on the Grill`,
+   `Asia Motor Show`, `Geneva Motor Show` pattern).
+4. **Entities named in the owned prose** (Phase B's ¶1–¶3).
+5. **Keyword-intent terms, 0–2** — `Премиера`, `слух`, `Инцидент`, `Зареждане`,
+   `Разход`, `Регистрация` (the existing `Tesla`+`SpaceX`+`слух` pattern).
+
+**Reuse first, count is no longer a gate.** Check every candidate:
 ```
 mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/tags",
   method="GET", params={"search":"<candidate>","_fields":"id,name,slug,count"})
 ```
+Search both spellings (Latin and Cyrillic; brand + model variants). An existing
+term is used whatever its post count when it is a keyphrase / top-3 / title
+entity or has measured demand — a post joining a count-1 term with real search
+demand is how that cluster starts. Skip only: (a) **saturated hubs** (≥20 posts:
+`Tesla` 63, `Volvo` 24, `Hyundai` 21) unless that brand is the headline entity;
+(b) terms with no demand that are neither top-3, keyphrase, title nor named in
+the prose.
 
-**The golden rule: choose a tag that already exists *and* sits in the 3–10 use
-band.** Existence alone is not enough — measured across all 365 tags on
-2026-08-14, 73% sit at ≤2 uses (51% at exactly 1), and tagging into those makes
-the same problem the `/tag/clbd/` finding already describes one post worse: a
-thin taxonomy archive outranking real editorial content. The band has a
-**ceiling** too, not just a floor — at ≥20 uses (`Tesla` 57, `Volvo` 24,
-`Hyundai` 20) the tag is a saturated brand hub; one more post adds no
-differentiating signal, so use it only if that brand is genuinely the
-headline entity. 11–19 uses is acceptable but treat it as established rather
-than reaching for it. The 3–10 band is the real topical cluster a post
-meaningfully joins (`Model S` 10, `IONIQ 5` 10, `Разход` 7, `Премиера` 6,
-`BYD` 5, `Supercharger` 5). If a needed concept has no existing term, or only
-one at ≤2 uses, **skip it** rather than create or reuse a thin one — note the
-gap in the report so a recurring gap can be batch-created deliberately later,
-not one-off per article.
+**Creating new terms is allowed, narrowly.** Only when (i) the term is the
+keyphrase's entity, a top-3 story entity or the title's event/series, (ii) no
+existing term covers it (check variants first), and (iii) it has measured BG
+demand ≥50/mo or is an event/series. **Max 2 new tags per post**; name them the
+way people search (`Rivian R2`, `Asia Motor Show`); mark them **NEW** in the
+report — Phase C shows them in the approval manifest and creates them only after
+an explicit yes.
 
-**The line that matters: owned prose vs. external cards, not "headline story
-only."** An EV News episode has 1 headline story and 27–68 external news
-cards; tagging for every card is the dilution to cap. But it is normal for
-the 130–190 word intro (¶1–¶3, once Phase B has run) to substantively name
-several entities — the headline story in ¶1–¶2, and 2–4 more stories in ¶3.
-If an entity is a real word in that owned prose (not just a card link),
-tag it: the theme's auto-linker only fires on text that's actually in
-`post_content`, so an untagged entity that *is* named in the prose is a
-missed, free internal link, and a tagged entity that's *only* in a card is a
-tag nobody's page ever mentions. **Corrected 2026-08-14** on post 7333 — the
-original wording here capped entity tags at 1–2 and dropped `Model S`,
-`Model X`, `Ford`, `Supercharger` even though ¶3 names all four; that was
-wrong. Concretely:
-- Before Phase B runs (post_content still thin): tag only what's confirmed —
-  usually just the headline story's 1–2 entities, since nothing else is
-  written yet to check the "named in prose" test against.
-- After Phase B runs, or on non-EV-News posts with real body text from day
-  one: check **every** entity named in the actual prose against the reuse +
-  band rule, not just the headline one. A post with 5–6 in-band entities
-  genuinely covered in its own text can carry 5–6 entity tags; a post that
-  only names 2 carries 2. The prose length is the natural cap — a 168-word
-  intro cannot name 20 entities, so this self-limits without an arbitrary
-  number.
-- Keyword-intent tags stay capped at **0–2** — those describe the piece as a
-  whole (`Премиера`, `слух`, `Регистрация`), not a per-mention count, so a
-  fixed small cap is still right there.
+**Price every candidate.** `tools/seo_cache.py kw get …` → send the `MISSING=`
+set to DataForSEO in one batch (see Step 3c) → bank it. Record the BG monthly
+volume next to each tag in the report; when trimming to 8, keep the higher
+demand.
 
-Record the chosen tags with their existing `id` and `count` in the report.
+**The tag must be visible on the page.** For EV News, Phase B names the top-3
+stories (when they were discussed on air) so each tag has an in-text mention —
+that is what makes the theme's auto-linker and on-page relevance work. A top-3
+story that was *not* discussed on air may still be tagged because its news card
+renders on the page; say so in the report.
+
+Record the chosen tags in the report as: tier · tag · id (or **NEW**) · count ·
+BG volume · source (`keyphrase` / `top3` / `title` / `prose` / `intent`).
 
 ### Step 5 — Write the research section, set Status
 
@@ -434,7 +433,8 @@ This phase makes **no live writes**. Everything here is research and a report
   ≈5–8%. Materially below the norm for its rank = a snippet worth rewriting.
 - **One keyphrase per page.** If two pages would target the same phrase, that's
   cannibalisation — resolve it first (consolidate or canonicalise).
-- **Tags: reuse only, in the 3–10 use band, never invent speculatively.** See
+- **Tags: 5–8 per EV News post, existing terms first, post count is not a gate,
+  ≤2 new, every keyphrase / top-3-story entity is a tag, each priced.** See
   Step 4b.
 - **Bulgarian, always.** Research in the phrasing autocomplete shows people
   using — not a translation of English SEO phrasing.

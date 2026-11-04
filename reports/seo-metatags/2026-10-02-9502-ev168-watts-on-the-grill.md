@@ -4,7 +4,7 @@
 **Prepared:** 2026-10-02 (Phase A)
 **Status:** applied
 **Keyphrase:** Rivian R2 recall
-**Ledger:** 9502-2026-10-02 (Phase B), 9502-2026-11-04-C (Phase C)
+**Ledger:** 9502-2026-10-02 (Phase B), 9502-2026-11-04-C (Phase C); 9502-2026-11-04-B2 + 9502-2026-11-04-C-b (tag + body revision)
 
 ---
 
@@ -210,3 +210,26 @@ _Written by `seo-article-apply`. Verified live via public REST (`yoast_head_json
 
 ### Declined
 _None._
+
+---
+
+## Tag + body revision — 2026-11-04 (user request, new tag rule)
+User flagged the single tag. Verified live before the change: `tags = [367]` (Watts on the Grill only); ¶3 covered Nio, the FSD bug and the FSD vote but **not** CSV stories 2–3 (Tesla Supercharger vandalism ≈7388 s; electric trucks cheaper than diesel ≈7486 s), both discussed on air. Root cause was the old Step 4b tag rule — rewritten the same day (5–8 tags, existing first, count not a gate, top-3 CSV stories mandatory, ≤2 priced NEW tags).
+
+**Keyword prices (DataForSEO BG, banked):** `rivian` 590/mo · `rivian r2` 110 · `tesla supercharger` 2,400 · `nio` 590 · `електрически камиони` 90 · `tesla fsd` 50 · `bmw i3` 2,400 · `tesla roadster` 720 · `rivian r2 recall` / `tesla fsd европа` / `xpeng l03` no data.
+
+**Tags before → after:** `[367]` → `[367 Watts on the Grill, 229 Rivian, 454 Rivian R2 (NEW), 134 Supercharger, 455 електрически камиони (NEW), 75 Nio, 171 FSD]`.
+| Tag | id | Posts now | BG vol/mo | Source |
+|---|---|---|---|---|
+| Watts on the Grill | 367 | 5 | — | title |
+| Rivian | 229 | 2 | 590 | keyphrase / story 1 |
+| Rivian R2 | 454 NEW | 1 | 110 | keyphrase + secondary |
+| Supercharger | 134 | 6 | 2,400 | story 2 |
+| електрически камиони | 455 NEW | 1 | 90 | story 3 |
+| Nio | 75 | 4 | 590 | ¶3 |
+| FSD | 171 | 5 | 50 | ¶3 (already linked to 9486) |
+Skipped: Tesla (4, 63 posts — saturated hub), XPeng (432, row 3 not top-3), BMW/i3 (row 4), Geely/Roadster (not in prose/top-3).
+
+**Body:** ¶3 rewritten (49 → 70 words; prose total 184) to name stories 2–3; ¶1, ¶2, the embed and both links (9441-era Watts page, 9486) unchanged. Verified live: embed intact, 3 paragraphs, 2 links, 0 `/tag/` links in body.
+**Secondary phrases (now tag-aligned):** `Rivian R2`, `Tesla Supercharger`, `електрически камиони`.
+**Not done:** a link from the trucks sentence to eActros article 9690 — it is *newer* than this episode; skipped per the new→old rule.

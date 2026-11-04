@@ -257,11 +257,17 @@ Metatags and tags can go in one call:
 ```
 mcp__wordpress__wp_call_endpoint(site="carlifebydani", endpoint="/wp/v2/posts/<id>",
   method="POST", params={
-    "tags": [<existing tag ids from Phase A>],
+    "tags": [<tag ids from Phase A — existing ids plus any NEW tag ids created in the step above>],
     "meta":{
       "_yoast_wpseo_title":"...", "_yoast_wpseo_metadesc":"...",
       "_yoast_wpseo_focuskw":"..."}})
 ```
+**NEW tags (Phase A marks them) are created only after the group-2 yes**, one
+call each: `POST /wp/v2/tags {"name":"<exact search spelling>"}` → use the
+returned `id`; verify the slug and that no near-duplicate exists first. The
+group-2 manifest line for every tag shows: name · id/NEW · post count · BG
+volume · source — and the full resulting tag set (not a diff).
+
 `tags` on this endpoint **replaces** the post's tag set, not merges — read the
 post's current `tags` array in Step 1 and include it in this list unless a
 current tag is being deliberately dropped.
