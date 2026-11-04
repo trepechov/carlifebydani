@@ -72,7 +72,7 @@ what it is *not* competing with on this site>
 | `_yoast_wpseo_focuskw` | | | |
 
 ### Proposed tags
-<5–8 tags on EV News (4–7 other categories). Existing terms first — post count is
+<4–6 tags (hard max 6). Existing terms first — post count is
 not a gate; skip only saturated hubs (≥20) that are not the headline. Every
 keyphrase / secondary-phrase / top-3-story entity is a tag. ≤2 NEW tags, marked
 NEW. Every row priced (BG monthly volume).>

@@ -342,7 +342,7 @@ Exactly **one** focus keyphrase, plus 2–4 secondary phrases. Rules:
   (`/wp/v2/search?search=<phrase>`). If it is, this is a cannibalisation decision,
   not a metatag decision — flag it and stop before writing.
 
-### Step 4b — Build the tag set (5–8 tags; keywords and tags share one vocabulary)
+### Step 4b — Build the tag set (4–6 tags; keywords and tags share one vocabulary)
 
 > **Rewritten 2026-11-04.** The previous rule (existing terms only, 3–10 uses
 > only, CSV `tags` ignored, tag only what a 140-word intro happens to name)
@@ -352,8 +352,10 @@ Exactly **one** focus keyphrase, plus 2–4 secondary phrases. Rules:
 > Tags are this site's topic-cluster and internal-link layer *and* search
 > vocabulary; treating them as a risk to minimise was the wrong default.
 
-**Target: 5–8 tags on an EV News post, 4–7 on other categories. One or two tags
-is a defect, not caution.**
+**Target: 4–6 tags on every post (hard ceiling 6 — 7–8 was tried on 2026-11-04 and
+judged too many). One or two tags is a defect, not caution.** When more than 6
+candidates qualify, keep: the keyphrase entity first, then the top-3-story
+entities, then the title's series/event, then the highest BG volume.
 
 **Where candidates come from (collect all, then filter):**
 1. **The keyphrase and every secondary phrase.** Each brand / model / event /
@@ -396,8 +398,8 @@ an explicit yes.
 
 **Price every candidate.** `tools/seo_cache.py kw get …` → send the `MISSING=`
 set to DataForSEO in one batch (see Step 3c) → bank it. Record the BG monthly
-volume next to each tag in the report; when trimming to 8, keep the higher
-demand.
+volume next to each tag in the report; when trimming to 6, apply the
+priority order above and note what was dropped.
 
 **The tag must be visible on the page.** For EV News, Phase B names the top-3
 stories (when they were discussed on air) so each tag has an in-text mention —
@@ -433,7 +435,7 @@ This phase makes **no live writes**. Everything here is research and a report
   ≈5–8%. Materially below the norm for its rank = a snippet worth rewriting.
 - **One keyphrase per page.** If two pages would target the same phrase, that's
   cannibalisation — resolve it first (consolidate or canonicalise).
-- **Tags: 5–8 per EV News post, existing terms first, post count is not a gate,
+- **Tags: 4–6 per post (max 6), existing terms first, post count is not a gate,
   ≤2 new, every keyphrase / top-3-story entity is a tag, each priced.** See
   Step 4b.
 - **Bulgarian, always.** Research in the phrasing autocomplete shows people

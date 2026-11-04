@@ -520,7 +520,7 @@ their own way.
 > **⚠️ Superseded 2026-11-04.** The 3–10 band, reuse-only and "ignore the CSV `tags`" rules below
 > produced one tag per EV News post (EV168, EV171 audited) and blocked terms with real BG demand
 > (`Rivian` 590/mo at count 1, `Tesla Supercharger` 2,400, `Nio` 590). `seo-keyphrase-research`
-> Step 4b now targets **5–8 tags**, existing terms first with post count no longer a gate, top-3
+> Step 4b now targets **4–6 tags** (first set at 5–8, trimmed the same day), existing terms first with post count no longer a gate, top-3
 > CSV stories + keyphrase entities mandatory, ≤2 priced NEW tags, keywords built from tag
 > vocabulary. **Trade-off kept on the record:** the original analysis below is still right that
 > tags at 1–2 posts are thin archives which can outrank articles on brand queries (`/tag/clbd/`:
