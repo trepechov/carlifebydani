@@ -41,7 +41,7 @@ get_template_part( 'template-parts/header' );
         <?php if ( empty( $articles ) ) : ?>
 
         <div class="py-20 text-center">
-            <span class="material-symbols-outlined text-5xl text-brand-lightgrey block mb-4">newspaper</span>
+            <svg class="icon text-5xl text-brand-lightgrey block mb-4" aria-hidden="true"><use href="#icon-newspaper"/></svg>
             <p class="text-brand-lightgrey text-lg">Няма налични новини. Проверете по-късно.</p>
         </div>
 

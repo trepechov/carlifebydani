@@ -10,23 +10,36 @@ function wpdocs_carlifebydani_scripts()
     // report 7ksv4vEw) flagged all of these by exact handle/URL as render-blocking
     // resources (2,990ms potential savings) — none of them gate first paint, so none
     // need to block the parser. See docs/plans/2026-09-05-002-fix-onsite-seo-performance-plan.md.
-    wp_enqueue_style('theme-css', get_stylesheet_directory_uri() . '/css/style.min.css');
-    wp_enqueue_style('glightbox-css', get_stylesheet_directory_uri() . '/css/glightbox.min.css');
-    wp_enqueue_style('cookieconsent-css', get_stylesheet_directory_uri() . '/css/cookieconsent.min.css');
+    // Self-hosted Sofia Sans (theme/fonts/sofia-sans/), replacing the fonts.googleapis.com
+    // @import that used to chain behind style.min.css. See docs/plans/2026-09-21-003-fix-onsite-performance-plan.md.
+    //
+    // $ver on every enqueue below is load-bearing, not decorative: none of these
+    // calls previously passed one, so every asset URL was byte-identical across
+    // deploys and Cloudflare/browsers had nothing to bust their cache on — a
+    // deploy could land on the origin while every visitor kept getting the old
+    // file indefinitely. Tying $ver to the theme's own Version header means every
+    // release bump (already required by docs/DEPLOYMENT.md) now also forces a
+    // fresh fetch of every enqueued asset.
+    $theme_version = wp_get_theme()->get('Version');
+
+    wp_enqueue_style('theme-fonts', get_stylesheet_directory_uri() . '/css/fonts.css', [], $theme_version);
+    wp_enqueue_style('theme-css', get_stylesheet_directory_uri() . '/css/style.min.css', [], $theme_version);
+    wp_enqueue_style('glightbox-css', get_stylesheet_directory_uri() . '/css/glightbox.min.css', [], $theme_version);
+    wp_enqueue_style('cookieconsent-css', get_stylesheet_directory_uri() . '/css/cookieconsent.min.css', [], $theme_version);
     // gtag.js is the GTM bootstrap snippet (sets dataLayer, records gtm.start,
     // inserts the actual gtm.js tag which is already loaded with j.async=true).
     // Google's own install instructions call for this outer snippet to run
     // synchronously as early in <head> as possible — deferring it would push
     // back gtm.start and skew every page's timing/early-interaction analytics.
     // Left un-deferred deliberately; not part of this fix.
-    wp_enqueue_script('gtag', get_stylesheet_directory_uri() . '/js/gtag.js');
-    wp_enqueue_script('glightbox', get_stylesheet_directory_uri() . '/js/glightbox.min.js', [], '', ['strategy' => 'defer']);
-    wp_enqueue_script('glightbox-init', get_stylesheet_directory_uri() . '/js/glightbox.init.js', ['glightbox', 'jquery'], '', ['strategy' => 'defer']);
-    wp_enqueue_script('cookieconsent', get_stylesheet_directory_uri() . '/js/cookieconsent.min.js', [], '', ['strategy' => 'defer', 'in_footer' => true]);
-    wp_enqueue_script('cookieconsent-init', get_stylesheet_directory_uri() . '/js/cookieconsent.init.js', ['cookieconsent'], '', ['strategy' => 'defer', 'in_footer' => true]);
-    wp_enqueue_script('ev-news-tracking', get_stylesheet_directory_uri() . '/js/ev-news-tracking.js', [], '', ['strategy' => 'defer', 'in_footer' => true]);
-    wp_enqueue_script('ev-news-voting', get_stylesheet_directory_uri() . '/js/ev-news-voting.js', [], '', ['strategy' => 'defer', 'in_footer' => true]);
-    wp_enqueue_script('ogimageloader-init', get_stylesheet_directory_uri() . '/js/ogimageloader.init.js', ['jquery'], '', ['strategy' => 'defer']);
+    wp_enqueue_script('gtag', get_stylesheet_directory_uri() . '/js/gtag.js', [], $theme_version);
+    wp_enqueue_script('glightbox', get_stylesheet_directory_uri() . '/js/glightbox.min.js', [], $theme_version, ['strategy' => 'defer']);
+    wp_enqueue_script('glightbox-init', get_stylesheet_directory_uri() . '/js/glightbox.init.js', ['glightbox', 'jquery'], $theme_version, ['strategy' => 'defer']);
+    wp_enqueue_script('cookieconsent', get_stylesheet_directory_uri() . '/js/cookieconsent.min.js', [], $theme_version, ['strategy' => 'defer', 'in_footer' => true]);
+    wp_enqueue_script('cookieconsent-init', get_stylesheet_directory_uri() . '/js/cookieconsent.init.js', ['cookieconsent'], $theme_version, ['strategy' => 'defer', 'in_footer' => true]);
+    wp_enqueue_script('ev-news-tracking', get_stylesheet_directory_uri() . '/js/ev-news-tracking.js', [], $theme_version, ['strategy' => 'defer', 'in_footer' => true]);
+    wp_enqueue_script('ev-news-voting', get_stylesheet_directory_uri() . '/js/ev-news-voting.js', [], $theme_version, ['strategy' => 'defer', 'in_footer' => true]);
+    wp_enqueue_script('ogimageloader-init', get_stylesheet_directory_uri() . '/js/ogimageloader.init.js', ['jquery'], $theme_version, ['strategy' => 'defer']);
     wp_localize_script('ogimageloader-init', 'ogProxy', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'nonce'   => wp_create_nonce('fetch_og_image_nonce'),

@@ -2,47 +2,101 @@
 // Backend GA4→Sheets sync (ENA_Analytics) aggregates the ev_news_upvote / ev_news_downvote
 // events keyed on article_url (truncated to 100 chars, matching the click-tracking pattern).
 //
-// Cookie structure per article (new format):
-//   { current: 'up'|'down'|null, fired: { up: bool, down: bool } }
+// The cookie only bridges the gap until the next GA4→Sheets sync, so it holds votes for the
+// articles currently on the feed and nothing else: every write OVERWRITES it with just those
+// entries, which drops articles that rotated off the feed and keeps it far below the 4 KB cap
+// (browsers silently reject larger cookies — the old JSON format hit that after ~36 votes).
 //
-// GA4 events are fired at most once per direction per article, regardless of how many times
-// the user switches between upvote and downvote. The `fired` map tracks this independently
-// of `current` (the active UI selection).
+// Cookie format: concatenated fixed-width entries, no separators, no URL-encoding needed:
+//   <first 8 hex chars of the article id><state char>
+// State char: u/d = current up/down, GA4 fired for that direction only;
+//             U/D = current up/down, GA4 already fired for both directions.
+// GA4 events are fired at most once per direction per article, regardless of switching.
 //
-// Backward compat: old entries stored as plain string 'up'|'down' are migrated on read.
+// Migration: the legacy JSON cookie (ev_news_votes) is converted on a feed page, then deleted.
 
 (function () {
-    var COOKIE_NAME = 'ev_news_votes';
-    var COOKIE_DAYS = 365;
+    var COOKIE_NAME = 'ev_news_v';
+    var LEGACY_COOKIE_NAME = 'ev_news_votes';
+    var COOKIE_DAYS = 30;
+    var ID_LEN = 8;
+    var ENTRY_RE = /([0-9a-f]{8})([uUdD])/g;
 
+    function readCookie(name) {
+        var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
+        return match ? match[1] : null;
+    }
+
+    function shortId(articleId) {
+        return String(articleId).slice(0, ID_LEN);
+    }
+
+    // Returns { shortId: { current: 'up'|'down', fired: { up: bool, down: bool } } }.
     function readVotes() {
-        var match = document.cookie.match(/(?:^|;\s*)ev_news_votes=([^;]*)/);
-        if (!match) return {};
+        var votes = {};
+        var raw = readCookie(COOKIE_NAME) || '';
+        var m;
+        while ((m = ENTRY_RE.exec(raw)) !== null) {
+            var code = m[2];
+            var dir = code.toLowerCase() === 'u' ? 'up' : 'down';
+            var fired = {};
+            fired[dir] = true;
+            if (code === 'U' || code === 'D') { fired.up = true; fired.down = true; }
+            votes[m[1]] = { current: dir, fired: fired };
+        }
+        return votes;
+    }
+
+    // Legacy JSON cookie: { articleId: 'up'|'down' } or { articleId: { current, fired } }.
+    function readLegacyVotes() {
+        var raw = readCookie(LEGACY_COOKIE_NAME);
+        if (!raw) return null;
+        var parsed;
         try {
-            var parsed = JSON.parse(decodeURIComponent(match[1]));
-            return (parsed && typeof parsed === 'object') ? parsed : {};
+            parsed = JSON.parse(decodeURIComponent(raw));
         } catch (err) {
             return {};
         }
+        var votes = {};
+        if (!parsed || typeof parsed !== 'object') return votes;
+        Object.keys(parsed).forEach(function (articleId) {
+            var entry = parsed[articleId];
+            if (typeof entry === 'string') {
+                var fired = {};
+                fired[entry] = true;
+                entry = { current: entry, fired: fired };
+            }
+            if (!entry || (entry.current !== 'up' && entry.current !== 'down')) return;
+            votes[shortId(articleId)] = { current: entry.current, fired: entry.fired || {} };
+        });
+        return votes;
     }
 
-    function writeVotes(votes) {
-        var expires = new Date(Date.now() + COOKIE_DAYS * 864e5).toUTCString();
-        document.cookie = COOKIE_NAME + '=' + encodeURIComponent(JSON.stringify(votes)) +
-            '; path=/; expires=' + expires + '; SameSite=Lax';
+    // Short ids of every article rendered on this page.
+    function pageIds() {
+        var ids = {};
+        document.querySelectorAll('[data-ev-news-upvote][data-article-id]').forEach(function (btn) {
+            ids[shortId(btn.dataset.articleId)] = true;
+        });
+        return ids;
     }
 
-    // Normalises old string entries ('up'|'down') to the new object shape.
-    function getEntry(votes, articleId) {
-        var raw = votes[articleId];
-        if (!raw) return null;
-        if (typeof raw === 'string') {
-            var migrated = { current: raw, fired: {} };
-            migrated.fired[raw] = true;
-            return migrated;
+    // Overwrites the cookie with only the votes for articles on this page.
+    function writeVotes(votes, onPage) {
+        var value = '';
+        Object.keys(votes).forEach(function (id) {
+            var entry = votes[id];
+            if (!onPage[id] || (entry.current !== 'up' && entry.current !== 'down')) return;
+            var code = entry.current === 'up' ? 'u' : 'd';
+            if (entry.fired.up && entry.fired.down) code = code.toUpperCase();
+            value += id + code;
+        });
+        if (!value) {
+            document.cookie = COOKIE_NAME + '=; path=/; max-age=0; SameSite=Lax';
+            return;
         }
-        if (!raw.fired) raw.fired = {};
-        return raw;
+        var expires = new Date(Date.now() + COOKIE_DAYS * 864e5).toUTCString();
+        document.cookie = COOKIE_NAME + '=' + value + '; path=/; expires=' + expires + '; SameSite=Lax';
     }
 
     function buttons(articleId, dir) {
@@ -94,15 +148,32 @@
         });
     }
 
-    // On load: disable and visually mark whichever button matches the stored current vote.
+    // On load: migrate the legacy cookie, prune votes for articles no longer on the feed,
+    // then disable and visually mark whichever button matches each stored vote.
+    // Only runs on pages that render vote buttons — the script is enqueued site-wide, and
+    // pruning against a page with no articles would wipe every stored vote.
     function applyStoredState() {
+        var onPage = pageIds();
+        if (!Object.keys(onPage).length) return;
+
         var votes = readVotes();
-        Object.keys(votes).forEach(function (articleId) {
-            var entry = getEntry(votes, articleId);
-            if (!entry || !entry.current) return;
-            var dir = entry.current;
-            if (dir !== 'up' && dir !== 'down') return;
-            buttons(articleId, dir).forEach(function (btn) {
+        var legacy = readLegacyVotes();
+        if (legacy) {
+            Object.keys(legacy).forEach(function (id) {
+                if (!votes[id]) votes[id] = legacy[id];
+            });
+            document.cookie = LEGACY_COOKIE_NAME + '=; path=/; max-age=0; SameSite=Lax';
+        }
+        // Rewriting on every feed visit also refreshes the expiry (Safari caps script-set
+        // cookies at 7 days from the last write).
+        writeVotes(votes, onPage);
+
+        document.querySelectorAll('[data-ev-news-upvote][data-article-id]').forEach(function (upBtn) {
+            var articleId = upBtn.dataset.articleId;
+            var entry = votes[shortId(articleId)];
+            if (!entry) return;
+            buttons(articleId, entry.current).forEach(function (btn) {
+                if (btn.disabled) return; // same article rendered twice: mark each button once
                 bump(btn, 1);
                 setDisabled(btn, true);
                 setVotedVisual(btn, true);
@@ -118,8 +189,9 @@
 
         var dir = upBtn ? 'up' : 'down';
         var articleId = btn.dataset.articleId;
+        var id = shortId(articleId);
         var votes = readVotes();
-        var entry = getEntry(votes, articleId) || { current: null, fired: {} };
+        var entry = votes[id] || { current: null, fired: {} };
         var prev = entry.current;
 
         if (prev === dir) return; // already selected this way (defensive; button should be disabled)
@@ -148,8 +220,8 @@
             pushEvent(dir === 'up' ? 'ev_news_upvote' : 'ev_news_downvote', btn);
         }
 
-        votes[articleId] = entry;
-        writeVotes(votes);
+        votes[id] = entry;
+        writeVotes(votes, pageIds());
     });
 
     if (document.readyState === 'loading') {

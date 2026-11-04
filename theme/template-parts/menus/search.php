@@ -1,9 +1,7 @@
 <form action="<?php echo home_url('/'); ?>" method="get" class="w-11/12 sm:w-4/5">
     <div class="relative">
         <div class="pointer-events-none absolute left-0">
-            <span class="material-symbols-outlined text-5xl hover:text-brand-red link-transition">
-                search
-            </span>
+            <svg class="icon text-5xl hover:text-brand-red link-transition" aria-hidden="true"><use href="#icon-search"/></svg>
         </div>
         <input type="text" name="s" value="<?php the_search_query(); ?>" placeholder="Търсене в сайта..." class="bg-black text-white w-full text-2xl block pl-20 pt-2 pb-8 focus:outline-none border-b-2 border-b-brand-button focus:border-b-brand-lightgrey placeholder:text-brand-grey rounded-none" />
     </div>

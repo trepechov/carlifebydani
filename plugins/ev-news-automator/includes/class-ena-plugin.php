@@ -27,7 +27,7 @@ class ENA_Plugin {
 
     private function __construct() {
         $this->settings   = new ENA_Settings();
-        $this->logger     = new ENA_Logger();
+        $this->logger     = new ENA_Logger( $this->settings );
         $this->http       = new ENA_HTTP();
         $this->auth       = new ENA_Google_Auth( $this->settings );
 
@@ -40,7 +40,7 @@ class ENA_Plugin {
         $this->scraper    = new ENA_Scraper( $this->logger );
         $this->collector  = new ENA_Collector( $this->storage, $this->scraper, $this->openrouter, $this->logger, $this->settings );
         $this->sync       = new ENA_Sync( $this->storage, $this->logger );
-        $this->podcast    = new ENA_Podcast( $this->storage, $this->analytics, $this->openrouter, $this->docs, $this->logger, $this->settings );
+        $this->podcast    = new ENA_Podcast( $this->storage, $this->analytics, $this->openrouter, $this->scraper, $this->docs, $this->logger, $this->settings );
 
         ENA_Cron::register_hooks();
         ENA_Ajax::register();

@@ -68,6 +68,10 @@ class ENA_Ajax {
         $plugin = ENA_Plugin::instance();
         $plugin->logger->begin_run( 'manual', 'podcast' );
 
+        // The «Резюме» brief fetches each article page before its OpenRouter call — don't let
+        // PHP's time limit cut the batch short (mirrors handle_bg_worker()).
+        if ( function_exists( 'set_time_limit' ) ) @set_time_limit( 0 );
+
         try {
             $result = $plugin->podcast->run();
             $plugin->logger->end_run( $result );

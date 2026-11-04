@@ -36,12 +36,22 @@ class ENA_HTTP {
     }
 
     public static function get( string $url, array $args = [] ): array|WP_Error {
-        $defaults = [ 'timeout' => 15, 'redirection' => 3 ];
+        // Some feed hosts (e.g. feeds.highgearmedia.com) WAF-block WordPress's default
+        // "WordPress/x.x; https://site" user agent as a bot signature and return 403,
+        // or a 200 with an empty body. Present as a regular browser instead.
+        $defaults = [
+            'timeout'     => 15,
+            'redirection' => 3,
+            'user-agent'  => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        ];
         $response = wp_remote_get( $url, array_merge( $defaults, $args ) );
         if ( is_wp_error( $response ) ) return $response;
         $code = wp_remote_retrieve_response_code( $response );
         if ( $code < 200 || $code >= 300 ) {
             return new WP_Error( 'http_error', "HTTP {$code}", [ 'url' => $url, 'body' => wp_remote_retrieve_body( $response ) ] );
+        }
+        if ( trim( wp_remote_retrieve_body( $response ) ) === '' ) {
+            return new WP_Error( 'http_empty_body', 'HTTP 200 with empty body', [ 'url' => $url ] );
         }
         return $response;
     }

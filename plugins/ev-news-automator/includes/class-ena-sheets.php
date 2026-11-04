@@ -36,6 +36,7 @@ class ENA_Sheets {
     private const SCOPES               = [ 'https://www.googleapis.com/auth/spreadsheets' ];
     private const COLUMNS              = [ 'title', 'description', 'link', 'author', 'upvote', 'downvote', 'clicks', 'added_date', 'pub_date', 'off_topic', 'tags', 'region' ];
     private const SESSION_DATE_PATTERN = '/^\d{2}\.\d{2}\.\d{4}$/';
+    private const DEDUP_TAB_COUNT      = 3; // active + live episode tab + one more for safety
 
     private ENA_Google_Auth $auth;
     private ENA_Settings    $settings;
@@ -84,28 +85,37 @@ class ENA_Sheets {
     }
 
     /**
-     * Returns [link => true] for deduplication within the active session sheet.
+     * Returns [link => true] for deduplication across the DEDUP_TAB_COUNT most recent
+     * session tabs, not just the active one. At the Tue 01:00 rollover the new tab starts
+     * empty while the collection cutoff still reaches back ≥24h, so checking only the
+     * active tab re-collected the previous tab's last day of articles (with their GA4
+     * votes already attached). The live feed/episode tab is always one of these.
      */
     public function existing_urls(): array {
-        $sheet = $this->active_sheet_name();
-        if ( is_wp_error( $sheet ) ) return [];
+        $tabs = $this->recent_session_tabs( self::DEDUP_TAB_COUNT );
+        if ( is_wp_error( $tabs ) || empty( $tabs ) ) return [];
 
         $token = $this->auth->get_access_token( self::SCOPES );
         if ( is_wp_error( $token ) ) return [];
 
-        $id    = $this->settings->get( 'spreadsheet_id' );
-        $range = rawurlencode( "{$sheet}!C:C" ); // column C = link
-        $url   = self::BASE . "/{$id}/values/{$range}";
+        $id     = $this->settings->get( 'spreadsheet_id' );
+        $ranges = implode( '&', array_map(
+            fn ( $tab ) => 'ranges=' . rawurlencode( "{$tab}!C:C" ), // column C = link
+            $tabs
+        ) );
+        $url = self::BASE . "/{$id}/values:batchGet?{$ranges}";
 
         $response = ENA_HTTP::get( $url, [ 'headers' => [ 'Authorization' => "Bearer {$token}" ] ] );
         $data     = ENA_HTTP::retrieve_json( $response );
         if ( is_wp_error( $data ) ) return [];
 
         $map = [];
-        foreach ( $data['values'] ?? [] as $i => $cell ) {
-            if ( $i === 0 ) continue; // skip header
-            $link = $cell[0] ?? '';
-            if ( ! empty( $link ) ) $map[ $link ] = true;
+        foreach ( $data['valueRanges'] ?? [] as $value_range ) {
+            foreach ( $value_range['values'] ?? [] as $i => $cell ) {
+                if ( $i === 0 ) continue; // skip header
+                $link = $cell[0] ?? '';
+                if ( ! empty( $link ) ) $map[ $link ] = true;
+            }
         }
         return $map;
     }
@@ -452,6 +462,25 @@ class ENA_Sheets {
      * Return the tab title of the most recently dated session sheet (DD.MM.YYYY format).
      */
     public function active_sheet_name(): string|WP_Error {
+        $tabs = $this->recent_session_tabs( 1 );
+        if ( is_wp_error( $tabs ) ) return $tabs;
+
+        if ( empty( $tabs ) ) {
+            return new WP_Error(
+                'no_session_sheet',
+                'No session sheet found. Expected tabs named DD.MM.YYYY (e.g. "16.06.2026").'
+            );
+        }
+
+        return $tabs[0];
+    }
+
+    /**
+     * Titles of the $limit most recently dated DD.MM.YYYY session tabs, newest first.
+     *
+     * @return string[]|WP_Error
+     */
+    private function recent_session_tabs( int $limit ): array|WP_Error {
         $sheets = $this->list_sheets();
         if ( is_wp_error( $sheets ) ) return $sheets;
 
@@ -460,18 +489,11 @@ class ENA_Sheets {
             fn ( $s ) => preg_match( self::SESSION_DATE_PATTERN, $s['title'] )
         );
 
-        if ( empty( $dated ) ) {
-            return new WP_Error(
-                'no_session_sheet',
-                'No session sheet found. Expected tabs named DD.MM.YYYY (e.g. "16.06.2026").'
-            );
-        }
-
         usort( $dated, fn ( $a, $b ) =>
             $this->parse_session_timestamp( $b['title'] ) <=> $this->parse_session_timestamp( $a['title'] )
         );
 
-        return $dated[0]['title'];
+        return array_slice( array_column( $dated, 'title' ), 0, $limit );
     }
 
     /**

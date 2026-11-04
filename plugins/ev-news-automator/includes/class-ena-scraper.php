@@ -31,6 +31,10 @@ class ENA_Scraper {
         }
 
         $body = wp_remote_retrieve_body( $response );
+        if ( trim( $body ) === '' ) {
+            $this->logger->log_error( 'scraper', "Empty response body for {$url}" );
+            return [];
+        }
         libxml_use_internal_errors( true );
         $dom = new DOMDocument();
         if ( ! $dom->loadXML( $body ) ) {
@@ -75,6 +79,10 @@ class ENA_Scraper {
         }
 
         $body = wp_remote_retrieve_body( $response );
+        if ( trim( $body ) === '' ) {
+            $this->logger->log_error( 'scraper', "Empty response body for {$url}" );
+            return [];
+        }
         libxml_use_internal_errors( true );
         $dom = new DOMDocument();
         $dom->loadHTML( mb_convert_encoding( $body, 'HTML-ENTITIES', 'UTF-8' ) );
@@ -116,6 +124,9 @@ class ENA_Scraper {
         if ( is_wp_error( $response ) ) return $response;
 
         $body = wp_remote_retrieve_body( $response );
+        if ( trim( $body ) === '' ) {
+            return new WP_Error( 'empty_body', "Empty response body for {$url}" );
+        }
         libxml_use_internal_errors( true );
         $dom = new DOMDocument();
         $dom->loadHTML( mb_convert_encoding( $body, 'HTML-ENTITIES', 'UTF-8' ) );

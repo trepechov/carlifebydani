@@ -3,9 +3,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ENA_Collector {
 
-    // Manual adds scrape a full article page (uncapped), unlike RSS excerpts (500 chars, already
-    // capped by ENA_Scraper::fetch_rss()). Cap here to keep the summarize() prompt/cost bounded.
-    private const MANUAL_BODY_CAP = 3000;
+    // analyze() reads the scraped article body (not just the ≤500-char RSS excerpt) so AEO titles and
+    // summaries carry the real numbers/dates. Cap it to keep the prompt/cost bounded — 1500 chars is
+    // the input the AEO output was reviewed on (tests/test-05). Shared by run() and add_manual().
+    private const ARTICLE_BODY_CAP = 1500;
 
     private ENA_Sheets     $storage;
     private ENA_Scraper    $scraper;
@@ -33,7 +34,7 @@ class ENA_Collector {
         $new_articles  = [];
         $batch_seen    = [];
 
-        $this->logger->step( 'existing_urls', 'ok', count( $existing_urls ) . ' URLs already in active sheet (used for dedup)' );
+        $this->logger->step( 'existing_urls', 'ok', count( $existing_urls ) . ' URLs already in the recent session tabs (used for dedup)' );
 
         $cutoff   = $this->settings->article_age_cutoff();
         $html_cap = 5; // HTML pages carry no dates; top N items are assumed most recent.
@@ -78,8 +79,10 @@ class ENA_Collector {
         $stopped_early = 0;  // articles never attempted because we bailed out on a 429/401.
 
         foreach ( $new_articles as $i => $article ) {
-            $num = $i + 1;
-            $analysis = $this->openrouter->analyze( $article['title'], $article['excerpt'] ?? '' );
+            $num      = $i + 1;
+            $pub_date = $article['published_at'] > 0 ? gmdate( 'Y-m-d', $article['published_at'] ) : '';
+            [ $text, $text_source ] = $this->article_text( $article['url'], $article['excerpt'] ?? '' );
+            $analysis = $this->openrouter->analyze( $article['title'], $text, $pub_date );
 
             if ( is_wp_error( $analysis ) ) {
                 $code = $analysis->get_error_code();
@@ -100,12 +103,12 @@ class ENA_Collector {
                 continue;
             }
 
-            $this->logger->step( 'openrouter_call', 'ok', "article {$num}/{$total} — bg_title generated (" . self::describe_analysis( $analysis ) . ')' );
+            $this->logger->step( 'openrouter_call', 'ok', "article {$num}/{$total} — bg_title generated from {$text_source} (" . self::describe_analysis( $analysis ) . ')' );
 
             $rows[] = $this->build_row( $analysis, [
                 'link'     => $article['url'],
                 'author'   => $article['source'],
-                'pub_date' => $article['published_at'] > 0 ? gmdate( 'Y-m-d', $article['published_at'] ) : '',
+                'pub_date' => $pub_date,
             ] );
         }
 
@@ -158,7 +161,7 @@ class ENA_Collector {
 
         $existing_urls = $this->storage->existing_urls();
         if ( isset( $existing_urls[ $url ] ) ) {
-            return new WP_Error( 'duplicate_url', 'This article is already in the active sheet.' );
+            return new WP_Error( 'duplicate_url', 'This article is already in one of the recent session tabs.' );
         }
 
         $body = $this->scraper->extract_body( $url );
@@ -166,9 +169,11 @@ class ENA_Collector {
         if ( trim( $body ) === '' ) {
             return new WP_Error( 'empty_body', 'Could not extract any article text from that URL.' );
         }
-        $body = mb_substr( $body, 0, self::MANUAL_BODY_CAP );
+        $body = mb_substr( $body, 0, self::ARTICLE_BODY_CAP );
 
-        $analysis = $this->openrouter->analyze( '', $body );
+        // Publication date unknown for an ad-hoc URL: pass '' so the model omits relative dates
+        // rather than resolving "вчера" against today (the sheet's pub_date column still gets today).
+        $analysis = $this->openrouter->analyze( '', $body, '' );
         if ( is_wp_error( $analysis ) ) return $analysis;
 
         $this->logger->step( 'manual_add', 'ok', "bg_title generated for {$url} (" . self::describe_analysis( $analysis ) . ')' );
@@ -178,6 +183,19 @@ class ENA_Collector {
             'author'   => (string) wp_parse_url( $url, PHP_URL_HOST ),
             'pub_date' => gmdate( 'Y-m-d' ),
         ] );
+    }
+
+    /**
+     * Source text for analyze(): the scraped article body (capped), falling back to the RSS excerpt
+     * when extraction fails or comes back empty (paywall, bot block, HTML source without a body).
+     * Returns [ text, 'body'|'excerpt' ] so the run transcript shows which one was used.
+     */
+    private function article_text( string $url, string $excerpt ): array {
+        $body = $this->scraper->extract_body( $url );
+        if ( ! is_wp_error( $body ) && trim( $body ) !== '' ) {
+            return [ mb_substr( $body, 0, self::ARTICLE_BODY_CAP ), 'body' ];
+        }
+        return [ $excerpt, 'excerpt' ];
     }
 
     /**

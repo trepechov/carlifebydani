@@ -135,6 +135,9 @@ class ENA_Admin {
         $values['offtopic_blacklist'] = sanitize_textarea_field( $_POST['offtopic_blacklist'] ?? '' );
         $values['tag_descriptors']    = sanitize_textarea_field( $_POST['tag_descriptors'] ?? '' );
 
+        // Checkbox: absent from $_POST when unchecked, so its presence alone is the signal.
+        $values['error_alert_enabled'] = isset( $_POST['error_alert_enabled'] );
+
         $this->settings->update( $values );
         ENA_Cron::reschedule();
 

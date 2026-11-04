@@ -52,7 +52,8 @@ foreach ( $sources as $source ) {
     foreach ( $slice as $item ) {
         WP_CLI::log( '  · ' . $item['title'] );
 
-        $summary = $openrouter->summarize( $item['title'], $item['excerpt'] ?? '' );
+        $pub_date = ( $item['published_at'] ?? 0 ) > 0 ? gmdate( 'Y-m-d', $item['published_at'] ) : '';
+        $summary  = $openrouter->analyze( $item['title'], $item['excerpt'] ?? '', $pub_date );
 
         $entry = [
             'original_title' => $item['title'],

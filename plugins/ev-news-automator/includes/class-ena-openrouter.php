@@ -9,6 +9,18 @@ class ENA_OpenRouter {
     private const DAILY_REQ_OPTION  = 'ena_openrouter_daily_requests';
     private const RATE_LIMIT_OPTION = 'ena_openrouter_rate_limit';
 
+    // Soft length ceilings for analyze() output: exceeding them only logs `over_length`, never truncates.
+    // Prompt targets are lower (title ~60/≤75, summary ~220/≤250) — see prompts/analysis-system.md.
+    private const TITLE_SOFT_MAX   = 90;
+    private const SUMMARY_SOFT_MAX = 300;
+
+    // Labels of the podcast «Резюме» brief; ENA_Docs bolds them, so both sides share these constants.
+    public const BRIEF_QUESTION_LABEL = 'Въпрос: ';
+    public const BRIEF_ANSWER_LABEL   = 'Отговор: ';
+
+    // Article body sent to podcast_summary(); the doc has no length clamp, so more context is fine.
+    private const PODCAST_BODY_CAP = 6000;
+
     // Error codes where retrying the next item in a batch just re-hits the same wall —
     // callers looping over multiple OpenRouter calls should stop instead of continuing.
     private const FATAL_BATCH_ERROR_CODES = [ 'http_429', 'http_401' ];
@@ -46,11 +58,14 @@ class ENA_OpenRouter {
      *   topic_reason string  — short model explanation of the on_topic call (for tuning), or ''
      *   tags         array   — Bulgarian tags: brand + model (proper nouns) + event descriptors
      *   region       string  — ISO 3166-1 alpha-2 region the article is about ("US", "CN,EU"), or ''
+     *
+     * $pub_date (Y-m-d, optional) lets the model turn "on Monday" into an absolute date (AEO rule).
      */
-    public function analyze( string $original_title, string $excerpt_or_body ): array|WP_Error {
+    public function analyze( string $original_title, string $excerpt_or_body, string $pub_date = '' ): array|WP_Error {
+        $date_line = 'Publication date: ' . ( $pub_date !== '' ? $pub_date : 'unknown' );
         $result = $this->chat(
             $this->build_analysis_system_prompt(),
-            "Original title: {$original_title}\n\nArticle excerpt: {$excerpt_or_body}\n\nProduce JSON.",
+            "Original title: {$original_title}\n{$date_line}\n\nArticle text: {$excerpt_or_body}\n\nProduce JSON.",
             [ 'temperature' => 0.4 ],
             'summarize' // keep the usage-stat bucket name stable across the rename
         );
@@ -62,9 +77,20 @@ class ENA_OpenRouter {
             return new WP_Error( 'openrouter_parse', 'Invalid or empty JSON response from OpenRouter' );
         }
 
+        $title   = self::to_paragraph( (string) $parsed['title'] );
+        $summary = self::to_paragraph( (string) ( $parsed['summary'] ?? '' ) );
+
+        // Length targets are soft (prompts/analysis-system.md) — never truncate, only make drift visible.
+        if ( mb_strlen( $summary ) > self::SUMMARY_SOFT_MAX || mb_strlen( $title ) > self::TITLE_SOFT_MAX ) {
+            $this->logger->step( 'over_length', 'warn', sprintf(
+                'title %d chars, summary %d chars (soft limits %d/%d) — kept as is: %s',
+                mb_strlen( $title ), mb_strlen( $summary ), self::TITLE_SOFT_MAX, self::SUMMARY_SOFT_MAX, $title
+            ) );
+        }
+
         return [
-            'bg_title'     => $parsed['title'],
-            'bg_summary'   => $parsed['summary'] ?? '',
+            'bg_title'     => $title,
+            'bg_summary'   => $summary,
             'on_topic'     => self::parse_bool( $parsed['on_topic'] ?? true ),
             'topic_reason' => is_scalar( $parsed['topic_reason'] ?? '' ) ? trim( (string) ( $parsed['topic_reason'] ?? '' ) ) : '',
             'tags'         => self::normalize_tags( $parsed['tags'] ?? [] ),
@@ -73,15 +99,68 @@ class ENA_OpenRouter {
     }
 
     /**
-     * Build the analyze() system prompt, folding in the editable off-topic whitelist/blacklist and
-     * the Bulgarian event-descriptor vocabulary from settings. The dictionaries are injected as
+     * Build the analyze() system prompt from prompts/analysis-system.md (AEO title/summary rules +
+     * shared prompts/aeo-rules.md), folding in the editable off-topic whitelist/blacklist and the
+     * Bulgarian event-descriptor vocabulary from settings. The dictionaries are injected as
      * guidance ("strongly on/off topic"), not a literal keyword filter — the judgment stays semantic.
+     * Falls back to the built-in v1.2.5 prompt if the file is missing, so a bad deploy can't stop collection.
      */
     private function build_analysis_system_prompt(): string {
         $whitelist   = self::flatten_list( (string) $this->settings->get( 'offtopic_whitelist', '' ) );
         $blacklist   = self::flatten_list( (string) $this->settings->get( 'offtopic_blacklist', '' ) );
         $descriptors = self::flatten_list( (string) $this->settings->get( 'tag_descriptors', '' ) );
 
+        $template = $this->load_prompt( 'analysis-system.md' );
+        if ( $template !== null ) {
+            $prompt = strtr( $template, [
+                '{{DESCRIPTOR_LINE}}' => $descriptors !== '' ? "\nPrefer these Bulgarian event descriptors for tags when they apply: {$descriptors}." : '',
+                '{{WHITELIST_LINE}}'  => $whitelist !== '' ? "\nTreat these topics as strongly ON-topic: {$whitelist}." : '',
+                '{{BLACKLIST_LINE}}'  => $blacklist !== '' ? "Treat these topics as strongly OFF-topic: {$blacklist}." : '',
+            ] );
+            return trim( preg_replace( "/\n{3,}/", "\n\n", $prompt ) );
+        }
+
+        return $this->build_legacy_analysis_prompt( $descriptors, $whitelist, $blacklist );
+    }
+
+    /**
+     * Read a prompt file from prompts/, strip its HTML comments (human notes) and inline the shared
+     * AEO rules. Returns null (and logs a warning) when the file is missing/unreadable/empty.
+     */
+    private function load_prompt( string $file ): ?string {
+        $text = self::read_prompt_file( $file );
+        if ( $text === null ) {
+            $this->logger->step( 'prompt_file', 'warn', "prompts/{$file} missing or empty — using the built-in fallback prompt" );
+            return null;
+        }
+        if ( str_contains( $text, '{{AEO_RULES}}' ) ) {
+            $rules = self::read_prompt_file( 'aeo-rules.md' );
+            if ( $rules === null ) {
+                $this->logger->step( 'prompt_file', 'warn', 'prompts/aeo-rules.md missing or empty — using the built-in fallback prompt' );
+                return null;
+            }
+            $text = str_replace( '{{AEO_RULES}}', $rules, $text );
+        }
+        return $text;
+    }
+
+    private static function read_prompt_file( string $file ): ?string {
+        $path = ENA_PLUGIN_DIR . 'prompts/' . $file;
+        $raw  = is_readable( $path ) ? file_get_contents( $path ) : false;
+        if ( $raw === false ) return null;
+        $text = trim( (string) preg_replace( '/<!--.*?-->/s', '', $raw ) );
+        return $text !== '' ? $text : null;
+    }
+
+    /** Collapse model output to one plain paragraph: drop list markers and line breaks (AEO format rule). */
+    private static function to_paragraph( string $text ): string {
+        $text = preg_replace( '/^\s*(?:[-•*·]|\d+[.)])\s+/mu', '', $text );
+        $text = preg_replace( '/\s*\R+\s*/u', ' ', (string) $text );
+        return trim( (string) $text );
+    }
+
+    /** The v1.2.5 analyze() prompt, kept verbatim as the fallback when prompts/analysis-system.md is unavailable. */
+    private function build_legacy_analysis_prompt( string $descriptors, string $whitelist, string $blacklist ): string {
         $lines = [
             'You are a Bulgarian automotive/EV news editor.',
             'Reply ONLY with a single JSON object — no markdown, no code fences:',
@@ -169,19 +248,39 @@ class ENA_OpenRouter {
     }
 
     /**
-     * Generate an extended summary for the hosts to read during the live session —
-     * longer than the sheet's short description, so it adds material rather than
-     * just restating it. Uses the existing title + description from the sheet —
-     * no article scraping needed.
+     * Generate the «Резюме» brief the hosts read during the live session, in AEO shape: one exact
+     * question a listener would ask, then a flowing answer paragraph (prompts/podcast-summary.md +
+     * shared prompts/aeo-rules.md). Written from the scraped article body when available, so it adds
+     * material beyond the sheet description; falls back to title + description when $body_text is ''.
+     *
+     * Returns the brief as two labelled lines ("Въпрос: …?\nОтговор: …") — ENA_Docs bolds the labels.
      */
-    public function podcast_summary( string $bg_title, string $description ): string|WP_Error {
-        return $this->chat(
-            'Пишеш разширено фактическо резюме на новинарска статия на български, което да разгъне и допълни кратко описание с повече детайли и контекст. Съдържай само фактите от статията — без упоменаване на подкаст, водещи, слушатели или епизоди. Без markdown.',
-            "Заглавие: {$bg_title}\n\nКратко описание: {$description}\n\nНапиши разширено резюме от 8-10 изречения с повече детайли и контекст, без да повтаряш описанието дословно.",
-            [ 'temperature' => 0.3 ],
-            'podcast_summary'
-        );
+    public function podcast_summary( string $bg_title, string $description, string $body_text = '', string $pub_date = '' ): string|WP_Error {
+        $system = $this->load_prompt( 'podcast-summary.md' ) ?? self::PODCAST_SUMMARY_FALLBACK_PROMPT;
+
+        $body = trim( mb_substr( $body_text, 0, self::PODCAST_BODY_CAP ) );
+        $user = "Заглавие: {$bg_title}\nPublication date: " . ( $pub_date !== '' ? $pub_date : 'unknown' )
+              . "\n\nКратко описание: {$description}\n\n"
+              . ( $body !== '' ? "Article text:\n{$body}" : 'Article text: unavailable (use only the title and description).' )
+              . "\n\nProduce JSON.";
+
+        $result = $this->chat( $system, $user, [ 'temperature' => 0.3 ], 'podcast_summary' );
+        if ( is_wp_error( $result ) ) return $result;
+
+        $parsed   = json_decode( self::strip_json_fences( $result ), true );
+        $question = self::to_paragraph( (string) ( $parsed['question'] ?? '' ) );
+        $answer   = self::to_paragraph( (string) ( $parsed['answer'] ?? '' ) );
+        if ( json_last_error() !== JSON_ERROR_NONE || $question === '' || $answer === '' ) {
+            return new WP_Error( 'openrouter_parse', 'Invalid podcast brief JSON (missing question or answer)' );
+        }
+        if ( ! str_ends_with( $question, '?' ) ) $question = rtrim( $question, '.!' ) . '?';
+
+        return self::BRIEF_QUESTION_LABEL . $question . "\n" . self::BRIEF_ANSWER_LABEL . $answer;
     }
+
+    private const PODCAST_SUMMARY_FALLBACK_PROMPT = 'You write the research brief Bulgarian EV podcast hosts read aloud. Write in Bulgarian. '
+        . 'Reply ONLY with JSON {"question":"...","answer":"..."} — no markdown. question: the one exact question a listener would ask about this story, naming the brand/model, ending with "?". '
+        . 'answer: one flowing paragraph of 4-6 sentences, answer first, every sentence naming its subject, absolute dates only, only facts from the source, no lists and no mention of the podcast.';
 
     /**
      * Fetch OpenRouter account info for the configured API key.

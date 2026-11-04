@@ -8,6 +8,8 @@
 
 get_template_part('template-parts/header'); ?>
 
+<h1 class="sr-only"><?php bloginfo('name'); ?><?php $tagline = get_bloginfo('description'); if ($tagline) : ?> — <?php echo esc_html($tagline); ?><?php endif; ?></h1>
+
 <!-- <div> -->
 <?php
 get_template_part('template-parts/front-page/featured-posts');
@@ -18,7 +20,10 @@ get_template_part('template-parts/front-page/ev-news');
 get_template_part('template-parts/front-page/ev-reviews');
 get_template_part('template-parts/front-page/ev-masters');
 get_template_part('template-parts/front-page/brands');
-get_template_part('template-parts/front-page/newsletter');
+// Disabled 2026-09 for performance (P2, docs/plans/2026-09-21-003-fix-onsite-performance-plan.md):
+// unconditional sibforms.com + recaptcha loads cost 117ms/756KB + 42ms/128KB blocking
+// on every homepage view. Uncomment to restore the newsletter signup + reCAPTCHA.
+// get_template_part('template-parts/front-page/newsletter');
 get_template_part('template-parts/find-us');
 ?>
 <!-- </div> -->
