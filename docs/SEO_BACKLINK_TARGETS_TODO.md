@@ -119,3 +119,6 @@ impressions first) unless something else is more urgent. When a row ships:
 3. Leave the GSC baseline column as the pre-optimization number — that's
    what a later verification checkpoint compares against, same convention
    as `reports/seo-optimizations/ledger.csv`.
+
+- [ ] **9727** — CLBD Coffee Day Пловдив 14.11.2026 (publications) — gained an outbound link from EV172 (9735) Phase B, 2026-11-04. Not yet optimized (auto-excerpt meta description, no ledger row).
+- [ ] **9690** — Mercedes eActros 600 (publications) — gained an outbound link from EV172 (9735) Phase B, 2026-11-04. Not yet optimized (auto-excerpt meta description, no ledger row).

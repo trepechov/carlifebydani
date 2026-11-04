@@ -2,9 +2,9 @@
 
 **URL:** https://www.carlifebydani.com/ev-news/ev168-watts-on-the-grill-septemvri-2026-skara-koli-i-dobra-kompaniya/ · **Post ID:** 9502 · **Category:** ev-news
 **Prepared:** 2026-10-02 (Phase A)
-**Status:** content-written
+**Status:** applied
 **Keyphrase:** Rivian R2 recall
-**Ledger:** 9502-2026-10-02 (Phase B)
+**Ledger:** 9502-2026-10-02 (Phase B), 9502-2026-11-04-C (Phase C)
 
 ---
 
@@ -187,3 +187,26 @@ Both targets already have `Status: applied` rows in
   prose says "партньорския екип" rather than naming a brand.
 - [x] Fixed a transcription typo on the first write ("задълго" instead of
   the approved "задето") — corrected in a second write before verification.
+
+---
+
+## Phase C — Applied 2026-11-04
+_Written by `seo-article-apply`. Verified live via public REST (`yoast_head_json`)._
+
+| Group | Field | Before | After |
+|---|---|---|---|
+| 1 Yoast | SEO title | _(empty)_ | `Rivian R2 recall: стоп на шофирането %%sep%% %%sitename%%` (36 chars; 55 rendered) |
+| 1 Yoast | Meta description | _(empty)_ | `Rivian R2 recall: собственици спират да шофират заради проверка на високоволтовите вериги. Плюс как мина Watts on the Grill и новини за Tesla FSD.` (146 chars) |
+| 1 Yoast | Focus keyphrase | _(empty)_ | `Rivian R2 recall` |
+| 4 Media 9503 | alt_text | _(empty)_ | `Rivian R2 recall и Watts on the Grill — EV Новини епизод 168` |
+| 4 Media 9503 | title | `#EVN 168` | `EV168 Rivian R2 recall и Watts on the Grill` |
+
+**Tags:** unchanged (`Watts on the Grill` 367) — `Rivian` (count 1), `R2`, `инцидент` below reuse floor.
+**Inbound links:** none proposed — only older Rivian post is 3469 (2024 R2 reveal), different event.
+**Backups:** `reports/yoast-meta-backup/9502-2026-11-04.csv`, `media-9503-2026-11-04.csv`.
+**Verified:** rendered `<title>`/`og:description` correct, wordCount 184, one `/tag/` link in body.
+
+**Incident note:** first write attempt passed the payload as `body`, which `wp_call_endpoint` doesn't accept (payload goes in `params`). It returned 200 with nothing saved (only `modified` bumped); caught by re-reading. Second attempt with `params` persisted.
+
+### Declined
+_None._
