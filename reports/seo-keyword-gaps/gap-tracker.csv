@@ -1,0 +1,33 @@
+date,keyword,project,bg_volume,volume_source,gsc_position,gsc_impressions,gsc_clicks,landing_page,status,note
+2026-11-04,зарядна станция,1-charging,1600,semrush 2026-08,,0,0,,baseline,no GSC row for the head term
+2026-11-04,зарядна станция за електрически автомобили,1-charging,1300,semrush 2026-08,,0,0,,baseline,
+2026-11-04,зарядни станции,1-charging,1000,semrush 2026-08,,0,0,,baseline,
+2026-11-04,зарядна станция за електромобил,1-charging,720,dataforseo 2026-09,,0,0,,baseline,
+2026-11-04,зарядни станции в българия,1-charging,170,dataforseo 2026-11,,0,0,,baseline,Sep 2026 = 390 (rising)
+2026-11-04,wallbox,1-charging,210,dataforseo 2026-11,,0,0,,baseline,
+2026-11-04,зарядно за електромобил,1-charging,110,dataforseo 2026-11,,0,0,,baseline,
+2026-11-04,зарядна станция в гаража,1-charging,,,3.5,137,8,/publications/domashno-zarezhdane-na-elektromobili/,baseline,long tail already ranking
+2026-11-04,зарядна станция за гараж,1-charging,,,7.4,42,1,/publications/domashno-zarezhdane-na-elektromobili/,baseline,long tail
+2026-11-04,тесла зарядни станции в българия,1-charging,,,3.9,96,7,/publications/stancziite-na-tesla-v-blgariya-veche-sa-plateni/,baseline,long tail already ranking
+2026-11-04,зарядна станция за тесла,6-supercharger,,,8.4,122,1,/publications/stancziite-na-tesla-v-blgariya-veche-sa-plateni/,baseline,CTR 0.8% at pos 8
+2026-11-04,tesla supercharger,6-supercharger,2400,dataforseo 2026-11,,0,0,,baseline,
+2026-11-04,tesla supercharger bulgaria,6-supercharger,,,8.4,77,2,/publications/stancziite-na-tesla-v-blgariya-veche-sa-plateni/,baseline,
+2026-11-04,tesla superchargers bulgaria,6-supercharger,,,7.2,47,2,/publications/stancziite-na-tesla-v-blgariya-veche-sa-plateni/,baseline,
+2026-11-04,byd българия,2-byd,6600,dataforseo 2026-11,,0,0,,baseline,Sep 2026 = 9900; Mar 2026 = 12100
+2026-11-04,byd seal,2-byd,1600,dataforseo 2026-09,,0,0,,baseline,
+2026-11-04,byd atto 3,2-byd,880,dataforseo 2026-11,,0,0,,baseline,
+2026-11-04,byd dolphin,2-byd,720,dataforseo 2026-11,,0,0,,baseline,
+2026-11-04,byd bulgaria,2-byd,,,27,2,0,,baseline,only footprint besides byd румъния
+2026-11-04,leapmotor,3-chinese,2900,dataforseo 2026-11,38.3,3,0,/ev-news-feed/,baseline,
+2026-11-04,xpeng,3-chinese,2400,dataforseo 2026-11,,0,0,,baseline,
+2026-11-04,leapmotor c10,3-chinese,880,dataforseo 2026-11,,0,0,,baseline,
+2026-11-04,leapmotor t03,3-chinese,590,dataforseo 2026-11,,0,0,,baseline,
+2026-11-04,xpeng g6,3-chinese,480,dataforseo 2026-11,,0,0,,baseline,90 -> 1000 in 12 months
+2026-11-04,китайски електромобили,3-chinese,170,dataforseo 2026-09,28,1,0,,baseline,dead Semrush slot
+2026-11-04,електромобил,4-head-terms,720,semrush 2026-08,19.7,144,0,/publications/kak-da-smenim-dvgto-s-elektromobil/,baseline,
+2026-11-04,електромобили,4-head-terms,720,semrush 2026-08,19.5,2,0,,baseline,
+2026-11-04,електрически автомобил,4-head-terms,12100,semrush 2026-08,,0,0,,baseline,VERIFY volume with DataForSEO
+2026-11-04,зареждане на електромобил,4-head-terms,90,dataforseo 2026-09,12.5,90,0,,baseline,
+2026-11-04,xiaomi su7,5-xiaomi,1600,dataforseo 2026-09,6.8,6,0,/ev-news/evn51-zashto-xiaomi-su7-katastrofira-tolkova-chesto/,baseline,
+2026-11-04,xiaomi su7 ultra,5-xiaomi,1600,dataforseo 2026-09,,0,0,,baseline,
+2026-11-04,xiaomi su7 цена,5-xiaomi,320,dataforseo 2026-11,,0,0,,baseline,

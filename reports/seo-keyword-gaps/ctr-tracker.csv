@@ -1,0 +1,30 @@
+date,post_id,slug,tier,impressions,clicks,ctr,position,query_or_page,title_state,meta_state,status,note
+2026-11-04,9099,zeekr-7x,2,35837,502,0.0140,6.2,page,optimized 2026-08-14,optimized (has meta),diagnose-only,28d check flat: CTR 1.57%->1.81%
+2026-11-04,9099,zeekr-7x,2,7266,94,0.0129,6.8,zeekr 7x,optimized 2026-08-14,optimized,baseline,
+2026-11-04,9099,zeekr-7x,2,4223,15,0.0036,7.2,zeekr,optimized 2026-08-14,optimized,baseline,
+2026-11-04,9099,zeekr-7x,2,2898,40,0.0138,5.9,zeekr 7x цена,optimized 2026-08-14,optimized,baseline,
+2026-11-04,9099,zeekr-7x,2,2474,13,0.0053,6.1,zeekr bulgaria,optimized 2026-08-14,optimized,baseline,
+2026-11-04,9099,zeekr-7x,2,631,29,0.0460,5.3,zeekr 7x мнения,optimized 2026-08-14,optimized,baseline,opinion modifier works
+2026-11-04,200,toyota-bz4x-tromava-iznenada-izvan-putya,1,9374,151,0.0161,7.9,page,default (= post title),absent,todo-B1,
+2026-11-04,200,toyota-bz4x-tromava-iznenada-izvan-putya,1,1977,14,0.0071,6.5,toyota bz4x,default,absent,todo-B1,
+2026-11-04,200,toyota-bz4x-tromava-iznenada-izvan-putya,1,595,63,0.1059,4.0,toyota bz4x мнения,default,absent,todo-B1,benchmark: keep this hook
+2026-11-04,420,mercedes-eqs-580-4matic-komfort-na-vsyaka-tsena,1,4588,36,0.0078,6.8,page,default,absent,todo-B1,
+2026-11-04,420,mercedes-eqs-580-4matic-komfort-na-vsyaka-tsena,1,745,1,0.0013,8.6,mercedes eqs,default,absent,todo-B1,
+2026-11-04,130,vw-id4-gtx-vpechatlyavashto-komforten-stilen-praktichen,2,4293,40,0.0093,7.4,page,optimized 2026-09-05,optimized,watch,28d check inconclusive: 1.08%->1.25%
+2026-11-04,4845,baw-pony-dostpen-kitajskite-gradski-avtomobil-s-mnogo-ekstri,1,2322,45,0.0194,7.4,page,default,absent,todo-B2,
+2026-11-04,3366,stark-varg-veche-se-predlaga-v-blgariya,1,756,0,0.0000,8.1,stark varg,default,absent,todo-B2,0 clicks from 756 impressions
+2026-11-04,3366,stark-varg-veche-se-predlaga-v-blgariya,1,583,7,0.0120,7.5,stark varg цена,default,absent,todo-B2,
+2026-11-04,6280,mhero-917-luksozen-vsedehod,1,1829,15,0.0082,7.3,mhero,default,absent,todo-B2,
+2026-11-04,6280,mhero-917-luksozen-vsedehod,1,634,2,0.0032,6.9,dongfeng m hero,default,absent,todo-B2,
+2026-11-04,2800,mg4-priemlivo-kachestvo-na-razumna-cena,1,1030,11,0.0107,6.3,mg4,default,absent,todo-B3,page clicks -39% vs prev period
+2026-11-04,2800,mg4-priemlivo-kachestvo-na-razumna-cena,1,364,0,0.0000,5.2,mg car цена,default,absent,todo-B3,
+2026-11-04,3474,mg-zs-ev-kompakten-gradski-suv,1,1250,26,0.0208,7.7,mg zs мнения,default,absent,todo-B3,page clicks -43% vs prev period
+2026-11-04,3474,mg-zs-ev-kompakten-gradski-suv,1,165,10,0.0606,1.0,джип mg,default,absent,todo-B3,expected CTR at pos 1 is 27.5%
+2026-11-04,5946,microlino,1,146,1,0.0068,1.1,мини кола,default,absent,diagnose-only,CTR at position 1.1: suspect SERP feature
+2026-11-04,5946,microlino,1,588,9,0.0153,7.5,microlino цена,default,absent,diagnose-only,
+2026-11-04,6165,noviyat-tesla-model-y-juniper-2025-be-predstaven-v-evropa,2,892,8,0.0090,4.5,новата тесла,optimized 2026-08-14,optimized,todo-B5,28d check regressed: CTR 2.31%->1.32%
+2026-11-04,6889,renault-5,2,808,9,0.0111,5.6,рено 5,optimized 2026-09-04,optimized,todo-B5,Latin vs Cyrillic keyphrase
+2026-11-04,3550,rimac-nevera-zavladyavashhata-elektricheska-superkola,1,771,8,0.0104,6.0,rimac nevera,default,absent,todo-B5,
+2026-11-04,2648,lucid-air-luksozen-elektromobil-bez-kompromisi,1,690,4,0.0058,6.3,lucid,default,absent,todo-B5,
+2026-11-04,,volvo-c40-purviyat-istinski-elektromobil-volvo,1,268,0,0.0000,4.4,volvo c40,unchecked,unchecked,todo-B5,
+2026-11-04,,ev-masters/hristo-bachvarov-dalboko-v-tehnicheskite-tayni-bmw-i3,special,974,13,0.0175,1.9,христо бъчваров,n/a,n/a,cannibalisation,/partners/ takes 778 impr at pos 5.4
