@@ -134,10 +134,13 @@ related chunk into an answer, and do not write ¶1 without a real one.
 **AEO writing rules — apply to all three paragraphs.** Answer engines (Google
 AI Overviews, ChatGPT, Perplexity) quote single sentences out of context, so
 every sentence must stand on its own. These mirror the shared rules in the
-EV News Automator plugin (`plugins/ev-news-automator/prompts/aeo-rules.md`,
-rationale in its `docs/AEO_CONTENT_GUIDELINES.md`, both on `main`) so the
-feed cards, podcast «Резюме» and these intros stay consistent. If that file
-changes, update this block too.
+EV News Automator plugin
+([`aeo-rules.md`](../../../plugins/ev-news-automator/prompts/aeo-rules.md),
+rationale in
+[`AEO_CONTENT_GUIDELINES.md`](../../../plugins/ev-news-automator/docs/AEO_CONTENT_GUIDELINES.md))
+so the feed cards, podcast «Резюме» and these intros stay consistent. Read
+the rules file before drafting; if it has changed since this block was
+written, follow the file and update this block.
 
 - **Answer first.** The first sentence of ¶1 states the answer or the key fact
   on its own, with the key number or date. No warm-up ("В този епизод…").
