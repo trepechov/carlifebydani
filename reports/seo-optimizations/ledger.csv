@@ -108,3 +108,5 @@ id,date_applied,post_id,slug,category,phase,changed,report,keyphrase,base_start,
 9220-2026-11-04-C-b,2026-11-04,9220,ev160-byd-denza-z-1582-konya-chista-elektricheska-mosht,ev-news,C,tags,2026-11-04-9220-ev160-byd-denza-z.md,BYD Denza Z,,,0,0,0.0000,,,,,2026-12-02
 9732-2026-11-04-B2,2026-11-04,9732,ev171-asia-motor-show-2026-aziya-prevzema-avtomobilniya-svyat,ev-news,B,content,2026-11-04-9732-ev171-asia-motor-show.md,Asia Motor Show 2026,,,0,0,0.0000,,,,,2026-12-30
 9732-2026-11-04-C-b,2026-11-04,9732,ev171-asia-motor-show-2026-aziya-prevzema-avtomobilniya-svyat,ev-news,C,tags,2026-11-04-9732-ev171-asia-motor-show.md,Asia Motor Show 2026,,,0,0,0.0000,,,,,2026-12-02
+9946-2026-11-25-B,2026-11-25,9946,ev175-gta-vi-elektricheskite-koli-prevzemat-li-vice-city,ev-news,B,content,2026-11-25-9946-ev175-gta-vi.md,GTA VI електрически коли,,,0,0,0.0000,,,,,2027-01-20
+9946-2026-11-25-C,2026-11-25,9946,ev175-gta-vi-elektricheskite-koli-prevzemat-li-vice-city,ev-news,C,title|metadesc|focuskw|tags|alt,2026-11-25-9946-ev175-gta-vi.md,GTA VI електрически коли,,,0,0,0.0000,,,,reports/yoast-meta-backup/9946-2026-11-25.csv,2026-12-23

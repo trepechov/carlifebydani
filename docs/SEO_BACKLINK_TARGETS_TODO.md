@@ -123,3 +123,4 @@ impressions first) unless something else is more urgent. When a row ships:
 - [ ] **9727** — CLBD Coffee Day Пловдив 14.11.2026 (publications) — gained an outbound link from EV172 (9735) Phase B, 2026-11-04. Not yet optimized (auto-excerpt meta description, no ledger row).
 - [ ] **9690** — Mercedes eActros 600 (publications) — gained an outbound link from EV172 (9735) Phase B, 2026-11-04. Not yet optimized (auto-excerpt meta description, no ledger row).
 - [ ] **6508** — #EV95 Как се чупи теглича на Cybertruck? (ev-news) — gained an outbound link from EV160 (9220) Phase B, 2026-11-04. Not yet optimized (no ledger row).
+- [ ] **9912** — VW ID.Cross: какво крие MEB+ под купето (publications) — gained an outbound link from EV175 (9946) Phase B, 2026-11-25. Not yet optimized (no ledger row).
