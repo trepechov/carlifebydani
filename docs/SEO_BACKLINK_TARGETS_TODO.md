@@ -50,6 +50,7 @@ picked up; a fresh Phase A run will get the current numbers regardless.
 | `[ ]` | 8340 | #EV146 – FSD в Холандия; Model S/X Signature Edition | ev-news | 9486 (outbound) | not pulled this run | — |
 | `[ ]` | 7821 | #EV127 – Cybertruck с FSD в Прага! | ev-news | 9486 (outbound) | not pulled this run | — |
 | `[ ]` | 8061 | #EV136 – Volvo официално представи новия EX60 | ev-news | 8976 (outbound, same-story-sequel citation, new→old) | 3 / 0 / 0% / 8.0 (2026-06-25→09-22) | — |
+| `[ ]` | 9792 | Как мина CLBD Coffee Day Пловдив | publications | 9942 (outbound, 2026-11-25) | ~4 / 0 / 0% (query-level rows from 2026-08-26→11-24 pull; not a page-dimension pull) | — |
 
 GSC window: 2026-06-06 → 2026-09-03, page-dimension pull filtered to each
 URL (9099's baseline below uses its own original 2026-05-15→2026-08-13
