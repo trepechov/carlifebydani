@@ -326,6 +326,12 @@ from an earlier Phase B write on this post).
 
 ## Decision rules
 
+- **Don't add content, don't remove editorial placeholders.** Only metatags, tags, alt/title and links on
+  already-existing words. No new paragraphs/FAQ/headings; leave deliberate placeholders (e.g. `[цена €]`).
+  See `_shared/constants.md` ("Don't add content during optimization").
+- **EV link direction uses publish date AND recording date.** EV episodes are sometimes published later than
+  filmed; an EV episode published before the article must not be wired to link forward to it. See
+  `_shared/constants.md` ("Publish date ≠ recording date").
 - **Never write without an explicit yes.** No exceptions, no "last chance"
   framing, no writing something in a form the user hasn't seen.
 - **A partial approval is a normal outcome, not a failure to redo.** Write

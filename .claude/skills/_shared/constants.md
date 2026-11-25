@@ -139,3 +139,20 @@ transcript-availability precondition; the other three skip straight from Phase A
   archives, external URLs — already excluded elsewhere), and for a target
   post id that's the same as the post currently being optimized (a rare
   self-link).
+
+- **Publish date ≠ recording date (EV News) — added 2026-11-25 on user's instruction.**
+  EV episodes are sometimes published *later* than they were filmed, so a post's
+  `date` alone doesn't say what the hosts knew when they spoke. When judging link
+  direction between an EV episode and another post, check **both** the publish
+  date (`/wp/v2/posts?include=<id>&_fields=date`) and, when it could matter, the
+  recording date (episode date in the YouTube title / `resolve_episode.py`).
+  Concretely: an EV episode published *before* an article **should not be made to
+  link forward** to that article (EV175, published 2026-11-24, was wired to link to
+  post 9912, published 2026-11-25 — the user flagged this as not making sense). Never
+  decide direction from relevance or traffic alone.
+- **Don't add content during optimization — added 2026-11-25 on user's instruction.**
+  The pipeline optimizes *around* an article (metatags, tags, alt/title, links on
+  existing words). It must **not** add FAQ blocks, new paragraphs, new headings or
+  "Какво е X?" sections to a hand-written / editorially-approved article, even
+  AI-assisted ones. Link anchors must wrap words already in the text. Placeholders
+  the editors left on purpose (e.g. `[цена €]` for a not-yet-known BG price) stay.
