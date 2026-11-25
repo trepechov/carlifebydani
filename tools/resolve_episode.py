@@ -133,6 +133,13 @@ def main() -> None:
 
     ref = args[0]
     hit = resolve(ref, index)
+    if hit is None and not refresh:
+        # A miss on a cached index is not trustworthy: new episodes are ingested
+        # throughout the week and the cache can be hours old (EV174 was reported
+        # NOT_INGESTED from a stale cache on 2026-11-25). Re-scroll Qdrant once
+        # and retry before declaring it missing. Costs one scroll, only on a miss.
+        index = load_index(refresh=True)
+        hit = resolve(ref, index)
     if hit is None:
         print(f"NOT_INGESTED: no episode matching {ref!r} in the {len(index)}-video corpus.")
         sys.exit(1)
